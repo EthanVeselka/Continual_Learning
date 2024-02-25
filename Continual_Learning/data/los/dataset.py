@@ -1,0 +1,108 @@
+from __future__ import absolute_import
+from __future__ import print_function
+
+import random
+import os
+import torch
+
+import numpy as np
+
+from data.preprocessing import Discretizer, Normalizer
+from data.readers import LengthOfStayReader
+from data.utils import read_chunk, get_bin_custom
+from data.base_dataset import BaseDataset
+
+
+class LOSDataset(BaseDataset):
+    """
+    Length-of-Stay dataset that can be directly used by PyTorch dataloaders. This class preprocesses the data the same way as "Multitask learning and benchmarking with clinical time series data": https://github.com/YerevaNN/mimic3-benchmarks
+
+    :param root: directory where data is located
+    :type root: str
+    :param train: if true, the training split of the data will be used. Otherwise, the validation dataset will be used
+    :type train: bool
+    :param partition: number of partitions to use for binning
+    :type partition: int
+    :param n_samples: number of samples to use. If None, all the data is used
+    :type n_samples: int
+    :param customListFile: listfile to use. If None, use train_listfile.csv
+    :type customListFile: str
+    """
+
+    def __init__(
+        self,
+        root,
+        train=True,
+        partition=10,
+        transform=None,
+        n_samples=None,
+        customListFile=None,
+    ):
+        """
+        Initialize LOSDataset
+
+        :param root: directory where data is located
+        :type root: str
+        :param train: if true, the training split of the data will be used. Otherwise, the validation dataset will be used
+        :type train: bool
+        :param partition: number of partitions to use for binning
+        :type partition: int
+        :param n_samples: number of samples to use. If None, all the data is used
+        :type n_samples: int
+        :param customListFile: listfile to use. If None, use train_listfile.csv
+        :type customListFile: str
+        """
+        super().__init__(transform=transform)
+
+        listfile = "train_listfile.csv" if train else "val_listfile.csv"
+
+        if customListFile is not None:
+            listfile = customListFile
+
+        self._read_data(root, listfile)
+        self._load_data(n_samples)
+
+        self.n_samples = len(self.data)
+        self.partition = partition
+
+    def _read_data(self, root, listfile):
+        if "test" in listfile:
+            self.reader = LengthOfStayReader(
+                dataset_dir=os.path.join(root, "test"),
+                listfile=os.path.join(root, listfile),
+            )
+        else:
+            self.reader = LengthOfStayReader(
+                dataset_dir=os.path.join(root, "train"),
+                listfile=os.path.join(root, listfile),
+            )
+
+        self.discretizer = Discretizer(
+            timestep=1.0,
+            store_masks=True,
+            impute_strategy="previous",
+            start_time="zero",
+        )
+
+        discretizer_header = self.discretizer.transform(
+            self.reader.read_example(0)["X"]
+        )[1].split(",")
+        cont_channels = [
+            i for (i, x) in enumerate(discretizer_header) if x.find("->") == -1
+        ]
+
+        self.normalizer = Normalizer(fields=cont_channels)
+        normalizer_state = "../normalizers/los_ts1.0.input_str:previous.start_time:zero.n5e4.normalizer"
+        normalizer_state = os.path.join(os.path.dirname(__file__), normalizer_state)
+        self.normalizer.load_params(normalizer_state)
+
+    def __getitem__(self, idx):
+        x = self.data[idx]
+        sl = len(x)
+
+        if self.partition == 10:
+            y = get_bin_custom(self.labels[idx], 10)
+        else:
+            y = self.labels[idx]
+
+        return x, y, sl, None

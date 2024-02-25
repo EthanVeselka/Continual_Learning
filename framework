@@ -1,0 +1,11 @@
+# Test/unittest WUPERR
+# -> WUPERR (custom EWC Loss, previous task data sampling)
+# -> Benchmark calls Logger, Dataset, DataLoader, Optimizer (Adam, Bayesian?)
+#  - Dataset = Basedataset <- Dataset <- Reader, Discretizer, Normalizer
+#  - This is where previous task sampling will happen (in data loading -> keep memory bank and resample from it)
+
+
+# Note: Need to find out which part of Dataset is specific to LSTM version (if any), change to ANN
+# Note: Adjust benchmark fit() to use WUPERR / Replay methods
+# Note: WUPERR model needs diag_fisher() and penalty() to apply EWC method as in example
+# Note: Adjust/remove parameters e.g. hidden_dim, num_layers, dropout_rate, bidirectional, n_classes, etc.
