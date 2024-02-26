@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+# Data processing to static features rather than timeseries unfinished
+
 
 class WUPERR(nn.Module):
     def __init__(
