@@ -19,6 +19,7 @@ class WUPERR(nn.Module):
 
         self.model = nn.Sequential(
             nn.Linear(76, self.hidden_dim1),
+            nn.ReLU(),
             nn.Linear(self.hidden_dim1, self.hidden_dim2),
             nn.ReLU(),
             nn.Dropout(self.dropout_rate),

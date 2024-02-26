@@ -32,7 +32,6 @@ def get_random_samples(task_samples, er_memory):
 
     # Shuffle the list
     random.shuffle(random_samples)
-
     return random_samples
 
 
