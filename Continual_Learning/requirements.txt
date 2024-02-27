@@ -1,0 +1,11 @@
+numpy
+    # via
+    #   scikit-learn
+    #   scipy
+    #   torchmimic (setup.py)
+scikit-learn
+    # via torchmimic (setup.py)
+torch
+    # via torchmimic (setup.py)
+wandb
+    # via torchmimic (setup.py)
