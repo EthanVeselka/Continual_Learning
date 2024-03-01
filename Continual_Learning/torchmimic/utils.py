@@ -5,6 +5,8 @@ import random
 
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence
+from torchmimic.data import IHMDataset
+from torch.utils.data import DataLoader
 
 
 def pad_colalte(batch):
@@ -28,18 +30,85 @@ def create_exp_dir(path, scripts_to_save=None):
             shutil.copyfile(script, dst_file)
 
 
-# Takes dict of random samples per task, returns a shuffled list of er_memory length with an equal distribution of random samples from each task
-def get_random_samples(task_samples, er_memory):
+def get_samples(sample_size, buffer_size, train_loader):
+    # get specified number of random samples
+
+    count = 0
+    random_samples = []
+    sample_idx = random.sample(range(len(sample_size)), buffer_size)
+    for data, label, lens, mask in enumerate(train_loader):
+        if count in sample_idx:
+            random_samples.append((data, label, lens, mask))
+        count += 1
+
+    random.shuffle(random_samples)
+    return random_samples
+
+
+# Takes dict of random samples per task, returns a shuffled list of buffer_size length with an equal distribution of random samples from each task
+def get_random_samples(task_num, task_samples, buffer_size):
     random_samples = []
 
     # Calculate the number of samples to take from each list
-    samples_per_list = er_memory // len(task_samples)
+    samples_per_list = buffer_size // task_num
 
-    for lst in task_samples.values():
+    for idx, lst in enumerate(task_samples.values()):
         # Randomly sample values from the list
+        if idx == task_num:
+            break
         sampled_values = random.sample(lst, samples_per_list)
         random_samples.extend(sampled_values)
 
     # Shuffle the list
     random.shuffle(random_samples)
     return random_samples
+
+
+# returns list of training/testing loaders for each task
+def get_loaders(
+    tasks, train_batch_size, test_batch_size, buffer_size, sample_size, workers, device
+):
+    train_loaders = []
+    test_loaders = []
+    task_samples = {}
+
+    for task_num, task_data in enumerate(tasks):
+
+        train_dataset = IHMDataset(
+            task_data,
+            train=True,
+            n_samples=sample_size,
+        )
+
+        test_dataset = IHMDataset(
+            task_data,
+            train=False,
+            n_samples=sample_size,
+        )
+
+        kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
+
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=train_batch_size,
+            shuffle=True,
+            collate_fn=pad_colalte,
+            **kwargs,
+        )
+        test_loader = DataLoader(
+            test_dataset,
+            batch_size=test_batch_size,
+            shuffle=False,
+            collate_fn=pad_colalte,
+            **kwargs,
+        )
+
+        task_samples[task_num] = (
+            []
+            if buffer_size == 0
+            else get_samples(sample_size, buffer_size, train_loader)
+        )
+        train_loaders.append(train_loader)
+        test_loaders.append(test_loader)
+
+    return train_loaders, test_loaders, task_samples

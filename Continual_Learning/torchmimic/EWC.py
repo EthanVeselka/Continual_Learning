@@ -29,7 +29,7 @@ class EWC(object):
         for n, p in deepcopy(self.params).items():
             self._means[n] = variable(p.data)
 
-    # adjust FIM calc to LSTM
+    # adjust tensors
     def _diag_fisher(self):
         precision_matrices = {}
         for n, p in deepcopy(self.params).items():
@@ -38,11 +38,18 @@ class EWC(object):
 
         self.model.eval()
         for input in self.dataset:
+            # _, (data, label, lens, mask) in enumerate(self.dataset):
             self.model.zero_grad()
             input = variable(input)
             output = self.model(input).view(1, -1)
             label = output.max(1)[1].view(-1)
             loss = F.nll_loss(F.log_softmax(output, dim=1), label)
+
+            # data = data.to(self.device)
+            # label = label.to(self.device)
+            # output = self.model((data, lens))
+            # loss = F.nll_loss(output, label[:, None])
+
             loss.backward()
 
             for n, p in self.model.named_parameters():
