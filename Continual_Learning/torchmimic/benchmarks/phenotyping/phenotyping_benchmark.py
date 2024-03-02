@@ -33,6 +33,11 @@ class PhenotypingBenchmark:
         self.device = device
         self.report_freq = report_freq
 
+        # self.train_loader = train_loader
+        # self.buffer_size = buffer_size
+        # self.task = "los"
+        # -workers, -sample_size
+
         config = {}
         config.update(model.get_config())
         config.update(self.get_config())

@@ -12,7 +12,7 @@ from test_standard_lstm import TestLSTM
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--task", type=int, required=True, help="Run tasks 1 through <task#>"
+        "--tasks", type=int, required=True, help="Run tasks 1 through <task#>"
     )
     parser.add_argument(
         "--b",
@@ -33,7 +33,7 @@ def main():
 
     args = parser.parse_args()
 
-    task_list = [i for i in range(0, args.task)]
+    task_list = [i for i in range(0, args.tasks)]
     buffer_size = args.b
     replay = args.replay if args.replay else False
     ewc_penalty = args.ewc if args.ewc else False

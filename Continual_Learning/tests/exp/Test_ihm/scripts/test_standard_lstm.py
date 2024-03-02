@@ -118,7 +118,7 @@ class TestLSTM(unittest.TestCase):
 
             # train model, evaluate on all testing data
             trainer.fit(
-                2,
+                3,
                 test_loaders,
                 task_num,
                 random_samples,

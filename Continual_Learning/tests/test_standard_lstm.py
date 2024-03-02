@@ -97,9 +97,12 @@ class TestLSTM(unittest.TestCase):
         random_samples = []
         for task_num, task_data in enumerate(tasks):
 
-            # use model from previous trainer
-            if task_num != 0 and (ewc_penalty or replay):
+            # use model from previous trainer for additional tasks
+            if task_num != 0:
                 model = trainers[task_num - 1].model
+
+            # get random samples for ewc/replay
+            if ewc_penalty or replay:
                 random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             trainer = IHMBenchmark(

@@ -18,7 +18,7 @@ class IHMBenchmark:
         train_batch_size=8,
         test_batch_size=256,
         train_loader=None,
-        data=None,
+        data="../../datasets/mimic3-benchmarks/in-hospital-mortality",
         buffer_size=1000,
         learning_rate=0.001,
         weight_decay=0,
@@ -29,13 +29,15 @@ class IHMBenchmark:
     ):
         self.train_batch_size = train_batch_size
         self.test_batch_size = test_batch_size
-        self.train_loader = train_loader
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
         self.model = model
         self.device = device
         self.report_freq = report_freq
+
+        self.train_loader = train_loader
         self.buffer_size = buffer_size
+        self.task = "ihm"
 
         config = {}
         config.update(model.get_config())
@@ -71,7 +73,7 @@ class IHMBenchmark:
             self.logger.reset()
 
             ewc = (
-                EWC(self.model, task_num, random_samples)
+                EWC(self.model, random_samples, self.device, self.task)
                 if task_num != 0 and ewc_penalty
                 else None
             )
@@ -103,13 +105,15 @@ class IHMBenchmark:
                 if (batch_idx + 1) % self.report_freq == 0:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
+            print("------------------------------------")
+            print(f"Task: {task_num}")
             self.logger.print_metrics(epoch, split="Train")
 
             # evaluate model on all tasks
             self.model.eval()
             self.logger.reset()
             with torch.no_grad():
-                for test_loader in test_loaders:
+                for eval_task, test_loader in enumerate(test_loaders):
                     for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
                         data = data.to(self.device)
                         label = label.to(self.device)
@@ -134,7 +138,7 @@ class IHMBenchmark:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
                             )
-
+                    print(f"Eval task: {eval_task}")
                     self.logger.print_metrics(epoch, split="Eval")
 
     def get_config(self):

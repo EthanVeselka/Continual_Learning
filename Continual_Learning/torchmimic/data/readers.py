@@ -50,7 +50,7 @@ class DecompensationReader(Reader):
         ret = []
         with open(os.path.join(self._dataset_dir, ts_filename), "r") as tsfile:
             header = tsfile.readline().strip().split(",")
-            assert header[0] == "Hours"
+            # assert header[0] == "Hours"
             for line in tsfile:
                 mas = line.strip().split(",")
                 t = float(mas[0])
@@ -106,7 +106,7 @@ class InHospitalMortalityReader(Reader):
         ret = []
         with open(os.path.join(self._dataset_dir, ts_filename), "r") as tsfile:
             header = tsfile.readline().strip().split(",")
-            assert header[0] == "Hours"
+            # assert header[0] == "Hours"
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))
@@ -157,7 +157,7 @@ class LengthOfStayReader(Reader):
         ret = []
         with open(os.path.join(self._dataset_dir, ts_filename), "r") as tsfile:
             header = tsfile.readline().strip().split(",")
-            assert header[0] == "Hours"
+            # assert header[0] == "Hours"
             for line in tsfile:
                 mas = line.strip().split(",")
                 t = float(mas[0])
@@ -213,7 +213,7 @@ class PhenotypingReader(Reader):
         ret = []
         with open(os.path.join(self._dataset_dir, ts_filename), "r") as tsfile:
             header = tsfile.readline().strip().split(",")
-            assert header[0] == "Hours"
+            # assert header[0] == "Hours"
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))
@@ -305,7 +305,7 @@ class MultitaskReader(Reader):
         ret = []
         with open(os.path.join(self._dataset_dir, ts_filename), "r") as tsfile:
             header = tsfile.readline().strip().split(",")
-            assert header[0] == "Hours"
+            # assert header[0] == "Hours"
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))

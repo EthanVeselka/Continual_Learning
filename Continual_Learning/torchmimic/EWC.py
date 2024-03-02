@@ -1,21 +1,21 @@
 from copy import deepcopy
 
 import torch
-from torch import nn
+import torch.nn as nn
 from torch.nn import functional as F
-from torch.autograd import Variable
+
+# from torch.autograd import Variable
 import torch.utils.data
 
 
-def variable(t: torch.Tensor, use_cuda=True, **kwargs):
-    if torch.cuda.is_available() and use_cuda:
-        t = t.cuda()
-    return Variable(t, **kwargs)
+# def variable(t: torch.Tensor, use_cuda=True, **kwargs):
+#     if torch.cuda.is_available() and use_cuda:
+#         t = t.cuda()
+#     return Variable(t, **kwargs)
 
 
-# change variable/tensor creation if neccesary
 class EWC(object):
-    def __init__(self, model: nn.Module, dataset: list):
+    def __init__(self, model: nn.Module, dataset: list, device, task):
 
         self.model = model
         self.dataset = dataset
@@ -24,31 +24,35 @@ class EWC(object):
             n: p for n, p in self.model.named_parameters() if p.requires_grad
         }
         self._means = {}
-        self._precision_matrices = self._diag_fisher()
+        self._precision_matrices = self._diag_fisher(device, task)
 
         for n, p in deepcopy(self.params).items():
-            self._means[n] = variable(p.data)
+            # self._means[n] = variable(p.data)
+            p = p.to(device)
+            self._means[n] = p.data
 
-    # adjust tensors
-    def _diag_fisher(self):
+    def _diag_fisher(self, device, task):
         precision_matrices = {}
         for n, p in deepcopy(self.params).items():
             p.data.zero_()
-            precision_matrices[n] = variable(p.data)
+            # precision_matrices[n] = variable(p.data)
+            p = p.to(device)
+            precision_matrices[n] = p.data
 
         self.model.eval()
-        for input in self.dataset:
-            # _, (data, label, lens, mask) in enumerate(self.dataset):
+        for _, (data, label, lens, mask) in enumerate(self.dataset):
             self.model.zero_grad()
-            input = variable(input)
-            output = self.model(input).view(1, -1)
-            label = output.max(1)[1].view(-1)
-            loss = F.nll_loss(F.log_softmax(output, dim=1), label)
+            # input = variable(input)
+            data = data.to(self.device)
+            label = label.to(self.device)
 
-            # data = data.to(self.device)
-            # label = label.to(self.device)
-            # output = self.model((data, lens))
-            # loss = F.nll_loss(output, label[:, None])
+            if task == ("phen" or "los"):  # multiclass classification
+                output = self.model((data, lens)).view(1, -1)
+                label = output.max(1)[1].view(-1)
+                loss = F.nll_loss(F.log_softmax(output, dim=1), label)
+            else:  # binary classification
+                output = self.model((data, lens))
+                loss = nn.BCELoss(output, label[:, None])
 
             loss.backward()
 
