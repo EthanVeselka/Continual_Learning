@@ -28,7 +28,6 @@ class EWC(object):
 
         for n, p in deepcopy(self.params).items():
             # self._means[n] = variable(p.data)
-            p = p.to(device)
             self._means[n] = p.data
 
     def _diag_fisher(self, device, task):
@@ -36,7 +35,6 @@ class EWC(object):
         for n, p in deepcopy(self.params).items():
             p.data.zero_()
             # precision_matrices[n] = variable(p.data)
-            p = p.to(device)
             precision_matrices[n] = p.data
 
         self.model.eval()
