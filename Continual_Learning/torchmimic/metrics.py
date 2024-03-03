@@ -197,6 +197,8 @@ class MetricMeter:
         :param pred: predicted labels
         :type pred: np.array
         """
+        # self.pred = np.append(self.pred, pred)
+        # self.true = np.append(self.true, true)
         self.pred.append(pred)
         self.true.append(true)
 

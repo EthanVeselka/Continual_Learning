@@ -22,7 +22,7 @@ from torchmimic.utils import get_loaders, get_random_samples
 # "/datasets/eICU-benchmarks/data/in-hospital-mortality",
 ihm_tasks = [
     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
-    "../../datasets/eICU-benchmarks/in-hospital-mortality",
+    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
 ]
 
 

@@ -42,7 +42,7 @@ class Discretizer:
     def transform(self, X, header=None, end=None):
         if header is None:
             header = self._header
-        assert header[0] == "Hours"
+        # assert header[0] == "Hours"
         eps = 1e-6
 
         N_channels = len(self._id_to_channel)
@@ -83,6 +83,66 @@ class Discretizer:
         unused_data = 0
 
         def write(data, bin_id, channel, value, begin_pos):
+            convert = {}
+            if channel == "Glascow coma scale eye opening":
+                convert = {
+                    "3.0": "3 To speech",
+                    "1.0": "1 No Response",
+                    "4.0": "4 Spontaneously",
+                    "2.0": "2 To pain",
+                }
+            elif channel == "Glascow coma scale motor response":
+                convert = {
+                    "3.0": "3 Abnorm flexion",
+                    "1.0": "1 No Response",
+                    "4.0": "4 Flex-withdraws",
+                    "2.0": "2 Abnorm extensn",
+                    "5.0": "5 Localizes Pain",
+                    "6.0": "6 Obeys Commands",
+                }
+            elif channel == "Glascow coma scale total":
+                convert = {
+                    "11.0": "11",
+                    "10.0": "10",
+                    "13.0": "13",
+                    "12.0": "12",
+                    "15.0": "15",
+                    "14.0": "14",
+                    "3.0": "3",
+                    "5.0": "5",
+                    "4.0": "4",
+                    "7.0": "7",
+                    "6.0": "6",
+                    "9.0": "9",
+                    "8.0": "8",
+                }
+            elif channel == "Glascow coma scale verbal response":
+                convert = {
+                    "3.0": "3 Inapprop words",
+                    "1.0": "1 No Response",
+                    "4.0": "4 Confused",
+                    "2.0": "2 Incomp sounds",
+                    "5.0": "5 Oriented",
+                }
+            elif channel == "Glascow coma scale verbal response":
+                convert = {
+                    "3.0": "3 Inapprop words",
+                    "1.0": "1 No Response",
+                    "4.0": "4 Confused",
+                    "2.0": "2 Incomp sounds",
+                    "5.0": "5 Oriented",
+                }
+            elif channel == "normal_values":
+                convert = {
+                    "4.0": "4 Spontaneously",
+                    "2.0": "2 To pain",
+                    "6.0": "6 Obeys Commands",
+                    "5.0": "5 Oriented",
+                }
+
+            if value in convert:
+                value = convert[value]
+
             channel_id = self._channel_to_id[channel]
             if self._is_categorical_channel[channel]:
                 category_id = self._possible_values[channel].index(value)
@@ -95,7 +155,10 @@ class Discretizer:
                 data[bin_id, begin_pos[channel_id]] = float(value)
 
         for row in X:
+
             t = float(row[0]) - first_time
+            if t < 0:
+                continue
             if t > max_hours + eps:
                 continue
             bin_id = int(t / self._timestep - eps)

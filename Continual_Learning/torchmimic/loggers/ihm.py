@@ -43,7 +43,7 @@ class IHMLogger(BaseLogger):
         """
         batch_size = outputs.size(0)
 
-        label_tmp = labels.cpu().numpy()
+        label_tmp = labels.cpu().numpy()  # error is here
         outputs = outputs.cpu().detach().numpy()
 
         self.metrics["Loss"].update(loss.item(), batch_size)
