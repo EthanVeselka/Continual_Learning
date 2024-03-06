@@ -3,6 +3,7 @@
 Testing standard LSTM on IHM dataset...
 ---------------------------------------
 
+importance = 0.99
 
 MIMIC training samples: 14681
 MIMIC testing samples: 3222

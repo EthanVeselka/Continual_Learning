@@ -65,7 +65,7 @@ class IHMBenchmark:
         random_samples,
         replay=False,
         ewc_penalty=False,
-        importance=0.99,
+        importance=5,
     ):
 
         for epoch in range(epochs):

@@ -3,6 +3,8 @@ test_ihm.py --tasks 2 --b 1000 --ewc
 Testing standard LSTM on IHM dataset...
 ---------------------------------------
 
+importance = 0.99
+
 
 MIMIC training samples: 14681
 MIMIC testing samples: 3222
