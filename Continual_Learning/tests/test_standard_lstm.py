@@ -25,6 +25,20 @@ ihm_tasks = [
     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
 ]
 
+# Howdy, after our discussion last week I spent a lot of time refactoring my code to allow for EWC
+# to be tested with the LSTM framework from torchmimic. I made significant changes to the structure
+# of training/testling and dataset creation, mostly in the form of moving things around logically to
+# allow correctly ordered object usage, as required by a multi-task framework. I have also adjusted the
+# loss functions and EWC class to allow for EWC application, with Replay in the works (it shouldn't take
+# long to add). I have been unable to test to any real degree until the eICU data processing was finished,
+# which I'm happy to report (pending any additional errors I may find) I have completed and is working as
+# intended. With this finished I can begin testing the LSTM's continual learning performance with EWC this
+# week, compiling results and baselines to work from. I may also look into implementing a transformer model
+# if I have the time to spare. During our meeting I'm hoping to get your input on how I can more formally
+# describe my results and structure future testing as well.
+
+# - Ethan V
+
 
 class TestLSTM(unittest.TestCase):
     def test_standard_lstm_phenotype(self):
@@ -64,7 +78,7 @@ class TestLSTM(unittest.TestCase):
             print("NOTE: Buffer size is 0, EWC and Replay will not be used")
 
         device = 0
-        sample_size = 1000
+        sample_size = None
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001
@@ -100,10 +114,11 @@ class TestLSTM(unittest.TestCase):
             # use model from previous trainer for additional tasks
             if task_num != 0:
                 model = trainers[task_num - 1].model
-
-            # get random samples for ewc/replay
-            if ewc_penalty or replay:
                 random_samples = get_random_samples(task_num, task_samples, buffer_size)
+
+            # # get random samples for ewc/replay
+            # if ewc_penalty or replay:
+            #     random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             trainer = IHMBenchmark(
                 model=model,

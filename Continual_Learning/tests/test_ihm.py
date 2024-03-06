@@ -7,6 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 from test_standard_lstm import TestLSTM
 
 # ssh veselka@cse-stmi-s1.cse.tamu.edu
+# buffer size must be <= samplesize/train_batch_size = 1000/8 = 125
 
 
 def main():
@@ -18,7 +19,7 @@ def main():
         "--b",
         type=int,
         required=True,
-        help="Specifies buffer size to be used in EWC and Replay",
+        help="Specifies buffer size (in number of batches) to be used in EWC and Replay",
     )
     parser.add_argument(
         "--replay",

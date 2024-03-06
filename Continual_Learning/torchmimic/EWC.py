@@ -19,38 +19,42 @@ class EWC(object):
 
         self.model = model
         self.dataset = dataset
+        self.device = device
+        self.task = task
 
         self.params = {
             n: p for n, p in self.model.named_parameters() if p.requires_grad
         }
         self._means = {}
-        self._precision_matrices = self._diag_fisher(device, task)
+        self._precision_matrices = self._diag_fisher()
 
         for n, p in deepcopy(self.params).items():
             # self._means[n] = variable(p.data)
             self._means[n] = p.data
 
-    def _diag_fisher(self, device, task):
+    def _diag_fisher(self):
         precision_matrices = {}
         for n, p in deepcopy(self.params).items():
             p.data.zero_()
             # precision_matrices[n] = variable(p.data)
             precision_matrices[n] = p.data
 
-        self.model.eval()
+        # self.model.eval()
+        self.model.train()
         for _, (data, label, lens, mask) in enumerate(self.dataset):
             self.model.zero_grad()
             # input = variable(input)
             data = data.to(self.device)
             label = label.to(self.device)
 
-            if task == ("phen" or "los"):  # multiclass classification
+            if self.task == ("phen" or "los"):  # multiclass classification
                 output = self.model((data, lens)).view(1, -1)
                 label = output.max(1)[1].view(-1)
                 loss = F.nll_loss(F.log_softmax(output, dim=1), label)
             else:  # binary classification
                 output = self.model((data, lens))
-                loss = nn.BCELoss(output, label[:, None])
+                loss = nn.BCELoss()
+                loss = loss(output, label[:, None])
 
             loss.backward()
 

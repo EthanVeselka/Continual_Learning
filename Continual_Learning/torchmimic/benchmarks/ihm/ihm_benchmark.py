@@ -8,7 +8,7 @@ from torch import optim
 
 from torchmimic.loggers import IHMLogger
 from torchmimic.utils import pad_colalte
-from torchmimic import EWC
+from torchmimic.EWC import EWC
 
 
 class IHMBenchmark:
@@ -69,11 +69,15 @@ class IHMBenchmark:
     ):
 
         for epoch in range(epochs):
+            print("------------------------------------")
+            print(f"Task: {task_num + 1}, Epoch: {epoch + 1}")
+
+            model_copy = self.model
             self.model.train()
             self.logger.reset()
 
             ewc = (
-                EWC(self.model, random_samples, self.device, self.task)
+                EWC(model_copy, random_samples, self.device, self.task)
                 if task_num != 0 and ewc_penalty
                 else None
             )
@@ -105,15 +109,14 @@ class IHMBenchmark:
                 if (batch_idx + 1) % self.report_freq == 0:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
-            print("------------------------------------")
-            print(f"Task: {task_num}")
             self.logger.print_metrics(epoch, split="Train")
+            print("-------------")
 
             # evaluate model on all tasks
-            self.model.eval()
-            self.logger.reset()
             with torch.no_grad():
                 for eval_task, test_loader in enumerate(test_loaders):
+                    self.model.eval()
+                    self.logger.reset()
                     for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
                         data = data.to(self.device)
                         label = label.to(self.device)
@@ -138,7 +141,7 @@ class IHMBenchmark:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
                             )
-                    print(f"Eval task: {eval_task}")
+                    print(f"Eval task: {eval_task + 1}")
                     self.logger.print_metrics(epoch, split="Eval")
 
     def get_config(self):

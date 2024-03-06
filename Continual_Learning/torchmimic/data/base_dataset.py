@@ -26,6 +26,7 @@ class BaseDataset(ABC):
         if sample_size is None:
             sample_size = N
 
+        print(sample_size)
         ret = read_chunk(self.reader, sample_size)
 
         data = ret["X"]

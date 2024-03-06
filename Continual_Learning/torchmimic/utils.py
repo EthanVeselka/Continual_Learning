@@ -35,11 +35,10 @@ def get_samples(sample_size, buffer_size, train_loader):
 
     count = 0
     random_samples = []
-    sample_idx = random.sample(range(len(sample_size)), buffer_size)
-    for data, label, lens, mask in enumerate(train_loader):
-        if count in sample_idx:
+    sample_idx = random.sample(range(len(train_loader)), buffer_size)
+    for idx, (data, label, lens, mask) in enumerate(train_loader):
+        if idx in sample_idx:
             random_samples.append((data, label, lens, mask))
-        count += 1
 
     random.shuffle(random_samples)
     return random_samples
@@ -52,6 +51,7 @@ def get_random_samples(task_num, task_samples, buffer_size):
     # Calculate the number of samples to take from each list
     samples_per_list = buffer_size // task_num
 
+    print(samples_per_list)
     for idx, lst in enumerate(task_samples.values()):
         # Randomly sample values from the list
         if idx == task_num:

@@ -15,6 +15,9 @@ class Reader:
             self._data = lfile.readlines()
         self._listfile_header = self._data[0]
         self._data = self._data[1:]
+        # if "2170432_episode1_timeseries.csv" in self._data[0]:
+        #     self._data = self._data[1:]
+        # file was in line 29316 of train listfile, removed for now
 
     def get_number_of_examples(self):
         return len(self._data)
@@ -110,6 +113,12 @@ class InHospitalMortalityReader(Reader):
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))
+        if len(ret) == 0:
+            print(self._dataset_dir, ts_filename)
+            # Empty files:
+            # Deleted file: 1565204_episode1_timeseries.csv
+            # Deleted file: 2170432_episode1_timeseries.csv
+            # Deleted file: 2447241_episode1_timeseries.csv
         return (np.stack(ret), header)
 
     def read_example(self, index):
