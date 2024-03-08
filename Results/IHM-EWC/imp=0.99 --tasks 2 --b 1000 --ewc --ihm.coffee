@@ -1,4 +1,4 @@
- test_ihm.py --tasks 2 --b 1000 --ewc
+ test.py --tasks 2 --b 1000 --ewc --ihm
 ---------------------------------------
 Testing standard LSTM on IHM dataset...
 ---------------------------------------

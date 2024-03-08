@@ -54,7 +54,10 @@ class EWC(object):
             else:  # binary classification
                 output = self.model((data, lens))
                 loss = nn.BCELoss()
-                loss = loss(output, label[:, None])
+                if self.task == "ihm":
+                    loss = loss(output, label[:, None])
+                elif self.task == "decomp":
+                    loss = loss(output[:, 0], label)
 
             loss.backward()
 

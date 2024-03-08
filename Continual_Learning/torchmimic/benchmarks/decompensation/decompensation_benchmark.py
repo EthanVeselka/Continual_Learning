@@ -1,13 +1,10 @@
 import torch
 import torch.nn as nn
+
+
 from torch import optim
-from torch.utils.data import DataLoader
-from torch.nn.utils.rnn import pad_sequence
-
-from torchmimic.data import DecompensationDataset
-from torchmimic.utils import pad_colalte
-
 from torchmimic.loggers import DecompensationLogger
+from torchmimic.EWC import EWC
 
 
 class DecompensationBenchmark:
@@ -16,14 +13,14 @@ class DecompensationBenchmark:
         model,
         train_batch_size=8,
         test_batch_size=256,
-        data="/data/datasets/mimic3-benchmarks/data/decompensation",
+        train_loader=None,
+        data="../../datasets/mimic3-benchmarks/decompensation",
+        buffer_size=1000,
         learning_rate=0.001,
         weight_decay=0,
         report_freq=200,
         exp_name="Test",
         device="cpu",
-        sample_size=None,
-        workers=5,
         wandb=False,
     ):
         self.test_batch_size = test_batch_size
@@ -34,10 +31,9 @@ class DecompensationBenchmark:
         self.device = device
         self.report_freq = report_freq
 
-        # self.train_loader = train_loader
-        # self.buffer_size = buffer_size
-        # self.task = "decomp"
-        # -workers, -sample_size
+        self.train_loader = train_loader
+        self.buffer_size = buffer_size
+        self.task = "decomp"
 
         config = {}
         config.update(model.get_config())
@@ -46,36 +42,6 @@ class DecompensationBenchmark:
         self.logger = DecompensationLogger(exp_name + "_decomp", config, wandb)
 
         torch.cuda.set_device(self.device)
-
-        train_dataset = DecompensationDataset(
-            data,
-            train=True,
-            n_samples=sample_size,
-        )
-
-        test_dataset = DecompensationDataset(
-            data,
-            train=False,
-            n_samples=sample_size,
-        )
-
-        kwargs = {"num_workers": workers, "pin_memory": True} if self.device else {}
-
-        self.train_loader = DataLoader(
-            train_dataset,
-            batch_size=train_batch_size,
-            shuffle=True,
-            collate_fn=pad_colalte,
-            **kwargs,
-        )
-        self.test_loader = DataLoader(
-            test_dataset,
-            batch_size=test_batch_size,
-            shuffle=False,
-            collate_fn=pad_colalte,
-            **kwargs,
-        )
-
         self.model = self.model.to(self.device)
 
         self.optimizer = optim.Adam(
@@ -87,16 +53,52 @@ class DecompensationBenchmark:
 
         self.crit = nn.BCELoss()
 
-    def fit(self, epochs):
+    def fit(
+        self,
+        epochs,
+        test_loaders,
+        task_num,
+        random_samples,
+        replay=False,
+        ewc_penalty=False,
+        importance=5,
+    ):
+
         for epoch in range(epochs):
+            print("------------------------------------")
+            print(f"Task: {task_num + 1}, Epoch: {epoch + 1}")
+
+            model_copy = self.model
             self.model.train()
             self.logger.reset()
+
+            ewc = (
+                EWC(model_copy, random_samples, self.device, self.task)
+                if task_num != 0 and ewc_penalty
+                else None
+            )
+
             for batch_idx, (data, label, lens, mask) in enumerate(self.train_loader):
+                print(
+                    f"Progress: {batch_idx/len(self.train_loader) *100:.2f}%", end="\r"
+                )
                 data = data.to(self.device)
                 label = label.to(self.device)
-
                 output = self.model((data, lens))
-                loss = self.crit(output[:, 0], label)
+
+                if task_num == 0 or not ewc_penalty:
+                    loss = self.crit(output[:, 0], label)
+                elif task_num > 0 and ewc_penalty:
+                    loss = self.crit(output[:, 0], label) + importance * ewc.penalty(
+                        self.model
+                    )
+
+                # add replay loss here
+                # if self.buffer_size != 0:
+                #     loss = (1 / (task_num + 1)) * loss + (
+                #         1 - (1 / (task_num + 1))
+                #     ) * self.replay_loss(self, random_samples)
+
                 loss.backward()
                 self.optimizer.step()
                 self.optimizer.zero_grad(set_to_none=True)
@@ -107,25 +109,39 @@ class DecompensationBenchmark:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
             self.logger.print_metrics(epoch, split="Train")
+            print("-------------")
 
-            self.model.eval()
-            self.logger.reset()
+            # evaluate model on all tasks
             with torch.no_grad():
-                for batch_idx, (data, label, lens, mask) in enumerate(self.test_loader):
-                    data = data.to(self.device)
-                    label = label.to(self.device)
+                for eval_task, test_loader in enumerate(test_loaders):
+                    self.model.eval()
+                    self.logger.reset()
+                    for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
+                        data = data.to(self.device)
+                        label = label.to(self.device)
+                        output = self.model((data, lens))
 
-                    output = self.model((data, lens))
-                    loss = self.crit(output[:, 0], label)
+                        if task_num == 0 or not ewc_penalty:
+                            loss = self.crit(output[:, 0], label)
+                        elif task_num > 0 and ewc_penalty:
+                            loss = self.crit(
+                                output[:, 0], label
+                            ) + importance * ewc.penalty(self.model)
 
-                    self.logger.update(output, label, loss)
+                        # add replay loss here
+                        # if self.buffer_size != 0:
+                        #     loss = (1 / (task_num + 1)) * loss + (
+                        #         1 - (1 / (task_num + 1))
+                        #     ) * self.replay_loss(self, random_samples)
 
-                    if (batch_idx + 1) % self.report_freq == 0:
-                        print(
-                            f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
-                        )
+                        self.logger.update(output, label, loss)
 
-                self.logger.print_metrics(epoch, split="Eval")
+                        if (batch_idx + 1) % self.report_freq == 0:
+                            print(
+                                f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
+                            )
+                    print(f"Eval task: {eval_task + 1}")
+                    self.logger.print_metrics(epoch, split="Eval")
 
     def get_config(self):
         return {

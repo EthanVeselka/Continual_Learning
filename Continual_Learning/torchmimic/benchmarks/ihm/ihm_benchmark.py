@@ -3,11 +3,7 @@ import torch.nn as nn
 import random
 
 from torch import optim
-
-# from torch.utils.data import DataLoader
-
 from torchmimic.loggers import IHMLogger
-from torchmimic.utils import pad_colalte
 from torchmimic.EWC import EWC
 
 
@@ -37,7 +33,7 @@ class IHMBenchmark:
 
         self.train_loader = train_loader
         self.buffer_size = buffer_size
-        self.task = "ihm"
+        self.task_name = "ihm"
 
         config = {}
         config.update(model.get_config())
@@ -83,6 +79,9 @@ class IHMBenchmark:
             )
 
             for batch_idx, (data, label, lens, mask) in enumerate(self.train_loader):
+                print(
+                    f"Progress: {batch_idx/len(self.train_loader) * 100:.2f}%", end="\r"
+                )
                 data = data.to(self.device)
                 label = label.to(self.device)
                 output = self.model((data, lens))

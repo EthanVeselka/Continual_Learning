@@ -1,4 +1,4 @@
-test_ihm.py --tasks 2 --b 0
+test.py --tasks 2 --b 0 --ihm
 ---------------------------------------
 Testing standard LSTM on IHM dataset...
 ---------------------------------------

@@ -6,6 +6,9 @@ import random
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence
 from torchmimic.data import IHMDataset
+from torchmimic.data import DecompensationDataset
+from torchmimic.data import LOSDataset
+from torchmimic.data import PhenotypingDataset
 from torch.utils.data import DataLoader
 
 
@@ -66,7 +69,14 @@ def get_random_samples(task_num, task_samples, buffer_size):
 
 # returns list of training/testing loaders for each task
 def get_loaders(
-    tasks, train_batch_size, test_batch_size, buffer_size, sample_size, workers, device
+    task_name,
+    tasks,
+    train_batch_size,
+    test_batch_size,
+    buffer_size,
+    sample_size,
+    workers,
+    device,
 ):
     train_loaders = []
     test_loaders = []
@@ -74,17 +84,54 @@ def get_loaders(
 
     for task_num, task_data in enumerate(tasks):
 
-        train_dataset = IHMDataset(
-            task_data,
-            train=True,
-            n_samples=sample_size,
-        )
+        if task_name == "ihm":
+            train_dataset = IHMDataset(
+                task_data,
+                train=True,
+                n_samples=sample_size,
+            )
 
-        test_dataset = IHMDataset(
-            task_data,
-            train=False,
-            n_samples=sample_size,
-        )
+            test_dataset = IHMDataset(
+                task_data,
+                train=False,
+                n_samples=sample_size,
+            )
+        elif task_name == "decomp":
+            train_dataset = DecompensationDataset(
+                task_data,
+                train=True,
+                n_samples=sample_size,
+            )
+
+            test_dataset = DecompensationDataset(
+                task_data,
+                train=False,
+                n_samples=sample_size,
+            )
+        elif task_name == "los":
+            train_dataset = LOSDataset(
+                task_data,
+                train=True,
+                n_samples=sample_size,
+            )
+
+            test_dataset = LOSDataset(
+                task_data,
+                train=False,
+                n_samples=sample_size,
+            )
+        elif task_name == "phen":
+            train_dataset = PhenotypingDataset(
+                task_data,
+                train=True,
+                n_samples=sample_size,
+            )
+
+            test_dataset = PhenotypingDataset(
+                task_data,
+                train=False,
+                n_samples=sample_size,
+            )
 
         kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
 
