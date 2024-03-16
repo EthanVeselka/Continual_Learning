@@ -161,6 +161,6 @@ class DecompensationBenchmark:
         data = data.to(self.device)
         label = label.to(self.device)
         output = self.model((data, lens))
-        replay_loss = self.crit(output, label[:, None])
+        replay_loss = self.crit(output[:, 0], label)
 
         return replay_loss
