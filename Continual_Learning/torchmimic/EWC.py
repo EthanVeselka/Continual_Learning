@@ -8,12 +8,6 @@ from torch.nn import functional as F
 import torch.utils.data
 
 
-# def variable(t: torch.Tensor, use_cuda=True, **kwargs):
-#     if torch.cuda.is_available() and use_cuda:
-#         t = t.cuda()
-#     return Variable(t, **kwargs)
-
-
 class EWC(object):
     def __init__(self, model: nn.Module, dataset: list, device, task):
 
@@ -29,21 +23,18 @@ class EWC(object):
         self._precision_matrices = self._diag_fisher()
 
         for n, p in deepcopy(self.params).items():
-            # self._means[n] = variable(p.data)
             self._means[n] = p.data
 
     def _diag_fisher(self):
         precision_matrices = {}
         for n, p in deepcopy(self.params).items():
             p.data.zero_()
-            # precision_matrices[n] = variable(p.data)
             precision_matrices[n] = p.data
 
         # self.model.eval()
         self.model.train()
         for _, (data, label, lens, mask) in enumerate(self.dataset):
             self.model.zero_grad()
-            # input = variable(input)
             data = data.to(self.device)
             label = label.to(self.device)
 
@@ -62,7 +53,6 @@ class EWC(object):
             loss.backward()
 
             for n, p in self.model.named_parameters():
-                # Each parameter p for matrix n is sum of p.grad ** 2 / len(data)
                 precision_matrices[n].data += p.grad.data**2 / len(self.dataset)
 
         precision_matrices = {n: p for n, p in precision_matrices.items()}
@@ -71,7 +61,6 @@ class EWC(object):
     def penalty(self, model: nn.Module):
         loss = 0
         for n, p in model.named_parameters():
-            # F(n) * (theta - mean(thetas)) ** 2   Theta is ith parameter, mean(theta) is mean of all p for parameter name n
             _loss = self._precision_matrices[n] * (p - self._means[n]) ** 2
             loss += _loss.sum()
         return loss

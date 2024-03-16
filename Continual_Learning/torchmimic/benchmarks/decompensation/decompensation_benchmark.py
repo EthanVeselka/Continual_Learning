@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import random
 
 
 from torch import optim
@@ -61,7 +62,7 @@ class DecompensationBenchmark:
         random_samples,
         replay=False,
         ewc_penalty=False,
-        importance=5,
+        importance=0.99,
     ):
 
         for epoch in range(epochs):
@@ -86,6 +87,7 @@ class DecompensationBenchmark:
                 label = label.to(self.device)
                 output = self.model((data, lens))
 
+                # add ewc penalty
                 if task_num == 0 or not ewc_penalty:
                     loss = self.crit(output[:, 0], label)
                 elif task_num > 0 and ewc_penalty:
@@ -93,11 +95,11 @@ class DecompensationBenchmark:
                         self.model
                     )
 
-                # add replay loss here
-                # if self.buffer_size != 0:
-                #     loss = (1 / (task_num + 1)) * loss + (
-                #         1 - (1 / (task_num + 1))
-                #     ) * self.replay_loss(self, random_samples)
+                # add replay loss
+                if task_num > 0 and replay:
+                    loss = (1 / (task_num + 1)) * loss + (
+                        1 - (1 / (task_num + 1))
+                    ) * self.replay_loss(random_samples)
 
                 loss.backward()
                 self.optimizer.step()
@@ -121,6 +123,7 @@ class DecompensationBenchmark:
                         label = label.to(self.device)
                         output = self.model((data, lens))
 
+                        # add ewc penalty
                         if task_num == 0 or not ewc_penalty:
                             loss = self.crit(output[:, 0], label)
                         elif task_num > 0 and ewc_penalty:
@@ -128,11 +131,11 @@ class DecompensationBenchmark:
                                 output[:, 0], label
                             ) + importance * ewc.penalty(self.model)
 
-                        # add replay loss here
-                        # if self.buffer_size != 0:
-                        #     loss = (1 / (task_num + 1)) * loss + (
-                        #         1 - (1 / (task_num + 1))
-                        #     ) * self.replay_loss(self, random_samples)
+                        # add replay loss
+                        if task_num > 0 and replay:
+                            loss = (1 / (task_num + 1)) * loss + (
+                                1 - (1 / (task_num + 1))
+                            ) * self.replay_loss(random_samples)
 
                         self.logger.update(output, label, loss)
 
@@ -150,3 +153,14 @@ class DecompensationBenchmark:
             "learning_rate": self.learning_rate,
             "weight_decay": self.weight_decay,
         }
+
+    def replay_loss(self, random_samples):
+        idx = random.randint(0, len(random_samples) - 1)
+        data, label, lens, mask = random_samples[idx]
+
+        data = data.to(self.device)
+        label = label.to(self.device)
+        output = self.model((data, lens))
+        replay_loss = self.crit(output, label[:, None])
+
+        return replay_loss

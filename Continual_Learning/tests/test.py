@@ -7,6 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
 from test_standard_lstm import TestLSTM
 
+# rsync -av --ignore-existing ./datasets/eICU-benchmarks veselka@cse-stmi-s1.cse.tamu.edu:~/datasets/   # continue copying data, stopped in output-copy/2908432...
 # ssh veselka@cse-stmi-s1.cse.tamu.edu
 # buffer size must be <= samplesize/train_batch_size = 1000/8 = 125
 
@@ -25,12 +26,12 @@ def main():
     parser.add_argument(
         "--replay",
         action="store_true",
-        help="Use replay, must specify > 1 task using --task",
+        help="Use replay, must specify > 1 task using --tasks",
     )
     parser.add_argument(
         "--ewc",
         action="store_true",
-        help="Use EWC penalty, must specify > 1 task using --task",
+        help="Use EWC penalty, must specify > 1 task using --tasks",
     )
     parser.add_argument(
         "--ihm",
@@ -52,8 +53,8 @@ def main():
 
     task_list = [i for i in range(0, args.tasks)]
     buffer_size = args.b
-    replay = args.replay if args.replay else False
-    ewc_penalty = args.ewc if args.ewc else False
+    replay = args.replay if (args.replay and buffer_size > 0) else False
+    ewc_penalty = args.ewc if (args.ewc and buffer_size > 0) else False
 
     # torch.cuda.empty_cache()
     if args.all:

@@ -18,15 +18,23 @@ from torchmimic.models import StandardLSTM
 from torchmimic.utils import get_loaders, get_random_samples
 
 
-# "/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-# "/datasets/eICU-benchmarks/data/in-hospital-mortality",
 ihm_tasks = [
     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
 ]
 
+# decomp_tasks = [
+#     "../../datasets/mimic3-benchmarks/decompensation",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+# ]
+
+# ihm_tasks = [
+#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
+# ]
+
 decomp_tasks = [
-    "../../datasets/mimic3-benchmarks/decompensation",
+    "/data/datasets/mimic3-benchmarks/data/decompensation",
     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
 ]
 
@@ -70,7 +78,7 @@ class TestLSTM(unittest.TestCase):
 
         task_name = "ihm"
         device = 0
-        sample_size = 1000
+        sample_size = None
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001
@@ -105,13 +113,13 @@ class TestLSTM(unittest.TestCase):
         for task_num, task_data in enumerate(tasks):
 
             # use model from previous trainer for additional tasks
-            if task_num != 0:
+            if task_num > 0:
                 model = trainers[task_num - 1].model
-                random_samples = get_random_samples(task_num, task_samples, buffer_size)
+                # random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             # # get random samples for ewc/replay
-            # if ewc_penalty or replay:
-            #     random_samples = get_random_samples(task_num, task_samples, buffer_size)
+            if task_num > 0 and (ewc_penalty or replay):
+                random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             trainer = IHMBenchmark(
                 model=model,
@@ -186,7 +194,7 @@ class TestLSTM(unittest.TestCase):
         learning_rate = 0.001
         weight_decay = 0
         report_freq = 200
-        workers = 1
+        workers = 5
         wandb = False
 
         model = StandardLSTM(
@@ -217,11 +225,11 @@ class TestLSTM(unittest.TestCase):
             # use model from previous trainer for additional tasks
             if task_num != 0:
                 model = trainers[task_num - 1].model
-                random_samples = get_random_samples(task_num, task_samples, buffer_size)
+                # random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
-            # # get random samples for ewc/replay
-            # if ewc_penalty or replay:
-            #     random_samples = get_random_samples(task_num, task_samples, buffer_size)
+            # get random samples for ewc/replay
+            if task_num > 0 and (ewc_penalty or replay):
+                random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             trainer = DecompensationBenchmark(
                 model=model,

@@ -6,18 +6,17 @@ import numpy as np
 class Reader:
     def __init__(self, dataset_dir, listfile=None):
         self._dataset_dir = dataset_dir
-        self._current_index = 0
+        self._current_index = 0  # potential issue with corrupted file, track by batch
         if listfile is None:
             listfile_path = os.path.join(dataset_dir, "listfile.csv")
         else:
             listfile_path = listfile
         with open(listfile_path, "r") as lfile:
-            self._data = lfile.readlines()
+            self._data = (
+                lfile.readlines()
+            )  # python list might have memory issues for lots of files
         self._listfile_header = self._data[0]
         self._data = self._data[1:]
-        # if "2170432_episode1_timeseries.csv" in self._data[0]:
-        #     self._data = self._data[1:]
-        # file was in line 29316 of train listfile, removed for now
 
     def get_number_of_examples(self):
         return len(self._data)
