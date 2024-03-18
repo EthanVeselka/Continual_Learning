@@ -62,7 +62,7 @@ class DecompensationBenchmark:
         random_samples,
         replay=False,
         ewc_penalty=False,
-        importance=0.99,
+        importance=2,
     ):
 
         for epoch in range(epochs):

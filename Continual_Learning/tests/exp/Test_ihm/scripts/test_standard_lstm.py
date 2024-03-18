@@ -188,7 +188,7 @@ class TestLSTM(unittest.TestCase):
 
         task_name = "decomp"
         device = 0
-        sample_size = 1000
+        sample_size = None
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001

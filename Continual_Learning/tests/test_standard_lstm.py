@@ -18,20 +18,20 @@ from torchmimic.models import StandardLSTM
 from torchmimic.utils import get_loaders, get_random_samples
 
 
-ihm_tasks = [
-    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
-    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
-]
+# ihm_tasks = [
+#     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
+# ]
 
 # decomp_tasks = [
 #     "../../datasets/mimic3-benchmarks/decompensation",
 #     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
 # ]
 
-# ihm_tasks = [
-#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
-# ]
+ihm_tasks = [
+    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
+]
 
 decomp_tasks = [
     "/data/datasets/mimic3-benchmarks/data/decompensation",
@@ -188,7 +188,7 @@ class TestLSTM(unittest.TestCase):
 
         task_name = "decomp"
         device = 0
-        sample_size = None
+        sample_size = 1000
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001

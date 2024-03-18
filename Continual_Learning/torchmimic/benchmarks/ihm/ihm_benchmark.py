@@ -33,7 +33,7 @@ class IHMBenchmark:
 
         self.train_loader = train_loader
         self.buffer_size = buffer_size
-        self.task_name = "ihm"
+        self.task = "ihm"
 
         config = {}
         config.update(model.get_config())
@@ -61,7 +61,7 @@ class IHMBenchmark:
         random_samples,
         replay=False,
         ewc_penalty=False,
-        importance=0.99,
+        importance=5,
     ):
 
         for epoch in range(epochs):
