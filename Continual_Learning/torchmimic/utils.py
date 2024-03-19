@@ -100,13 +100,13 @@ def get_loaders(
             train_dataset = DecompensationDataset(
                 task_data,
                 train=True,
-                n_samples=sample_size,
+                n_samples=int(sample_size * 0.7),
             )
 
             test_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                n_samples=sample_size,
+                n_samples=int(sample_size * 0.3),
             )
         elif task_name == "los":
             train_dataset = LOSDataset(

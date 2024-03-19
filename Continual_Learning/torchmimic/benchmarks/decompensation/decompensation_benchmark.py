@@ -80,6 +80,9 @@ class DecompensationBenchmark:
             )
 
             for batch_idx, (data, label, lens, mask) in enumerate(self.train_loader):
+                # print("Data shape: ", data.shape)
+                # print("Label shape: ", label.shape)
+                # print("Sequence length: ", lens)
                 print(
                     f"Progress: {batch_idx/len(self.train_loader) *100:.2f}%", end="\r"
                 )
