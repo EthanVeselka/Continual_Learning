@@ -108,13 +108,13 @@ class TestLSTM(unittest.TestCase):
         )
 
         # train on current task, test on all tasks
-        trainers = []
+        prev_models = []
         random_samples = []
         for task_num, task_data in enumerate(tasks):
 
             # use model from previous trainer for additional tasks
             if task_num > 0:
-                model = trainers[task_num - 1].model
+                model = prev_models[task_num - 1]
                 # random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             # # get random samples for ewc/replay
@@ -125,7 +125,6 @@ class TestLSTM(unittest.TestCase):
                 model=model,
                 train_batch_size=train_batch_size,
                 test_batch_size=test_batch_size,
-                train_loader=train_loaders[task_num],
                 data=task_data,
                 buffer_size=buffer_size,
                 learning_rate=learning_rate,
@@ -138,6 +137,7 @@ class TestLSTM(unittest.TestCase):
             # train model, evaluate on all testing data
             trainer.fit(
                 2,
+                train_loaders[task_num],
                 test_loaders,
                 task_num,
                 random_samples,
@@ -145,7 +145,7 @@ class TestLSTM(unittest.TestCase):
                 ewc_penalty=ewc_penalty,
             )
 
-            trainers.append(trainer)
+            prev_models.append(trainer.model)
 
         # torch.cuda.empty_cache()
 
@@ -188,7 +188,7 @@ class TestLSTM(unittest.TestCase):
 
         task_name = "decomp"
         device = 0
-        sample_size = 100000
+        sample_size = 1000
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001
@@ -218,13 +218,13 @@ class TestLSTM(unittest.TestCase):
         )
 
         # train on current task, test on all tasks
-        trainers = []
+        prev_models = []
         random_samples = []
         for task_num, task_data in enumerate(tasks):
 
             # use model from previous trainer for additional tasks
             if task_num != 0:
-                model = trainers[task_num - 1].model
+                model = prev_models[task_num - 1]
                 # random_samples = get_random_samples(task_num, task_samples, buffer_size)
 
             # get random samples for ewc/replay
@@ -235,7 +235,6 @@ class TestLSTM(unittest.TestCase):
                 model=model,
                 train_batch_size=train_batch_size,
                 test_batch_size=test_batch_size,
-                train_loader=train_loaders[task_num],
                 data=task_data,
                 buffer_size=buffer_size,
                 learning_rate=learning_rate,
@@ -248,6 +247,7 @@ class TestLSTM(unittest.TestCase):
             # train model, evaluate on all testing data
             trainer.fit(
                 1,
+                train_loaders[task_num],
                 test_loaders,
                 task_num,
                 random_samples,
@@ -255,5 +255,5 @@ class TestLSTM(unittest.TestCase):
                 ewc_penalty=ewc_penalty,
             )
 
-            trainers.append(trainer)
+            prev_models.append(trainer.model)
         # torch.cuda.empty_cache()

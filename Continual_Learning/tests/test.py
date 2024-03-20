@@ -44,6 +44,11 @@ def main():
         help="Test for Decompensation task",
     )
     parser.add_argument(
+        "--los",
+        action="store_true",
+        help="Test for LoS task",
+    )
+    parser.add_argument(
         "--all",
         action="store_true",
         help="Test for all tasks",
@@ -92,6 +97,13 @@ def main():
         )
 
         return
+
+    if args.los:
+        print("---------------------------------------")
+        print("Testing standard LSTM on LoS dataset...")
+        print("---------------------------------------")
+        print("\n")
+        TestLSTM().test_standard_lstm_los()
 
 
 main()

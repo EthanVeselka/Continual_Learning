@@ -54,7 +54,6 @@ def get_random_samples(task_num, task_samples, buffer_size):
     # Calculate the number of samples to take from each list
     samples_per_list = buffer_size // task_num
 
-    print(samples_per_list)
     for idx, lst in enumerate(task_samples.values()):
         # Randomly sample values from the list
         if idx == task_num:

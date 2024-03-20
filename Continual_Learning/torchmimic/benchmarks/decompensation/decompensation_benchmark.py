@@ -14,7 +14,6 @@ class DecompensationBenchmark:
         model,
         train_batch_size=8,
         test_batch_size=256,
-        train_loader=None,
         data="../../datasets/mimic3-benchmarks/decompensation",
         buffer_size=1000,
         learning_rate=0.001,
@@ -32,7 +31,6 @@ class DecompensationBenchmark:
         self.device = device
         self.report_freq = report_freq
 
-        self.train_loader = train_loader
         self.buffer_size = buffer_size
         self.task = "decomp"
 
@@ -57,6 +55,7 @@ class DecompensationBenchmark:
     def fit(
         self,
         epochs,
+        train_loader,
         test_loaders,
         task_num,
         random_samples,
@@ -79,13 +78,8 @@ class DecompensationBenchmark:
                 else None
             )
 
-            for batch_idx, (data, label, lens, mask) in enumerate(self.train_loader):
-                # print("Data shape: ", data.shape)
-                # print("Label shape: ", label.shape)
-                # print("Sequence length: ", lens)
-                print(
-                    f"Progress: {batch_idx/len(self.train_loader) *100:.2f}%", end="\r"
-                )
+            for batch_idx, (data, label, lens, mask) in enumerate(train_loader):
+                print(f"Progress: {batch_idx/len(train_loader) * 100:.2f}%", end="\r")
                 data = data.to(self.device)
                 label = label.to(self.device)
                 output = self.model((data, lens))

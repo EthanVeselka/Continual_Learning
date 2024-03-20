@@ -31,7 +31,6 @@ class IHMBenchmark:
         self.device = device
         self.report_freq = report_freq
 
-        self.train_loader = train_loader
         self.buffer_size = buffer_size
         self.task = "ihm"
 
@@ -56,6 +55,7 @@ class IHMBenchmark:
     def fit(
         self,
         epochs,
+        train_loader,
         test_loaders,
         task_num,
         random_samples,
@@ -78,7 +78,7 @@ class IHMBenchmark:
                 else None
             )
 
-            for batch_idx, (data, label, lens, mask) in enumerate(self.train_loader):
+            for batch_idx, (data, label, lens, mask) in enumerate(train_loader):
                 print(
                     f"Progress: {batch_idx/len(self.train_loader) * 100:.2f}%", end="\r"
                 )
