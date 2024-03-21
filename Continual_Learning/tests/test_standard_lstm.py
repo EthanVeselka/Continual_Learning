@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import torch
+import gc
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
@@ -188,7 +189,7 @@ class TestLSTM(unittest.TestCase):
 
         task_name = "decomp"
         device = 0
-        sample_size = 1000
+        sample_size = 24000  # try 36 chunks, each 8000 samples long, so 300k samples total (should use ~65 gigs of memory)
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001
@@ -217,6 +218,7 @@ class TestLSTM(unittest.TestCase):
             device,
         )
 
+        gc.collect()
         # train on current task, test on all tasks
         prev_models = []
         random_samples = []
@@ -256,4 +258,5 @@ class TestLSTM(unittest.TestCase):
             )
 
             prev_models.append(trainer.model)
+            gc.collect()
         # torch.cuda.empty_cache()
