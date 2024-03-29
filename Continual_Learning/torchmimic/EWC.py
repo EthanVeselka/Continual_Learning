@@ -36,19 +36,25 @@ class EWC(object):
         for _, (data, label, lens, mask) in enumerate(self.dataset):
             self.model.zero_grad()
             data = data.to(self.device)
-            label = label.to(self.device)
 
-            if self.task == ("phen" or "los"):  # multiclass classification
-                output = self.model((data, lens)).view(1, -1)
-                label = output.max(1)[1].view(-1)
-                loss = F.nll_loss(F.log_softmax(output, dim=1), label)
-            else:  # binary classification
+            if self.task == "los":  # multiclass classification
+                label = label.type(torch.LongTensor)
+                label = label.to(self.device)
+                output = self.model((data, lens))
+
+                loss = nn.CrossEntropyLoss()
+                loss = loss(output, label)
+
+            else:  # binary classification (phen uses ovr)
+                label = label.to(self.device)
                 output = self.model((data, lens))
                 loss = nn.BCELoss()
                 if self.task == "ihm":
                     loss = loss(output, label[:, None])
                 elif self.task == "decomp":
                     loss = loss(output[:, 0], label)
+                elif self.task == "phen":
+                    loss = loss(output, label)
 
             loss.backward()
 

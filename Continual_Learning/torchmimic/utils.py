@@ -5,11 +5,12 @@ import random
 
 import numpy as np
 from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import DataLoader
+
 from torchmimic.data import IHMDataset
 from torchmimic.data import DecompensationDataset
 from torchmimic.data import LOSDataset
 from torchmimic.data import PhenotypingDataset
-from torch.utils.data import DataLoader
 
 
 def pad_colalte(batch):
@@ -33,10 +34,26 @@ def create_exp_dir(path, scripts_to_save=None):
             shutil.copyfile(script, dst_file)
 
 
+# Takes dict of random samples per task, returns a shuffled list of buffer_size length with an equal distribution of random samples from each task
+def update_buffer(task_num, task_samples, buffer_size):
+    buff = []
+
+    # Calculate the number of samples to take from each list
+    samples_per_list = buffer_size // (task_num + 1)
+
+    for _, lst in enumerate(task_samples.values()):
+        # Randomly sample values from the list
+        sampled_values = random.sample(lst, samples_per_list)
+        buff.extend(sampled_values)
+
+    # Shuffle the list
+    random.shuffle(buff)
+    return buff
+
+
 def get_samples(sample_size, buffer_size, train_loader):
     # get specified number of random samples
 
-    count = 0
     random_samples = []
     sample_idx = random.sample(range(len(train_loader)), buffer_size)
     for idx, (data, label, lens, mask) in enumerate(train_loader):
@@ -47,86 +64,87 @@ def get_samples(sample_size, buffer_size, train_loader):
     return random_samples
 
 
-# Takes dict of random samples per task, returns a shuffled list of buffer_size length with an equal distribution of random samples from each task
-def get_random_samples(task_num, task_samples, buffer_size):
-    random_samples = []
-
-    # Calculate the number of samples to take from each list
-    samples_per_list = buffer_size // task_num
-
-    for idx, lst in enumerate(task_samples.values()):
-        # Randomly sample values from the list
-        if idx == task_num:
-            break
-        sampled_values = random.sample(lst, samples_per_list)
-        random_samples.extend(sampled_values)
-
-    # Shuffle the list
-    random.shuffle(random_samples)
-    return random_samples
-
-
-# returns list of training/testing loaders for each task
-def get_loaders(
+# returns task training loader
+def get_train_loader(
     task_name,
-    tasks,
+    task_data,
     train_batch_size,
-    test_batch_size,
-    buffer_size,
     sample_size,
     workers,
     device,
 ):
-    train_loaders = []
-    test_loaders = []
-    task_samples = {}
+
+    if task_name == "ihm":
+        train_dataset = IHMDataset(
+            task_data,
+            train=True,
+            n_samples=sample_size,
+        )
+    elif task_name == "decomp":
+        train_dataset = DecompensationDataset(
+            task_data,
+            train=True,
+            n_samples=280000,  # 100000
+        )
+    elif task_name == "los":
+        train_dataset = LOSDataset(
+            task_data,
+            train=True,
+            n_samples=sample_size,
+        )
+    elif task_name == "phen":
+        train_dataset = PhenotypingDataset(
+            task_data,
+            train=True,
+            n_samples=sample_size,
+        )
+
+    kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=train_batch_size,
+        shuffle=True,
+        collate_fn=pad_colalte,
+        **kwargs,
+    )
+
+    return train_loader
+
+
+# Returns validation loaders for each task
+def get_val_loaders(
+    task_name,
+    tasks,
+    val_batch_size,
+    sample_size,
+    workers,
+    device,
+):
+    val_loaders = []
 
     for task_num, task_data in enumerate(tasks):
 
         if task_name == "ihm":
-            train_dataset = IHMDataset(
-                task_data,
-                train=True,
-                n_samples=sample_size,
-            )
-
-            test_dataset = IHMDataset(
+            val_dataset = IHMDataset(
                 task_data,
                 train=False,
                 n_samples=sample_size,
             )
         elif task_name == "decomp":
-            train_dataset = DecompensationDataset(
-                task_data,
-                train=True,
-                n_samples=16000,  # 200000
-            )
-
-            test_dataset = DecompensationDataset(
+            val_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                n_samples=8000,  # 100000
+                n_samples=60000,  # 100000
             )
         elif task_name == "los":
-            train_dataset = LOSDataset(
-                task_data,
-                train=True,
-                n_samples=sample_size,
-            )
-
-            test_dataset = LOSDataset(
+            val_dataset = LOSDataset(
                 task_data,
                 train=False,
                 n_samples=sample_size,
             )
         elif task_name == "phen":
-            train_dataset = PhenotypingDataset(
-                task_data,
-                train=True,
-                n_samples=sample_size,
-            )
-
-            test_dataset = PhenotypingDataset(
+            val_dataset = PhenotypingDataset(
                 task_data,
                 train=False,
                 n_samples=sample_size,
@@ -134,13 +152,60 @@ def get_loaders(
 
         kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
 
-        train_loader = DataLoader(
-            train_dataset,
-            batch_size=train_batch_size,
-            shuffle=True,
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=val_batch_size,
+            shuffle=False,
             collate_fn=pad_colalte,
             **kwargs,
         )
+
+        val_loaders.append(val_loader)
+
+    return val_loaders
+
+
+def get_test_loaders(
+    task_name,
+    tasks,
+    test_batch_size,
+    sample_size,
+    workers,
+    device,
+):
+    test_loaders = []
+    for task_num, task_data in enumerate(tasks):
+        if task_name == "ihm":
+            test_dataset = IHMDataset(
+                task_data,
+                train=False,
+                customListFile="test_listfile.csv",
+                n_samples=sample_size,
+            )
+        elif task_name == "decomp":
+            test_dataset = DecompensationDataset(
+                task_data,
+                train=False,
+                customListFile="test_listfile.csv",
+                n_samples=60000,  # 100000
+            )
+        elif task_name == "los":
+            test_dataset = LOSDataset(
+                task_data,
+                train=False,
+                customListFile="test_listfile.csv",
+                n_samples=sample_size,
+            )
+        elif task_name == "phen":
+            test_dataset = PhenotypingDataset(
+                task_data,
+                train=False,
+                customListFile="test_listfile.csv",
+                n_samples=sample_size,
+            )
+
+        kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
+
         test_loader = DataLoader(
             test_dataset,
             batch_size=test_batch_size,
@@ -149,12 +214,6 @@ def get_loaders(
             **kwargs,
         )
 
-        task_samples[task_num] = (
-            []
-            if buffer_size == 0
-            else get_samples(sample_size, buffer_size, train_loader)
-        )
-        train_loaders.append(train_loader)
         test_loaders.append(test_loader)
 
-    return train_loaders, test_loaders, task_samples
+    return test_loaders

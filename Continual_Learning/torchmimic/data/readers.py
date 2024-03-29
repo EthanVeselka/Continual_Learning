@@ -112,12 +112,12 @@ class InHospitalMortalityReader(Reader):
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))
-        if len(ret) == 0:
-            print(self._dataset_dir, ts_filename)
-            # Empty files:
-            # Deleted file: 1565204_episode1_timeseries.csv
-            # Deleted file: 2170432_episode1_timeseries.csv
-            # Deleted file: 2447241_episode1_timeseries.csv
+        # if len(ret) == 0:
+        #   print(self._dataset_dir, ts_filename)
+        # Empty files:
+        # Deleted file: 1565204_episode1_timeseries.csv
+        # Deleted file: 2170432_episode1_timeseries.csv
+        # Deleted file: 2447241_episode1_timeseries.csv
         return (np.stack(ret), header)
 
     def read_example(self, index):

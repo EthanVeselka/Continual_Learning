@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 import random
 
-
 from torch import optim
-from torchmimic.loggers import DecompensationLogger
 from torchmimic.EWC import EWC
 
 
@@ -12,33 +10,17 @@ class DecompensationBenchmark:
     def __init__(
         self,
         model,
-        train_batch_size=8,
-        test_batch_size=256,
-        data="../../datasets/mimic3-benchmarks/decompensation",
-        buffer_size=1000,
         learning_rate=0.001,
         weight_decay=0,
         report_freq=200,
-        exp_name="Test",
+        logger=None,
         device="cpu",
-        wandb=False,
     ):
-        self.test_batch_size = test_batch_size
-        self.train_batch_size = train_batch_size
-        self.learning_rate = learning_rate
-        self.weight_decay = weight_decay
         self.model = model
         self.device = device
         self.report_freq = report_freq
-
-        self.buffer_size = buffer_size
         self.task = "decomp"
-
-        config = {}
-        config.update(model.get_config())
-        config.update(self.get_config())
-
-        self.logger = DecompensationLogger(exp_name + "_decomp", config, wandb)
+        self.logger = logger
 
         torch.cuda.set_device(self.device)
         self.model = self.model.to(self.device)
@@ -56,13 +38,15 @@ class DecompensationBenchmark:
         self,
         epochs,
         train_loader,
+        val_loaders,
         test_loaders,
         task_num,
         random_samples,
         replay=False,
         ewc_penalty=False,
-        importance=2,
+        importance=1,
     ):
+        results = {}
 
         for epoch in range(epochs):
             print("------------------------------------")
@@ -79,7 +63,6 @@ class DecompensationBenchmark:
             )
 
             for batch_idx, (data, label, lens, mask) in enumerate(train_loader):
-                print(f"Progress: {batch_idx/len(train_loader) * 100:.2f}%", end="\r")
                 data = data.to(self.device)
                 label = label.to(self.device)
                 output = self.model((data, lens))
@@ -107,15 +90,15 @@ class DecompensationBenchmark:
                 if (batch_idx + 1) % self.report_freq == 0:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
-            self.logger.print_metrics(epoch, split="Train")
+            self.logger.print_metrics(epoch, split="Train", task=None)
             print("-------------")
 
             # evaluate model on all tasks
             with torch.no_grad():
-                for eval_task, test_loader in enumerate(test_loaders):
-                    self.model.eval()
+                for eval_task, val_loader in enumerate(val_loaders):
                     self.logger.reset()
-                    for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
+                    self.model.eval()
+                    for batch_idx, (data, label, lens, mask) in enumerate(val_loader):
                         data = data.to(self.device)
                         label = label.to(self.device)
                         output = self.model((data, lens))
@@ -141,15 +124,54 @@ class DecompensationBenchmark:
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
                             )
                     print(f"Eval task: {eval_task + 1}")
-                    self.logger.print_metrics(epoch, split="Eval")
+                    self.logger.print_metrics(
+                        epoch,
+                        split="Eval",
+                        task="Eval Task " + str(eval_task + 1),
+                    )
 
-    def get_config(self):
-        return {
-            "test_batch_size": self.test_batch_size,
-            "train_batch_size": self.train_batch_size,
-            "learning_rate": self.learning_rate,
-            "weight_decay": self.weight_decay,
-        }
+            if epoch == (epochs - 1):
+                results["val"] = self.logger.get_results()
+
+        tests = {}
+        if test_loaders != None:
+            # test model on all tasks
+            with torch.no_grad():
+                for eval_task, test_loader in enumerate(test_loaders):
+                    self.logger.reset()
+                    self.model.eval()
+                    for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
+                        data = data.to(self.device)
+                        label = label.to(self.device)
+                        output = self.model((data, lens))
+                        loss = self.crit(output[:, 0], label)
+
+                        self.logger.update(output, label, loss)
+
+                        if (batch_idx + 1) % self.report_freq == 0:
+                            print(
+                                f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
+                            )
+
+                    print("\n")
+                    print("-------------------------")
+                    print(f"Testing task: {eval_task + 1}")
+                    print("-------------------------")
+                    self.logger.print_metrics(
+                        (epochs - 1),
+                        split="Test",
+                        task="Eval Task " + str(eval_task + 1),
+                        test=True,
+                    )
+
+                    tests["Eval Task " + str(eval_task + 1)] = (
+                        self.logger.save_results()
+                    )
+
+            # self.logger.save(self.model)
+
+        results["test"] = tests
+        return results
 
     def replay_loss(self, random_samples):
         idx = random.randint(0, len(random_samples) - 1)

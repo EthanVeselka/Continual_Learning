@@ -26,8 +26,8 @@ class PhenotypingLogger(BaseLogger):
 
         self.metrics.update(
             {
-                "AUC-ROC Micro": MetricMeter(AUCROC("micro")),
                 "AUC-ROC Macro": MetricMeter(AUCROC("macro")),
+                "AUC-ROC Micro": MetricMeter(AUCROC("micro")),
             }
         )
 
@@ -49,5 +49,5 @@ class PhenotypingLogger(BaseLogger):
         outputs = outputs.cpu().detach().numpy()
 
         self.metrics["Loss"].update(loss.item(), batch_size)
-        self.metrics["AUC-ROC Micro"].update(label_tmp, outputs)
         self.metrics["AUC-ROC Macro"].update(label_tmp, outputs)
+        self.metrics["AUC-ROC Micro"].update(label_tmp, outputs)

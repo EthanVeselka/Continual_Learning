@@ -23,7 +23,7 @@ def kappa(true, pred):
     :rtype: int
     """
     pred = np.argmax(pred, axis=1)
-    true = true[:, 0]
+    # true = true[:, 0]
     return cohen_kappa_score(true, pred, weights="linear")
 
 
@@ -81,9 +81,10 @@ def mae(true, pred):
     :return: MAE/MAD score
     :rtype: int
     """
-    one_hot = np.zeros((true.size, true.max() + 1))
+    one_hot = np.zeros((true.size, pred.shape[1]))
     for i in np.arange(true.size):
         one_hot[np.arange(true.size), true[i]] = 1
+
     return mean_absolute_error(one_hot, pred)
 
 
@@ -127,6 +128,7 @@ class AUCROC:
         :return: AUC-ROC score
         :rtype: int
         """
+
         return roc_auc_score(true, pred, multi_class="ovr", average=self.average)
 
 
@@ -210,4 +212,5 @@ class MetricMeter:
         """
         self.true = np.concatenate(self.true, axis=0)
         self.pred = np.concatenate(self.pred, axis=0)
+
         return self.score_fn(self.true, self.pred)

@@ -97,7 +97,7 @@ class LOSDataset(BaseDataset):
         self.normalizer.load_params(normalizer_state)
 
     def __getitem__(self, idx):
-        x = self.data[idx]
+        x = torch.Tensor(self.data[idx])
         sl = len(x)
 
         if self.partition == 10:
