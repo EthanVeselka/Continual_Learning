@@ -1,12 +1,12 @@
 Notes:
 
-IHM: 28 epochs (best basis at 4) (bad overfitting past this, 3 might be better)
+IHM: 28 epochs (best basis at 4) (bad overfitting past this)
 - 14,681 mimic training samples
 - 3,222 mimic val samples
 - 50,758 eICU training samples
 - 10,877 eICU val samples
 
-Phen: 20 epochs (best basis at 8) (haven't tried replay/ewc)
+Phen: 20 epochs (best basis at 6) (haven't tried replay/ewc)
 - 29,250 mimic training samples
 - 6,371 mimic val samples
 - 33,684 eICU training samples

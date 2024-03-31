@@ -34,6 +34,9 @@ class BaseLogger(ABC):
         self.perf = {}
         self.task_results = []
 
+        self.val_scores = {}
+        self.test_scores = {}
+
         if self.log_wandb:
             wandb.init(project="MIMIC Benchmark", name=exp_name)
             wandb.config.update(config)
@@ -153,6 +156,8 @@ class BaseLogger(ABC):
         metric2 = ""
         total_diff_m1 = 0
         total_diff_m2 = 0
+        totalm1 = 0
+        totalm2 = 0
 
         for result in results:
             res = {}
@@ -163,10 +168,12 @@ class BaseLogger(ABC):
                         diff = val - prev[key]
                         total_diff_m1 += diff
                         res[key] = diff
+                        totalm1 += val if count == len(results) else 0
                     elif (idx + 1) % 3 == 0:
                         diff = val - prev[key]
                         total_diff_m2 += diff
                         res[key] = diff
+                        totalm2 += val if count == len(results) else 0
 
             else:
                 for idx, (key, val) in enumerate(result.items()):
@@ -174,10 +181,16 @@ class BaseLogger(ABC):
                         words = key.split()
                         metric1 = " ".join(words[3:])
                         res[key] = val
+                        wandb.run.summary[
+                            "Initial " + metric1 + " (Task " + words[2] + ")"
+                        ] = val
                     elif idx == 2:
                         words = key.split()
                         metric2 = " ".join(words[3:])
                         res[key] = val
+                        wandb.run.summary[
+                            "Initial " + metric2 + " (Task " + words[2] + ")"
+                        ] = val
                     elif (idx + 1) % 3 == 2:
                         words = key.split()
                         res[key] = val
@@ -199,17 +212,30 @@ class BaseLogger(ABC):
             prev = result
 
         wandb.run.summary["Differences"] = differences
+        self.val_scores["Scores"] = perf_summary
+        self.val_scores["Average " + metric1] = totalm1 / (count - 1)
+        self.val_scores["Average " + metric2] = totalm2 / (count - 1)
+        wandb.run.summary["Average " + metric1] = totalm1 / (count - 1)
+        wandb.run.summary["Average " + metric2] = totalm2 / (count - 1)
         wandb.run.summary["Average " + metric1 + " Delta"] = total_diff_m1 / (count - 1)
         wandb.run.summary["Average " + metric2 + " Delta"] = total_diff_m2 / (count - 1)
         wandb.run.summary[
             "Validation Performance Summary " + "(Tasks 1-" + str(count - 1) + ")"
         ] = perf_summary
 
+        return (metric1, metric2)
+
     def update_wandb_test(self, results):
         all_res = []
 
+        metric1 = ""
+        metric2 = ""
+        totalm1 = 0
+        totalm2 = 0
+
+        count = 1
         for _, (k, v) in enumerate(results.items()):
-            name = "{" + k + " Tests}"
+            name = "{" + k + "}"
             perf_summary = []
             for _, (key, val) in enumerate(v.items()):
                 k1 = val[0][0]
@@ -219,8 +245,23 @@ class BaseLogger(ABC):
                 k3 = val[2][0]
                 v3 = val[2][1]
 
+                totalm1 += v2 if count == len(results) else 0
+                totalm2 += v3 if count == len(results) else 0
+                metric1 = k2 if count == len(results) else ""
+                metric2 = k3 if count == len(results) else ""
+
                 res = {k1: v1, k2: v2, k3: v3}
                 perf_summary.append({key: res})
             all_res.append({name: perf_summary})
+            count += 1
 
         wandb.run.summary["Test Performance Summary"] = all_res
+        self.test_scores["Scores"] = all_res
+        self.test_scores["Average " + metric1] = totalm1 / (count - 1)
+        self.test_scores["Average " + metric2] = totalm2 / (count - 1)
+
+    def get_val_scores(self):
+        return self.val_scores
+
+    def get_test_scores(self):
+        return self.test_scores

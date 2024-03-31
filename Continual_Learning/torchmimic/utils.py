@@ -66,37 +66,39 @@ def get_samples(sample_size, buffer_size, train_loader):
 
 # returns task training loader
 def get_train_loader(
+    task_num,
     task_name,
-    task_data,
+    tasks,
+    lf_map,
     train_batch_size,
     sample_size,
     workers,
     device,
 ):
 
+    clf = (
+        (lf_map[task_num - 1] + "_train.csv")
+        if (task_num > 0 and len(tasks) > 2)
+        else "train_listfile.csv"
+    )
     if task_name == "ihm":
         train_dataset = IHMDataset(
-            task_data,
+            tasks[task_num],
             train=True,
             n_samples=sample_size,
+            customListFile=clf,
         )
     elif task_name == "decomp":
         train_dataset = DecompensationDataset(
-            task_data,
-            train=True,
-            n_samples=280000,  # 100000
+            tasks[task_num], train=True, n_samples=280000, customListFile=clf  # 100000
         )
     elif task_name == "los":
         train_dataset = LOSDataset(
-            task_data,
-            train=True,
-            n_samples=sample_size,
+            tasks[task_num], train=True, n_samples=sample_size, customListFile=clf
         )
     elif task_name == "phen":
         train_dataset = PhenotypingDataset(
-            task_data,
-            train=True,
-            n_samples=sample_size,
+            tasks[task_num], train=True, n_samples=sample_size, customListFile=clf
         )
 
     kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
@@ -116,38 +118,42 @@ def get_train_loader(
 def get_val_loaders(
     task_name,
     tasks,
+    lf_map,
     val_batch_size,
     sample_size,
     workers,
     device,
 ):
     val_loaders = []
+    clf = None
 
     for task_num, task_data in enumerate(tasks):
-
+        clf = (
+            (lf_map[task_num - 1] + "_val.csv")
+            if (task_num > 0 and len(tasks) > 2)
+            else "val_listfile.csv"
+        )
         if task_name == "ihm":
             val_dataset = IHMDataset(
                 task_data,
                 train=False,
                 n_samples=sample_size,
+                customListFile=clf,
             )
         elif task_name == "decomp":
             val_dataset = DecompensationDataset(
                 task_data,
                 train=False,
                 n_samples=60000,  # 100000
+                customListFile=clf,
             )
         elif task_name == "los":
             val_dataset = LOSDataset(
-                task_data,
-                train=False,
-                n_samples=sample_size,
+                task_data, train=False, n_samples=sample_size, customListFile=clf
             )
         elif task_name == "phen":
             val_dataset = PhenotypingDataset(
-                task_data,
-                train=False,
-                n_samples=sample_size,
+                task_data, train=False, n_samples=sample_size, customListFile=clf
             )
 
         kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
@@ -168,40 +174,48 @@ def get_val_loaders(
 def get_test_loaders(
     task_name,
     tasks,
+    lf_map,
     test_batch_size,
     sample_size,
     workers,
     device,
 ):
     test_loaders = []
+    clf = None
+
     for task_num, task_data in enumerate(tasks):
+        clf = (
+            (lf_map[task_num - 1] + "_test.csv")
+            if (task_num > 0 and len(tasks) > 2)
+            else "test_listfile.csv"
+        )
         if task_name == "ihm":
             test_dataset = IHMDataset(
                 task_data,
                 train=False,
-                customListFile="test_listfile.csv",
                 n_samples=sample_size,
+                customListFile=clf,
             )
         elif task_name == "decomp":
             test_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                customListFile="test_listfile.csv",
                 n_samples=60000,  # 100000
+                customListFile=clf,
             )
         elif task_name == "los":
             test_dataset = LOSDataset(
                 task_data,
                 train=False,
-                customListFile="test_listfile.csv",
                 n_samples=sample_size,
+                customListFile=clf,
             )
         elif task_name == "phen":
             test_dataset = PhenotypingDataset(
                 task_data,
                 train=False,
-                customListFile="test_listfile.csv",
                 n_samples=sample_size,
+                customListFile=clf,
             )
 
         kwargs = {"num_workers": workers, "pin_memory": True} if device else {}

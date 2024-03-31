@@ -40,10 +40,25 @@ from torchmimic.utils import (
 #     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
 # ]
 
+lf_map = ["south", "midwest", "west", "northeast"]
+
 ihm_tasks = [
     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
+    "/data/datasets/eICU2MIMIC/ihm",
 ]
+ihm_splits = [
+    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+    "/data/datasets/eICU2MIMIC/ihm_cl",
+    "/data/datasets/eICU2MIMIC/ihm_cl",
+    "/data/datasets/eICU2MIMIC/ihm_cl",
+    "/data/datasets/eICU2MIMIC/ihm_cl",
+]
+
+phen_tasks = [
+    "/data/datasets/mimic3-benchmarks/data/phenotyping",
+    "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
+]
+phen_splits = []
 
 decomp_tasks = [
     "/data/datasets/mimic3-benchmarks/data/decompensation",
@@ -53,10 +68,6 @@ decomp_tasks = [
 los_tasks = [
     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
-]
-phen_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/phenotyping",
-    "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
 ]
 
 
@@ -69,6 +80,8 @@ def get_config(
     importance=0,
     replay=False,
     buffer_size=0,
+    epochs=2,
+    tasks=1,
 ):
     return {
         "Buffer size": buffer_size,
@@ -79,6 +92,8 @@ def get_config(
         "train_batch_size": train_batch_size,
         "learning_rate": learning_rate,
         "weight_decay": weight_decay,
+        "Epochs": epochs,
+        "Tasks": tasks,
     }
 
 
@@ -103,17 +118,25 @@ class TestLSTM(unittest.TestCase):
         weight_decay = 0
         report_freq = 200
         workers = 5
+
         wandb = True
         config = {}
+        test_loaders = None
+        exp_name = task
 
         if buffer_size == 0:
             ewc_penalty = False
             replay = False
+            exp_name += "_baseline"
             print("NOTE: Buffer size is 0, EWC and Replay will not be used")
 
         # specify tasks
         if task == "ihm":
-            tasks = [ihm_tasks[i] for i in task_list]
+            tasks = (
+                [ihm_tasks[i] for i in task_list]
+                if len(task_list) <= 2
+                else [ihm_splits[i] for i in task_list]
+            )
             model = StandardLSTM(
                 n_classes=1,
                 hidden_dim=16,
@@ -125,7 +148,11 @@ class TestLSTM(unittest.TestCase):
             benchmark = IHMBenchmark
 
         elif task == "phen":
-            tasks = [phen_tasks[i] for i in task_list]
+            tasks = (
+                [phen_tasks[i] for i in task_list]
+                if len(task_list) <= 2
+                else [phen_splits[i] for i in task_list]
+            )
             model = StandardLSTM(
                 n_classes=25,
                 hidden_dim=256,
@@ -171,16 +198,19 @@ class TestLSTM(unittest.TestCase):
                 importance,
                 replay,
                 buffer_size,
+                epochs,
+                len(tasks),
             )
         )
 
-        exp_name = ("Test_" + task) if test else ("Train_" + task)
+        exp_name = ("Test_" + exp_name) if test else ("Train_" + exp_name)
         logger = logger(exp_name, config, wandb)
 
         # get test loaders for each task
         val_loaders = get_val_loaders(
             task,
             tasks,
+            lf_map,
             test_batch_size,
             sample_size,
             workers,
@@ -191,6 +221,7 @@ class TestLSTM(unittest.TestCase):
             test_loaders = get_test_loaders(
                 task,
                 tasks,
+                lf_map,
                 test_batch_size,
                 sample_size,
                 workers,
@@ -205,6 +236,7 @@ class TestLSTM(unittest.TestCase):
         buffer = []
 
         for task_num, task_data in enumerate(tasks):
+            # testn = True if (test and task_num == len(tasks) - 1) else False
 
             # use model from previous trainer for additional tasks
             if task_num > 0:
@@ -221,8 +253,10 @@ class TestLSTM(unittest.TestCase):
 
             # train model, evaluate on all testing data
             train_loader = get_train_loader(
+                task_num,
                 task,
-                task_data,
+                tasks,
+                lf_map,
                 train_batch_size,
                 sample_size,
                 workers,
@@ -246,7 +280,7 @@ class TestLSTM(unittest.TestCase):
             val_results.append(result["val"])
 
             # get random samples for ewc/replay
-            if ewc_penalty or replay:
+            if (task_num != len(tasks) - 1) and (ewc_penalty or replay):
                 samples["Task " + str(task_num + 1)] = get_samples(
                     sample_size, buffer_size, train_loader
                 )
@@ -254,7 +288,12 @@ class TestLSTM(unittest.TestCase):
             prev_model = trainer.model
             del trainer, train_loader
 
-        if task == ("decomp" or "los"):
-            os.system("ps aux | grep veselka | grep dec")
-        logger.update_wandb_val(val_results)
+        # if task == ("decomp" or "los"):
+        #     os.system("ps aux | grep veselka | grep dec")
+        m1, m2 = logger.update_wandb_val(val_results)
         logger.update_wandb_test(test_results)
+
+        results = {}
+        results["val"] = ((m1, m2), logger.get_val_scores(), config)
+        results["test"] = ((m1, m2), logger.get_test_scores(), config)
+        return results
