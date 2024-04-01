@@ -295,5 +295,6 @@ class TestLSTM(unittest.TestCase):
 
         results = {}
         results["val"] = ((m1, m2), logger.get_val_scores(), config)
-        results["test"] = ((m1, m2), logger.get_test_scores(), config)
+        if test:
+            results["test"] = ((m1, m2), logger.get_test_scores(), config)
         return results
