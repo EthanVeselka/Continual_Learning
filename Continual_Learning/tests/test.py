@@ -115,13 +115,13 @@ def get_best_perf(n, k, task_perf, name, num_tasks):
         plt.gca().xaxis.set_label_position("top")
         plt.title("Trained vs. Evaluated " + metric2, pad=20)
 
-        plt.savefig("results/" + name + ".png")
+        plt.savefig("./results/" + name + ".png")
 
     m1sorted = sorted(m1_performances, key=lambda x: x[1], reverse=True)
     if n > len(m1sorted):
         n = len(m1sorted)
 
-    with open("results/" + name + ".txt", "w") as f:
+    with open("./results/" + name + ".txt", "w") as f:
         print(f"Best {k} performances:", file=f)
         print("----------------------------------", file=f)
         for idx, model in enumerate(m1sorted[:n]):
