@@ -3,7 +3,9 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 import random
+import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
@@ -12,10 +14,15 @@ from test_standard_lstm import TestLSTM
 # ssh veselka@cse-stmi-s1.cse.tamu.edu
 # buffer size must be <= samplesize/train_batch_size = 1000/8 = 125
 
-# python3 test.py --bl --test --rt --i 5 --n 5   # Run baseline tests, 5 iterations, and report best 5 models ranked by test results, as well as averages, std_dev, plots
-# python3 test.py --tasks 2 --ihm --grid --n 3   # Run gridsearch on ihm with 2 task, report best 3 models at each buffer size
-# python3 test.py --tasks 5 --ihm --grid --n 3   # Run gridsearch on ihm with 5 tasks, report best 3 models at each buffer size
-# python3 test.py --tasks 2 --phen --grid --n 3  # Run gridsearch on phen with 2 task, report best 3 models at each buffer size
+# python3 test.py --bl --test --rt --i 5 --n 5   # Run baseline tests, 5 iterations, and report best 5 models ranked by test results, as well as averages, std_dev, conf matrix
+# python3 test.py --tasks 2 --ihm --grid --n 3   # Run gridsearch on ihm with 2 task, report best 3 models at each buffer size (X)
+# python3 test.py --tasks 5 --ihm --grid --n 3   # Run gridsearch on ihm with 5 tasks, report best 3 models at each buffer size (rerun with corrections)
+# python3 test.py --tasks 5 --phen --grid --n 3  # Run gridsearch on phen with 2 task, report best 3 models at each buffer size (get splits, run for splits)
+
+# add metric avg perf of tasks up through n, not including past tasks
+# organize results into a confusion matrix (test results, 5x5 grid, either one for each metric, or just put both)
+# rank grid search models by best average primary metric as is already being done, test best of each buffer size 3 times
+# graph buffer size vs perf of best models
 
 random.seed(42)
 
@@ -35,20 +42,30 @@ los_perf = []
 dec_perf = []
 
 
-def get_best_perf(n, k, task_perf, name):
+def get_best_perf(n, k, task_perf, name, num_tasks):
     m1_performances = []
 
     for _, perf in enumerate(task_perf):
         p = perf[k]
         metric1 = p[0][0]
         metric2 = p[0][1]
-        v1 = p[1]["Average " + metric1]
-        v2 = p[1]["Average " + metric2]
+
+        v1 = p[1]["Final Average " + metric1]
+        v2 = p[1]["Final Average " + metric2]
         conf = p[2]
+        if k == "test":
+            avgs = {}
+            for num in range(num_tasks):
+                avgs[f"Task {num+1}"] = {
+                    "Average " + metric1: p[1][f"Task {num+1} Average " + metric1],
+                    "Average " + metric2: p[1][f"Task {num+1} Average " + metric2],
+                }
+        m1_performances.append((metric1, v1, metric2, v2, conf, avgs))
 
     if k == "test":
         data = []
         for _, perf in enumerate(task_perf):
+            p = perf[k]
             v3 = p[1]["Scores"]
             perf_data = []
             for task_num, task in enumerate(v3):
@@ -66,54 +83,40 @@ def get_best_perf(n, k, task_perf, name):
         averages = np.mean(data, axis=0)
         stacked = np.stack(data, axis=-1)
         std_dev = np.std(stacked, axis=-1)
-        std_dev_m1 = std_dev[..., 0]
-        std_dev_m2 = std_dev[..., 1]
+        std_dev_m1 = std_dev[:, :, 0]
+        std_dev_m2 = std_dev[:, :, 1]
         m = averages.shape[0]
 
-        # Extract the first and second values from the array
-        first_values = averages[:, :, 0].flatten()
-        second_values = averages[:, :, 1].flatten()
+        first_values = averages[:, :, 0]
+        second_values = averages[:, :, 1]
 
-        # Create two subplots
-        fig, axs = plt.subplots(2, 1, figsize=(8, 6))
-        colors = np.array(["r", "g", "b", "c", "m"])
-        x = np.repeat(np.arange(1, m + 1), m)
-        c = np.repeat(colors[:m], m)
+        tasks = [f"Task {i}" for i in range(1, m + 1)]
+        df1 = pd.DataFrame(first_values, tasks, tasks)
+        df2 = pd.DataFrame(second_values, tasks, tasks)
 
-        # Plot the first values on the first subplot
-        axs[0].scatter(x, first_values, c=c)
-        axs[0].errorbar(
-            x,
-            first_values,
-            yerr=std_dev_m1.flatten(),
-            ecolor="black",
-            capsize=3,
-            fmt="none",
-        )
-        axs[0].set_title(metric1)
-        axs[0].set_xlabel("Task number")
-        axs[0].set_ylabel("Value")
+        # Plot confusion matrices
+        plt.figure(figsize=(12, 4))
 
-        # Plot the second values on the second subplot
-        axs[1].scatter(x, second_values, c=c)
-        axs[1].errorbar(
-            x,
-            second_values,
-            yerr=std_dev_m2.flatten(),
-            ecolor="black",
-            capsize=3,
-            fmt="none",
-        )
-        axs[1].set_title(metric2)
-        axs[1].set_xlabel("Task number")
-        axs[1].set_ylabel("Value")
+        plt.subplot(1, 2, 1)
+        sns.heatmap(df1, annot=True, cmap="Blues", fmt=".3f")
+        plt.yticks(rotation=0)
+        plt.xlabel("Evaluated")
+        plt.ylabel("Trained")
+        plt.gca().xaxis.set_ticks_position("top")
+        plt.gca().xaxis.set_label_position("top")
+        plt.title("Trained vs. Evaluated " + metric1, pad=20)
 
-        # Adjust layout to prevent overlap
-        plt.tight_layout()
-        plt.grid()
+        plt.subplot(1, 2, 2)
+        sns.heatmap(df2, annot=True, cmap="Blues", fmt=".3f")
+        plt.yticks(rotation=0)
+        plt.xlabel("Evaluated")
+        plt.ylabel("Trained")
+        plt.gca().xaxis.set_ticks_position("top")
+        plt.gca().xaxis.set_label_position("top")
+        plt.title("Trained vs. Evaluated " + metric2, pad=20)
+
         plt.savefig("results/" + name + ".png")
 
-    m1_performances.append((metric1, v1, metric2, v2, conf, v3))
     m1sorted = sorted(m1_performances, key=lambda x: x[1], reverse=True)
     if n > len(m1sorted):
         n = len(m1sorted)
@@ -121,14 +124,16 @@ def get_best_perf(n, k, task_perf, name):
     with open("results/" + name + ".txt", "w") as f:
         print(f"Best {k} performances:", file=f)
         print("----------------------------------", file=f)
-        for model in m1sorted[:n]:
+        for idx, model in enumerate(m1sorted[:n]):
             print(
-                f"Model: Average {model[0]}: {model[1]}, Average {model[2]}: {model[3]}\nConfiguration: {model[4]}",
+                f"Model: Final Average {model[0]}: {model[1]}, Final Average {model[2]}: {model[3]}\nConfiguration: {model[4]}",
                 file=f,
             )
             print("\n", file=f)
 
         if k == "test":
+            print(f"Per Task Average: {m1sorted[0][5]}", file=f)
+            print("\n", file=f)
             print("Average performance:\n", averages, file=f)
             print("\n", file=f)
             print("Standard deviation " + metric1 + ":\n", std_dev_m1, file=f)
@@ -200,7 +205,9 @@ def gridsearch(n, k, task, task_list):
                 )
             )
 
-        get_best_perf(n, k, task_perf, f"{task}_{str(bs)}_{str(len(task_list))}")
+        get_best_perf(
+            n, k, task_perf, f"{task}_{str(bs)}_{str(len(task_list))}", len(task_list)
+        )
 
 
 def main():
@@ -287,6 +294,7 @@ def main():
     args = parser.parse_args()
 
     task_list = [i for i in range(0, args.tasks)] if args.tasks else [0]
+    num_tasks = len(task_list)
     iterations = args.i if args.i else 1
     buffer_size = args.b if (args.ewc or args.replay) else 0
     importance = args.imp if args.ewc else 0
@@ -329,7 +337,7 @@ def main():
                 )
             )
 
-        get_best_perf(n, k, ihm_perf, "ihm_perf_ex")
+        get_best_perf(n, k, ihm_perf, "ihm_perf", num_tasks)
         return
 
     if args.phen:
@@ -355,7 +363,7 @@ def main():
                 )
             )
 
-        get_best_perf(n, k, phen_perf, "phen_perf")
+        get_best_perf(n, k, phen_perf, "phen_perf", num_tasks)
         return
 
     if args.los:
@@ -381,7 +389,7 @@ def main():
                 )
             )
 
-        get_best_perf(n, k, los_perf, "los_perf")
+        get_best_perf(n, k, los_perf, "los_perf", num_tasks)
         return
 
     if args.dec:
@@ -407,7 +415,7 @@ def main():
                 )
             )
 
-        get_best_perf(n, k, dec_perf, "dec_perf")
+        get_best_perf(n, k, dec_perf, "dec_perf", num_tasks)
         return
 
     if args.bl:
@@ -420,19 +428,7 @@ def main():
                 TestLSTM().test_standard_lstm(
                     "ihm",
                     param_grid["ihm_epochs"],
-                    [0, 1],
-                    buffer_size=0,
-                    replay=False,
-                    ewc_penalty=False,
-                    importance=False,
-                    test=True,
-                )
-            )
-            ihm_split_perf.append(
-                TestLSTM().test_standard_lstm(
-                    "ihm",
-                    param_grid["ihm_epochs"],
-                    [0, 1, 2, 3, 4],
+                    task_list,
                     buffer_size=0,
                     replay=False,
                     ewc_penalty=False,
@@ -444,7 +440,7 @@ def main():
                 TestLSTM().test_standard_lstm(
                     "phen",
                     param_grid["phen_epochs"],
-                    [0, 1],
+                    task_list,
                     buffer_size=0,
                     replay=False,
                     ewc_penalty=False,
@@ -452,9 +448,8 @@ def main():
                     test=True,
                 )
             )
-        get_best_perf(n, k, ihm_perf, "ihm_baseline")
-        get_best_perf(n, k, ihm_split_perf, "ihm_split_baseline")
-        get_best_perf(n, k, phen_perf, "phen_baseline")
+        get_best_perf(n, k, ihm_perf, "ihm_baseline", num_tasks)
+        get_best_perf(n, k, phen_perf, "phen_baseline", num_tasks)
         return
 
 

@@ -181,28 +181,16 @@ class BaseLogger(ABC):
                         words = key.split()
                         metric1 = " ".join(words[3:])
                         res[key] = val
-                        wandb.run.summary[
-                            "Initial " + metric1 + " (Task " + words[2] + ")"
-                        ] = val
                     elif idx == 2:
                         words = key.split()
                         metric2 = " ".join(words[3:])
                         res[key] = val
-                        wandb.run.summary[
-                            "Initial " + metric2 + " (Task " + words[2] + ")"
-                        ] = val
                     elif (idx + 1) % 3 == 2:
                         words = key.split()
                         res[key] = val
-                        wandb.run.summary[
-                            "Initial " + metric1 + " (Task " + words[2] + ")"
-                        ] = val
                     elif (idx + 1) % 3 == 0:
                         words = key.split()
                         res[key] = val
-                        wandb.run.summary[
-                            "Initial " + metric2 + " (Task " + words[2] + ")"
-                        ] = val
 
             name = "{Task " + str(count) + "}"
             perf_summary.append({name: result})
@@ -213,10 +201,10 @@ class BaseLogger(ABC):
 
         wandb.run.summary["Differences"] = differences
         self.val_scores["Scores"] = perf_summary
-        self.val_scores["Average " + metric1] = totalm1 / (count - 1)
-        self.val_scores["Average " + metric2] = totalm2 / (count - 1)
-        wandb.run.summary["Average " + metric1] = totalm1 / (count - 1)
-        wandb.run.summary["Average " + metric2] = totalm2 / (count - 1)
+        self.val_scores["Final Average " + metric1] = totalm1 / (count - 1)
+        self.val_scores["Final Average " + metric2] = totalm2 / (count - 1)
+        wandb.run.summary["Final Average " + metric1] = totalm1 / (count - 1)
+        wandb.run.summary["Final Average " + metric2] = totalm2 / (count - 1)
         wandb.run.summary["Average " + metric1 + " Delta"] = total_diff_m1 / (count - 1)
         wandb.run.summary["Average " + metric2 + " Delta"] = total_diff_m2 / (count - 1)
         wandb.run.summary[
@@ -234,10 +222,12 @@ class BaseLogger(ABC):
         totalm2 = 0
 
         count = 1
-        for _, (k, v) in enumerate(results.items()):
+        for i, (k, v) in enumerate(results.items()):
             name = "{" + k + "}"
             perf_summary = []
-            for _, (key, val) in enumerate(v.items()):
+            avg1 = 0
+            avg2 = 0
+            for j, (key, val) in enumerate(v.items()):
                 k1 = val[0][0]
                 v1 = val[0][1]
                 k2 = val[1][0]
@@ -245,20 +235,25 @@ class BaseLogger(ABC):
                 k3 = val[2][0]
                 v3 = val[2][1]
 
+                avg1 += v2 if j <= i else 0
+                avg2 += v3 if j <= i else 0
                 totalm1 += v2 if count == len(results) else 0
                 totalm2 += v3 if count == len(results) else 0
-                metric1 = k2 if count == len(results) else ""
-                metric2 = k3 if count == len(results) else ""
+                metric1 = k2 if count == 1 else metric1
+                metric2 = k3 if count == 1 else metric2
 
                 res = {k1: v1, k2: v2, k3: v3}
                 perf_summary.append({key: res})
             all_res.append({name: perf_summary})
             count += 1
+            self.test_scores[f"Task {i+1} Average " + metric1] = avg1 / (count - 1)
+            self.test_scores[f"Task {i+1} Average " + metric2] = avg2 / (count - 1)
+            wandb.run.summary["Test Performance Summary " + name] = perf_summary
 
         wandb.run.summary["Test Performance Summary"] = all_res
         self.test_scores["Scores"] = all_res
-        self.test_scores["Average " + metric1] = totalm1 / (count - 1)
-        self.test_scores["Average " + metric2] = totalm2 / (count - 1)
+        self.test_scores["Final Average " + metric1] = totalm1 / (count - 1)
+        self.test_scores["Final Average " + metric2] = totalm2 / (count - 1)
 
     def get_val_scores(self):
         return self.val_scores

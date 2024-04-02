@@ -90,11 +90,14 @@ def get_train_loader(
         )
     elif task_name == "decomp":
         train_dataset = DecompensationDataset(
-            tasks[task_num], train=True, n_samples=280000, customListFile=clf  # 100000
+            tasks[task_num],
+            train=True,
+            n_samples=sample_size * 0.7,  # 100000
+            customListFile=clf,
         )
     elif task_name == "los":
         train_dataset = LOSDataset(
-            tasks[task_num], train=True, n_samples=sample_size, customListFile=clf
+            tasks[task_num], train=True, n_samples=sample_size * 0.7, customListFile=clf
         )
     elif task_name == "phen":
         train_dataset = PhenotypingDataset(
@@ -144,12 +147,12 @@ def get_val_loaders(
             val_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                n_samples=60000,  # 100000
+                n_samples=sample_size * 0.15,  # 100000
                 customListFile=clf,
             )
         elif task_name == "los":
             val_dataset = LOSDataset(
-                task_data, train=False, n_samples=sample_size, customListFile=clf
+                task_data, train=False, n_samples=sample_size * 0.15, customListFile=clf
             )
         elif task_name == "phen":
             val_dataset = PhenotypingDataset(
@@ -200,14 +203,14 @@ def get_test_loaders(
             test_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                n_samples=60000,  # 100000
+                n_samples=sample_size * 0.15,  # 100000
                 customListFile=clf,
             )
         elif task_name == "los":
             test_dataset = LOSDataset(
                 task_data,
                 train=False,
-                n_samples=sample_size,
+                n_samples=sample_size * 0.15,
                 customListFile=clf,
             )
         elif task_name == "phen":

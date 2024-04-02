@@ -48,27 +48,35 @@ ihm_tasks = [
 ]
 ihm_splits = [
     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-    "/data/datasets/eICU2MIMIC/ihm_cl",
-    "/data/datasets/eICU2MIMIC/ihm_cl",
-    "/data/datasets/eICU2MIMIC/ihm_cl",
-    "/data/datasets/eICU2MIMIC/ihm_cl",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/ihm_split",
 ]
 
 phen_tasks = [
     "/data/datasets/mimic3-benchmarks/data/phenotyping",
     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
 ]
-phen_splits = []
-
-decomp_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/decompensation",
-    "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+phen_splits = [
+    "/data/datasets/mimic3-benchmarks/data/phenotyping",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
 ]
 
 los_tasks = [
     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
 ]
+los_splits = []
+
+decomp_tasks = [
+    "/data/datasets/mimic3-benchmarks/data/decompensation",
+    "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+]
+decomp_splits = []
 
 
 def get_config(
@@ -164,7 +172,12 @@ class TestLSTM(unittest.TestCase):
             benchmark = PhenotypingBenchmark
 
         elif task == "decomp":
-            tasks = [decomp_tasks[i] for i in task_list]
+            sample_size = 100000
+            tasks = (
+                [decomp_tasks[i] for i in task_list]
+                if len(task_list) <= 2
+                else [decomp_splits[i] for i in task_list]
+            )
             model = StandardLSTM(
                 n_classes=1,
                 hidden_dim=128,
@@ -176,7 +189,12 @@ class TestLSTM(unittest.TestCase):
             benchmark = DecompensationBenchmark
 
         elif task == "los":
-            tasks = [los_tasks[i] for i in task_list]
+            sample_size = 100000
+            tasks = (
+                [los_tasks[i] for i in task_list]
+                if len(task_list) <= 2
+                else [los_splits[i] for i in task_list]
+            )
             model = StandardLSTM(
                 n_classes=10,
                 hidden_dim=64,
@@ -291,10 +309,10 @@ class TestLSTM(unittest.TestCase):
         # if task == ("decomp" or "los"):
         #     os.system("ps aux | grep veselka | grep dec")
         m1, m2 = logger.update_wandb_val(val_results)
-        logger.update_wandb_test(test_results)
 
         results = {}
         results["val"] = ((m1, m2), logger.get_val_scores(), config)
         if test:
+            logger.update_wandb_test(test_results)
             results["test"] = ((m1, m2), logger.get_test_scores(), config)
         return results
