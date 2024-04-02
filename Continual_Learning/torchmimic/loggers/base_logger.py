@@ -248,7 +248,7 @@ class BaseLogger(ABC):
             count += 1
             self.test_scores[f"Task {i+1} Average " + metric1] = avg1 / (count - 1)
             self.test_scores[f"Task {i+1} Average " + metric2] = avg2 / (count - 1)
-            wandb.run.summary["Test Performance Summary " + name] = perf_summary
+            # wandb.run.summary["Test Performance Summary " + name] = perf_summary
 
         wandb.run.summary["Test Performance Summary"] = all_res
         self.test_scores["Scores"] = all_res
