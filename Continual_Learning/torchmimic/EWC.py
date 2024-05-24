@@ -3,18 +3,21 @@ from copy import deepcopy
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from libauc.losses import pAUC_DRO_Loss
 
 # from torch.autograd import Variable
 import torch.utils.data
 
 
 class EWC(object):
-    def __init__(self, model: nn.Module, dataset: list, device, task):
+    def __init__(self, model: nn.Module, dataset: list, loss, shift_map, device, task):
 
         self.model = model
         self.dataset = dataset
         self.device = device
         self.task = task
+        self.loss = loss
+        self.shift_map = shift_map
 
         self.params = {
             n: p for n, p in self.model.named_parameters() if p.requires_grad
@@ -33,9 +36,13 @@ class EWC(object):
 
         # self.model.eval()
         self.model.train()
-        for _, (data, label, lens, mask) in enumerate(self.dataset):
+        for idx, (data, label, lens, mask, index, task_num) in enumerate(self.dataset):
             self.model.zero_grad()
             data = data.to(self.device)
+            # index = [idx] * 8
+            index = torch.tensor(index, dtype=torch.int)
+            index += self.shift_map[task_num]
+            index = index.to(self.device)
 
             if self.task == "los":  # multiclass classification
                 label = label.type(torch.LongTensor)
@@ -48,13 +55,14 @@ class EWC(object):
             else:  # binary classification (phen uses ovr)
                 label = label.to(self.device)
                 output = self.model((data, lens))
-                loss = nn.BCELoss()
+                loss = self.loss
+                # loss = nn.BCELoss()
                 if self.task == "ihm":
-                    loss = loss(output, label[:, None])
+                    loss = loss(output, label[:, None], index)
                 elif self.task == "decomp":
-                    loss = loss(output[:, 0], label)
+                    loss = loss(output[:, 0], label, index)
                 elif self.task == "phen":
-                    loss = loss(output, label)
+                    loss = loss(output, label, index)
 
             loss.backward()
 

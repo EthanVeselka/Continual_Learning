@@ -1,0 +1,14 @@
+Best val performances:
+----------------------------------
+Model: Final Average AUC-ROC: 0.8799375684902551, Final Average AUC-PR: 0.6142250486527066
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 425, 'EWC': True, 'Importance': 6, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC: 0.8798205604042595, Final Average AUC-PR: 0.6156822590220352
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 425, 'EWC': True, 'Importance': 8, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC: 0.8777608919812797, Final Average AUC-PR: 0.6221999565749375
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 425, 'EWC': True, 'Importance': 2, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 5}
+
+

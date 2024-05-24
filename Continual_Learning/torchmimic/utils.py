@@ -12,13 +12,16 @@ from torchmimic.data import DecompensationDataset
 from torchmimic.data import LOSDataset
 from torchmimic.data import PhenotypingDataset
 
+from libauc.sampler import DualSampler
+
 
 def pad_colalte(batch):
-    xx, yy, lens, mask = zip(*batch)
+    xx, yy, lens, mask, index = zip(*batch)
     x = pad_sequence(xx, batch_first=True)
     y = torch.FloatTensor(yy)
+    # index = torch.Tensor(index)
 
-    return x, y, lens, mask
+    return x, y, lens, mask, index
 
 
 def create_exp_dir(path, scripts_to_save=None):
@@ -51,14 +54,14 @@ def update_buffer(task_num, task_samples, buffer_size):
     return buff
 
 
-def get_samples(sample_size, buffer_size, train_loader):
+def get_samples(task_num, buffer_size, train_loader):
     # get specified number of random samples
 
     random_samples = []
     sample_idx = random.sample(range(len(train_loader)), buffer_size)
-    for idx, (data, label, lens, mask) in enumerate(train_loader):
+    for idx, (data, label, lens, mask, index) in enumerate(train_loader):
         if idx in sample_idx:
-            random_samples.append((data, label, lens, mask))
+            random_samples.append((data, label, lens, mask, index, task_num))
 
     random.shuffle(random_samples)
     return random_samples
@@ -75,7 +78,7 @@ def get_train_loader(
     workers,
     device,
 ):
-
+    ss = [1, 1, 1, 0.5, 0.25]
     clf = (
         (lf_map[task_num - 1] + "_train.csv")
         if (task_num > 0 and len(tasks) > 2)
@@ -92,24 +95,28 @@ def get_train_loader(
         train_dataset = DecompensationDataset(
             tasks[task_num],
             train=True,
-            n_samples=sample_size * 0.7,  # 100000
+            n_samples=int((sample_size * ss[task_num]) * 0.7),
             customListFile=clf,
         )
     elif task_name == "los":
         train_dataset = LOSDataset(
-            tasks[task_num], train=True, n_samples=sample_size * 0.7, customListFile=clf
+            tasks[task_num],
+            train=True,
+            n_samples=int((sample_size * ss[task_num]) * 0.7),
+            customListFile=clf,
         )
     elif task_name == "phen":
         train_dataset = PhenotypingDataset(
             tasks[task_num], train=True, n_samples=sample_size, customListFile=clf
         )
 
-    kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
-
+    sampler = DualSampler(train_dataset, train_batch_size, sampling_rate=0.5)
+    kwargs = {"num_workers": 0, "pin_memory": True} if device else {}
     train_loader = DataLoader(
         train_dataset,
+        sampler=sampler,
         batch_size=train_batch_size,
-        shuffle=True,
+        # shuffle=True,
         collate_fn=pad_colalte,
         **kwargs,
     )
@@ -129,7 +136,7 @@ def get_val_loaders(
 ):
     val_loaders = []
     clf = None
-
+    ss = [1, 1, 1, 0.5, 0.25]
     for task_num, task_data in enumerate(tasks):
         clf = (
             (lf_map[task_num - 1] + "_val.csv")
@@ -147,12 +154,15 @@ def get_val_loaders(
             val_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                n_samples=sample_size * 0.15,  # 100000
+                n_samples=int((sample_size * ss[task_num]) * 0.15),  # 100000
                 customListFile=clf,
             )
         elif task_name == "los":
             val_dataset = LOSDataset(
-                task_data, train=False, n_samples=sample_size * 0.15, customListFile=clf
+                task_data,
+                train=False,
+                n_samples=int((sample_size * ss[task_num]) * 0.15),
+                customListFile=clf,
             )
         elif task_name == "phen":
             val_dataset = PhenotypingDataset(
@@ -160,10 +170,10 @@ def get_val_loaders(
             )
 
         kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
-
         val_loader = DataLoader(
             val_dataset,
             batch_size=val_batch_size,
+            drop_last=True,
             shuffle=False,
             collate_fn=pad_colalte,
             **kwargs,
@@ -185,7 +195,7 @@ def get_test_loaders(
 ):
     test_loaders = []
     clf = None
-
+    ss = [1, 1, 1, 0.5, 0.25]
     for task_num, task_data in enumerate(tasks):
         clf = (
             (lf_map[task_num - 1] + "_test.csv")
@@ -203,14 +213,14 @@ def get_test_loaders(
             test_dataset = DecompensationDataset(
                 task_data,
                 train=False,
-                n_samples=sample_size * 0.15,  # 100000
+                n_samples=int((sample_size * ss[task_num]) * 0.15),  # 100000
                 customListFile=clf,
             )
         elif task_name == "los":
             test_dataset = LOSDataset(
                 task_data,
                 train=False,
-                n_samples=sample_size * 0.15,
+                n_samples=int((sample_size * ss[task_num]) * 0.15),
                 customListFile=clf,
             )
         elif task_name == "phen":
@@ -222,10 +232,10 @@ def get_test_loaders(
             )
 
         kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
-
         test_loader = DataLoader(
             test_dataset,
             batch_size=test_batch_size,
+            drop_last=True,
             shuffle=False,
             collate_fn=pad_colalte,
             **kwargs,

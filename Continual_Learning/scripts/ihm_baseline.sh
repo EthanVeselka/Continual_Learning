@@ -1,1 +1,0 @@
-python3 ../tests/test.py --tasks 5 --ihm --bl --test --rt --i 5 --n 1

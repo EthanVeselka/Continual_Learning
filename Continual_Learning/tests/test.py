@@ -7,22 +7,17 @@ import seaborn as sns
 import random
 import pandas as pd
 
+
+# git status --porcelain | grep -v 'exp/' | grep -v 'wandb/' | grep -v 'loss' | awk '{print $2}'
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
+np.set_printoptions(suppress=True)
 
 from test_standard_lstm import TestLSTM
 
 # ssh veselka@cse-stmi-s1.cse.tamu.edu
 # buffer size must be <= samplesize/train_batch_size = 1000/8 = 125
 
-# python3 test.py --bl --test --rt --i 5 --n 5   # Run baseline tests, 5 iterations, and report best 5 models ranked by test results, as well as averages, std_dev, conf matrix
-# python3 test.py --tasks 2 --ihm --grid --n 3   # Run gridsearch on ihm with 2 task, report best 3 models at each buffer size (X)
-# python3 test.py --tasks 5 --ihm --grid --n 3   # Run gridsearch on ihm with 5 tasks, report best 3 models at each buffer size (rerun with corrections)
-# python3 test.py --tasks 5 --phen --grid --n 3  # Run gridsearch on phen with 2 task, report best 3 models at each buffer size (get splits, run for splits)
-
-# add metric avg perf of tasks up through n, not including past tasks
-# organize results into a confusion matrix (test results, 5x5 grid, either one for each metric, or just put both)
-# rank grid search models by best average primary metric as is already being done, test best of each buffer size 3 times
-# graph buffer size vs perf of best models
 
 random.seed(42)
 
@@ -53,8 +48,8 @@ def get_best_perf(n, k, task_perf, name, num_tasks):
         v1 = p[1]["Final Average " + metric1]
         v2 = p[1]["Final Average " + metric2]
         conf = p[2]
+        avgs = {}
         if k == "test":
-            avgs = {}
             for num in range(num_tasks):
                 avgs[f"Task {num+1}"] = {
                     "Average " + metric1: p[1][f"Task {num+1} Average " + metric1],
@@ -115,13 +110,13 @@ def get_best_perf(n, k, task_perf, name, num_tasks):
         plt.gca().xaxis.set_label_position("top")
         plt.title("Trained vs. Evaluated " + metric2, pad=20)
 
-        plt.savefig("../results/" + name + ".png")
+        # plt.savefig("../results/" + name + ".png")
 
     m1sorted = sorted(m1_performances, key=lambda x: x[1], reverse=True)
     if n > len(m1sorted):
         n = len(m1sorted)
 
-    with open("../results/" + name + ".txt", "w") as f:
+    with open("../results/alt/" + name + ".txt", "w") as f:
         print(f"Best {k} performances:", file=f)
         print("----------------------------------", file=f)
         for idx, model in enumerate(m1sorted[:n]):
@@ -132,7 +127,11 @@ def get_best_perf(n, k, task_perf, name, num_tasks):
             print("\n", file=f)
 
         if k == "test":
-            print(f"Per Task Average: {m1sorted[0][5]}", file=f)
+            print(
+                f"Per Task Average: {[np.mean(averages[i][0:i+1,:], axis=0) for i in range(num_tasks)]}",
+                file=f,
+            )
+            print(f"Best Per Task Average: {m1sorted[0][5]}", file=f)
             print("\n", file=f)
             print("Average performance:\n", averages, file=f)
             print("\n", file=f)
@@ -147,12 +146,16 @@ def gridsearch(n, k, task, task_list):
     print("---------------------------------------")
     print("\n")
     if task == "ihm":
+        param_grid["buffer_size"] = [500, 425, 350, 275, 200, 125, 50]
         epochs = param_grid["ihm_epochs"]
     elif task == "phen":
+        param_grid["buffer_size"] = [500, 425, 350, 275, 200, 125, 50]
         epochs = param_grid["phen_epochs"]
     elif task == "los":
+        param_grid["buffer_size"] = [2750, 2340, 1925, 1515, 1100, 690, 275]
         epochs = param_grid["los_epochs"]
     elif task == "decomp":
+        param_grid["buffer_size"] = [2750, 2340, 1925, 1515, 1100, 690, 275]
         epochs = param_grid["dec_epochs"]
 
     for bs in param_grid["buffer_size"]:
@@ -290,6 +293,11 @@ def main():
         type=int,
         help="Save top n model performances",
     )
+    parser.add_argument(
+        "--alt",
+        action="store_true",
+        help="Use pAUC loss",
+    )
 
     args = parser.parse_args()
 
@@ -336,8 +344,17 @@ def main():
                     test=test,
                 )
             )
-
-        get_best_perf(n, k, ihm_perf, "ihm_perf", num_tasks)
+        if ewc_penalty and replay:
+            var = "comb"
+        elif ewc_penalty and not replay:
+            var = "ewc"
+        elif replay and not ewc_penalty:
+            var = "rep"
+        else:
+            var = "base"
+        get_best_perf(
+            n, k, ihm_perf, f"ihm_perf_{buffer_size}_{var}_alt_rev_mix2", num_tasks
+        )
         return
 
     if args.phen:
@@ -363,7 +380,17 @@ def main():
                 )
             )
 
-        get_best_perf(n, k, phen_perf, "phen_perf", num_tasks)
+        if ewc_penalty and replay:
+            var = "comb"
+        elif ewc_penalty and not replay:
+            var = "ewc"
+        elif replay and not ewc_penalty:
+            var = "rep"
+        else:
+            var = "base"
+        get_best_perf(
+            n, k, phen_perf, f"phen_perf_{buffer_size}_{var}_alt_rev_mix", num_tasks
+        )
         return
 
     if args.los:
@@ -388,8 +415,15 @@ def main():
                     test=test,
                 )
             )
-
-        get_best_perf(n, k, los_perf, "los_perf", num_tasks)
+        if ewc_penalty and replay:
+            var = "comb"
+        elif ewc_penalty and not replay:
+            var = "ewc"
+        elif replay and not ewc_penalty:
+            var = "rep"
+        else:
+            var = "base"
+        get_best_perf(n, k, los_perf, f"los_perf_{buffer_size}_{var}", num_tasks)
         return
 
     if args.dec:
@@ -414,8 +448,17 @@ def main():
                     test=test,
                 )
             )
-
-        get_best_perf(n, k, dec_perf, "dec_perf", num_tasks)
+        if ewc_penalty and replay:
+            var = "comb"
+        elif ewc_penalty and not replay:
+            var = "ewc"
+        elif replay and not ewc_penalty:
+            var = "rep"
+        else:
+            var = "base"
+        get_best_perf(
+            n, k, dec_perf, f"dec_perf_{buffer_size}_{var}_alt_rev_mix", num_tasks
+        )
         return
 
     if args.bl:
@@ -448,8 +491,30 @@ def main():
                     test=True,
                 )
             )
+            # dec_perf.append(TestLSTM().test_standard_lstm(
+            #     "decomp",
+            #     param_grid["dec_epochs"],
+            #     task_list,
+            #     buffer_size=0,
+            #     replay=False,
+            #     ewc_penalty=False,
+            #     importance=False,
+            #     test=True,
+            # ))
+            # los_perf.append(TestLSTM().test_standard_lstm(
+            #     "los",
+            #     param_grid["los_epochs"],
+            #     task_list,
+            #     buffer_size=0,
+            #     replay=False,
+            #     ewc_penalty=False,
+            #     importance=False,
+            #     test=True,
+            # ))
         get_best_perf(n, k, ihm_perf, "ihm_baseline", num_tasks)
         get_best_perf(n, k, phen_perf, "phen_baseline", num_tasks)
+        # get_best_perf(n, k, dec_perf, "dec_baseline", num_tasks)
+        # get_best_perf(n, k, los_perf, "los_baseline", num_tasks)
         return
 
 

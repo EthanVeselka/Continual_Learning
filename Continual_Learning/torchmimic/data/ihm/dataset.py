@@ -12,8 +12,10 @@ from torchmimic.data.readers import InHospitalMortalityReader
 from torchmimic.data.utils import read_chunk
 from torchmimic.data.base_dataset import BaseDataset
 
+from torch.utils.data import Dataset
 
-class IHMDataset(BaseDataset):
+
+class IHMDataset(Dataset):
     """
     In-Hospital-Mortality dataset that can be directly used by PyTorch dataloaders. This class preprocesses the data the same way as "Multitask learning and benchmarking with clinical time series data": https://github.com/YerevaNN/mimic3-benchmarks
 
@@ -47,7 +49,7 @@ class IHMDataset(BaseDataset):
         :param customListFile: listfile to use. If None, use train_listfile.csv
         :type customListFile: str
         """
-        super().__init__(transform=transform)
+        # super().__init__(transform=transform)
 
         listfile = "train_listfile.csv" if train else "val_listfile.csv"
 
@@ -58,6 +60,23 @@ class IHMDataset(BaseDataset):
         self._load_data(n_samples)
 
         self.n_samples = len(self.data)
+        self.transform = transform
+
+    def __getitem__(self, idx):
+        x = torch.Tensor(self.data[idx])
+        sl = len(x)
+        y = self.labels[idx]
+        m = self.mask[idx]
+        index = idx
+        # index = torch.tensor(index, dtype=torch.int)
+
+        if self.transform:
+            x = self.transform(x)
+
+        return x, y, sl, m, index
+
+    def __len__(self):
+        return self.n_samples
 
     def _read_data(self, root, listfile):
         if "test" in listfile:
@@ -93,3 +112,43 @@ class IHMDataset(BaseDataset):
             "ihm_ts1.0.input_str:previous.start_time:zero.normalizer",
         )
         self.normalizer.load_params(normalizer_state)
+
+    def _load_data(self, sample_size):
+        N = self.reader.get_number_of_examples()
+
+        if sample_size is None:
+            sample_size = N
+
+        # print(sample_size)
+        ret = read_chunk(self.reader, sample_size)
+
+        data = ret["X"]
+        ts = ret["t"]
+        ys = ret["y"]
+        names = ret["name"]
+
+        data_tmp = []
+        self.mask = []
+
+        for X, t in zip(data, ts):
+            d = self.discretizer.transform(X, end=t)[0]
+            data_tmp.append(d)
+            self.mask.append(self.expand_mask(d[:, 59:]))
+
+        # data = [self.discretizer.transform(X, end=t)[0] for (X, t) in zip(data, ts)]
+        if self.normalizer is not None:
+            self.data = [self.normalizer.transform(X) for X in data_tmp]
+        self.labels = ys
+        self.ts = ts
+        self.names = names
+        self.targets = ys
+
+    def expand_mask(self, mask):
+        expanded_mask = torch.ones((mask.shape[0], 59))
+
+        for i, pv in enumerate(self.discretizer._possible_values.values()):
+            n_values = len(pv) if not pv == [] else 1
+            for p in range(n_values):
+                expanded_mask[:, p + i] = torch.from_numpy(mask[:, i])
+
+        return expanded_mask

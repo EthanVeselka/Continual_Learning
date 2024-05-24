@@ -1,6 +1,7 @@
 import unittest
 import sys
 import os
+import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
@@ -30,15 +31,9 @@ from torchmimic.utils import (
 )
 
 
-# ihm_tasks = [
-#     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality",
-# ]
+from libauc.losses import pAUC_DRO_Loss
+from libauc.optimizers import SOPAs
 
-# decomp_tasks = [
-#     "../../datasets/mimic3-benchmarks/decompensation",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
-# ]
 
 lf_map = ["south", "midwest", "west", "northeast"]
 
@@ -70,13 +65,25 @@ los_tasks = [
     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
 ]
-los_splits = []
+los_splits = [
+    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+]
 
 decomp_tasks = [
     "/data/datasets/mimic3-benchmarks/data/decompensation",
     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
 ]
-decomp_splits = []
+decomp_splits = [
+    "/data/datasets/mimic3-benchmarks/data/decompensation",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+]
 
 
 def get_config(
@@ -154,6 +161,9 @@ class TestLSTM(unittest.TestCase):
             )
             logger = IHMLogger
             benchmark = IHMBenchmark
+            # shift_map = [0, 14681, 32626, 49900, 58556,]
+            shift_map = [0]
+            data_len = 65000  # Place Holder
 
         elif task == "phen":
             tasks = (
@@ -170,8 +180,11 @@ class TestLSTM(unittest.TestCase):
             )
             logger = PhenotypingLogger
             benchmark = PhenotypingBenchmark
+            shift_map = [0]
+            data_len = 200000  # placeholder
 
         elif task == "decomp":
+            # use 100k for first three tasks, then 50k for task four, and 25k for task 5
             sample_size = 100000
             tasks = (
                 [decomp_tasks[i] for i in task_list]
@@ -187,8 +200,13 @@ class TestLSTM(unittest.TestCase):
             )
             logger = DecompensationLogger
             benchmark = DecompensationBenchmark
+            shift_map = [0]
+            data_len = np.sum(
+                [x * sample_size for x in [1, 1, 1, 0.5, 0.25]]
+            )  # 1, 1, 1, .5 .25 sample ratios
 
         elif task == "los":
+            # use 100k for first three tasks, then 50k for task four, and 25k for task 5
             sample_size = 100000
             tasks = (
                 [los_tasks[i] for i in task_list]
@@ -204,6 +222,10 @@ class TestLSTM(unittest.TestCase):
             )
             logger = LOSLogger
             benchmark = LOSBenchmark
+            shift_map = [0]
+            data_len = np.sum(
+                [x * sample_size for x in [1, 1, 1, 0.5, 0.25]]
+            )  # 1, 1, 1, .5 .25 sample ratios
 
         config.update(model.get_config())
         config.update(
@@ -252,6 +274,16 @@ class TestLSTM(unittest.TestCase):
         val_results = []
         test_results = {}
         buffer = []
+        shift = 0
+
+        crit = pAUC_DRO_Loss(data_len=int(data_len))
+        optimizer = SOPAs(  # initial optimizer
+            model.parameters(),
+            mode="adam",
+            lr=learning_rate,
+            weight_decay=weight_decay,
+            betas=(0.9, 0.98),
+        )
 
         for task_num, task_data in enumerate(tasks):
             # testn = True if (test and task_num == len(tasks) - 1) else False
@@ -259,6 +291,13 @@ class TestLSTM(unittest.TestCase):
             # use model from previous trainer for additional tasks
             if task_num > 0:
                 model = prev_model
+                optimizer = SOPAs(  # update model parameters
+                    model.parameters(),
+                    mode="adam",
+                    lr=learning_rate,
+                    weight_decay=weight_decay,
+                    betas=(0.9, 0.98),
+                )
 
             trainer = benchmark(
                 model=model,
@@ -267,8 +306,11 @@ class TestLSTM(unittest.TestCase):
                 report_freq=report_freq,
                 logger=logger,
                 device=device,
+                loss=crit,
+                optimizer=optimizer,
+                shift_map=shift_map,
+                # shift=shift_map[task_num],
             )
-
             # train model, evaluate on all testing data
             train_loader = get_train_loader(
                 task_num,
@@ -292,26 +334,26 @@ class TestLSTM(unittest.TestCase):
                 importance=importance,
             )
 
+            shift += len(train_loader.dataset)
+            shift_map.append(shift)
             if test:
                 test_results["Task " + str(task_num + 1)] = result["test"]
-
             val_results.append(result["val"])
 
             # get random samples for ewc/replay
             if (task_num != len(tasks) - 1) and (ewc_penalty or replay):
                 samples["Task " + str(task_num + 1)] = get_samples(
-                    sample_size, buffer_size, train_loader
+                    task_num, buffer_size, train_loader
                 )
                 buffer = update_buffer(task_num, samples, buffer_size)
             prev_model = trainer.model
             del trainer, train_loader
 
-        # if task == ("decomp" or "los"):
-        #     os.system("ps aux | grep veselka | grep dec")
         m1, m2 = logger.update_wandb_val(val_results)
-
         results = {}
         results["val"] = ((m1, m2), logger.get_val_scores(), config)
+        print(shift_map)
+
         if test:
             logger.update_wandb_test(test_results)
             results["test"] = ((m1, m2), logger.get_test_scores(), config)

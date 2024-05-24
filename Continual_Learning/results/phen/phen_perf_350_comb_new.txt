@@ -1,0 +1,72 @@
+Best test performances:
+----------------------------------
+Model: Final Average AUC-ROC Macro: 0.6944092730635039, Final Average AUC-ROC Micro: 0.7864660142834217
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 350, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6920917995633674, Final Average AUC-ROC Micro: 0.7801901648085485
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 350, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6896957659591151, Final Average AUC-ROC Micro: 0.7825622276430604
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 350, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6895362099044704, Final Average AUC-ROC Micro: 0.7837781641984608
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 350, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6883867497870103, Final Average AUC-ROC Micro: 0.7818020888193741
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 350, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Per Task Average: [array([0.76520214, 0.81647497]), array([0.72228452, 0.79608464]), array([0.70714385, 0.78944729]), array([0.69579519, 0.78298496]), array([0.69082396, 0.78295973])]
+Best Per Task Average: {'Task 1': {'Average AUC-ROC Macro': 0.7654722253223208, 'Average AUC-ROC Micro': 0.8171415866708183}, 'Task 2': {'Average AUC-ROC Macro': 0.7229992014385547, 'Average AUC-ROC Micro': 0.7972665047984594}, 'Task 3': {'Average AUC-ROC Macro': 0.7103531746745935, 'Average AUC-ROC Micro': 0.7913752420836996}, 'Task 4': {'Average AUC-ROC Macro': 0.6958452171645433, 'Average AUC-ROC Micro': 0.7848151873333096}, 'Task 5': {'Average AUC-ROC Macro': 0.6944092730635039, 'Average AUC-ROC Micro': 0.7864660142834217}}
+
+
+Average performance:
+ [[[0.76520214 0.81647497]
+  [0.49335016 0.53258961]
+  [0.48892476 0.53922667]
+  [0.48559352 0.50564954]
+  [0.4855912  0.56581475]]
+
+ [[0.73596526 0.79206953]
+  [0.70860378 0.80009975]
+  [0.66203859 0.76560765]
+  [0.63435368 0.75115927]
+  [0.66013025 0.76288879]]
+
+ [[0.72033794 0.77873571]
+  [0.69060198 0.77499796]
+  [0.71049164 0.8146082 ]
+  [0.66212295 0.75952343]
+  [0.64768863 0.73372219]]
+
+ [[0.71172578 0.76976514]
+  [0.67198781 0.76564258]
+  [0.67995244 0.78227513]
+  [0.71951473 0.814257  ]
+  [0.64692564 0.7423887 ]]
+
+ [[0.70999827 0.77124982]
+  [0.69273314 0.77448391]
+  [0.67586365 0.78335018]
+  [0.66244231 0.76969766]
+  [0.71308242 0.8160171 ]]]
+
+
+Standard deviation AUC-ROC Macro:
+ [[0.00063528 0.01280719 0.00663814 0.0087745  0.00619913]
+ [0.00144865 0.00480059 0.00426765 0.0095869  0.00339527]
+ [0.00306342 0.00670058 0.00686243 0.00860263 0.00488593]
+ [0.00160065 0.00610689 0.00870518 0.00661289 0.00868362]
+ [0.00277488 0.00455098 0.00583232 0.00770548 0.00443805]]
+
+
+Standard deviation AUC-ROC Micro:
+ [[0.00041239 0.01059008 0.01307637 0.01309007 0.00830644]
+ [0.00131677 0.00334038 0.00180019 0.00116668 0.00500071]
+ [0.00204999 0.00418027 0.00309338 0.00968159 0.0056821 ]
+ [0.0020429  0.00428298 0.00537393 0.00189345 0.00478231]
+ [0.00302234 0.0034868  0.00297257 0.00526843 0.00243734]]

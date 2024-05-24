@@ -4,6 +4,8 @@ import random
 
 from torch import optim
 from torchmimic.EWC import EWC
+from libauc.losses import pAUC_DRO_Loss
+from libauc.optimizers import SOPAs
 
 
 class PhenotypingBenchmark:
@@ -16,6 +18,9 @@ class PhenotypingBenchmark:
         logger=None,
         device="cpu",
     ):
+        self.learning_rate = learning_rate
+        self.weight_decay = weight_decay
+
         self.model = model
         self.device = device
         self.report_freq = report_freq
@@ -46,8 +51,26 @@ class PhenotypingBenchmark:
         ewc_penalty=False,
         importance=1,
     ):
-        results = {}
+        # rsc = len(random_samples) * train_loader.batch_size
+        rsc = len(random_samples)
+        self.crit_rep = pAUC_DRO_Loss(data_len=rsc)
+        self.crit = pAUC_DRO_Loss(data_len=len(train_loader.dataset))
+        self.optimizer = SOPAs(
+            self.model.parameters(),
+            mode="adam",
+            lr=self.learning_rate,
+            weight_decay=self.weight_decay,
+            betas=(0.9, 0.98),
+        )
 
+        results = {}
+        step = (
+            len(train_loader) // len(random_samples)
+            if len(random_samples) > 0
+            else len(train_loader)
+        )
+        if step == 0:
+            step = 1  # in the case of less training samples than buffer size
         for epoch in range(epochs):
             print("------------------------------------")
             print(f"Task: {task_num + 1}, Epoch: {epoch + 1}")
@@ -57,29 +80,56 @@ class PhenotypingBenchmark:
             self.logger.reset()
 
             ewc = (
-                EWC(model_copy, random_samples, self.device, self.task)
+                EWC(
+                    model_copy,
+                    random_samples,
+                    rsc,
+                    self.device,
+                    self.task,
+                )
                 if task_num != 0 and ewc_penalty
                 else None
             )
 
-            for batch_idx, (data, label, lens, mask) in enumerate(train_loader):
+            idx = 0
+            for batch_idx, (data, label, lens, mask, index) in enumerate(train_loader):
                 data = data.to(self.device)
                 label = label.to(self.device)
+                index = torch.tensor(index, dtype=torch.int)
+                index = index.to(self.device)
                 output = self.model((data, lens))
+                # output = torch.sigmoid(output)
+                # print(len(train_loader.dataset))
+                # print(index)
+                print(label)
+                pos_mask = (label == 1).squeeze()
+                print(pos_mask)
+                print(sum(pos_mask))
 
                 # add ewc penalty
                 if task_num == 0 or not ewc_penalty:
-                    loss = self.crit(output, label)
+                    loss = self.crit(output, label, index)
                 elif task_num > 0 and ewc_penalty:
-                    loss = self.crit(output, label) + importance * ewc.penalty(
+                    loss = self.crit(output, label, index) + importance * ewc.penalty(
                         self.model
                     )
 
                 # add replay loss
-                if task_num > 0 and replay:
-                    loss = (1 / (task_num + 1)) * loss + (
-                        1 - (1 / (task_num + 1))
-                    ) * self.replay_loss(random_samples)
+                # if task_num > 0 and replay:
+                #     loss = (1 / (task_num + 1)) * loss + (
+                #         1 - (1 / (task_num + 1))
+                #     ) * self.replay_loss(random_samples)
+
+                if (
+                    task_num > 0
+                    and replay
+                    and (batch_idx % step == 0)
+                    and idx < len(random_samples)
+                ):
+                    loss = (1 - (1 / (task_num + 1))) * loss + (
+                        1 / (task_num + 1)
+                    ) * self.replay_loss(random_samples, idx, rsc)
+                    idx += 1
 
                 loss.backward()
                 self.optimizer.step()
@@ -92,30 +142,45 @@ class PhenotypingBenchmark:
 
             self.logger.print_metrics(epoch, split="Train", task=None)
             print("-------------")
-
+            idx = 0
             # evaluate model on all tasks
             with torch.no_grad():
                 for eval_task, val_loader in enumerate(val_loaders):
                     self.logger.reset()
                     self.model.eval()
-                    for batch_idx, (data, label, lens, mask) in enumerate(val_loader):
+                    for batch_idx, (data, label, lens, mask, index) in enumerate(
+                        val_loader
+                    ):
                         data = data.to(self.device)
                         label = label.to(self.device)
+                        index = torch.tensor(index, dtype=torch.int)
+                        index = index.to(self.device)
                         output = self.model((data, lens))
+                        # output = torch.sigmoid(output)
 
                         # add ewc penalty
                         if task_num == 0 or not ewc_penalty:
-                            loss = self.crit(output, label)
+                            loss = self.crit(output, label, index)
                         elif task_num > 0 and ewc_penalty:
-                            loss = self.crit(output, label) + importance * ewc.penalty(
-                                self.model
-                            )
+                            loss = self.crit(
+                                output, label, index
+                            ) + importance * ewc.penalty(self.model)
 
                         # add replay loss
-                        if task_num > 0 and replay:
-                            loss = (1 / (task_num + 1)) * loss + (
-                                1 - (1 / (task_num + 1))
-                            ) * self.replay_loss(random_samples)
+                        # if task_num > 0 and replay:
+                        #     loss = (1 / (task_num + 1)) * loss + (
+                        #         1 - (1 / (task_num + 1))
+                        #     ) * self.replay_loss(random_samples)
+                        if (
+                            task_num > 0
+                            and replay
+                            and (batch_idx % step == 0)
+                            and idx < len(random_samples)
+                        ):
+                            loss = (1 - (1 / (task_num + 1))) * loss + (
+                                1 / (task_num + 1)
+                            ) * self.replay_loss(random_samples, idx, rsc)
+                            idx += 1
 
                         self.logger.update(output, label, loss)
 
@@ -133,19 +198,23 @@ class PhenotypingBenchmark:
             if epoch == (epochs - 1):
                 results["val"] = self.logger.get_results()
 
-        # test model on all tasks
         tests = {}
         if test_loaders != None:
+            # test model on all tasks
             with torch.no_grad():
                 for eval_task, test_loader in enumerate(test_loaders):
                     self.logger.reset()
                     self.model.eval()
-                    for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
+                    for batch_idx, (data, label, lens, mask, index) in enumerate(
+                        test_loader
+                    ):
                         data = data.to(self.device)
                         label = label.to(self.device)
+                        index = torch.tensor(index, dtype=torch.int)
+                        index = index.to(self.device)
                         output = self.model((data, lens))
-                        loss = self.crit(output, label)
 
+                        loss = self.crit(output, label, index)
                         self.logger.update(output, label, loss)
 
                         if (batch_idx + 1) % self.report_freq == 0:
@@ -173,13 +242,16 @@ class PhenotypingBenchmark:
         results["test"] = tests
         return results
 
-    def replay_loss(self, random_samples):
-        idx = random.randint(0, len(random_samples) - 1)
-        data, label, lens, mask = random_samples[idx]
+    def replay_loss(self, random_samples, idx=0, data_len=0):
+        # idx = random.randint(0, len(random_samples) - 1)
+        data, label, lens, mask, index = random_samples[idx]
+        index = [idx] * 8
+        index = torch.tensor(index, dtype=torch.int)
+        index = index.to(self.device)
 
         data = data.to(self.device)
         label = label.to(self.device)
         output = self.model((data, lens))
-        replay_loss = self.crit(output, label)
+        replay_loss = self.crit_rep(output, label, index)
 
         return replay_loss

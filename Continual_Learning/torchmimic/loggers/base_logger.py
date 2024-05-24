@@ -33,7 +33,7 @@ class BaseLogger(ABC):
         self.log_wandb = log_wandb
         self.perf = {}
         self.task_results = []
-
+        
         self.val_scores = {}
         self.test_scores = {}
 
@@ -210,12 +210,12 @@ class BaseLogger(ABC):
         wandb.run.summary[
             "Validation Performance Summary " + "(Tasks 1-" + str(count - 1) + ")"
         ] = perf_summary
-
+        
         return (metric1, metric2)
 
     def update_wandb_test(self, results):
         all_res = []
-
+        
         metric1 = ""
         metric2 = ""
         totalm1 = 0
@@ -234,7 +234,7 @@ class BaseLogger(ABC):
                 v2 = val[1][1]
                 k3 = val[2][0]
                 v3 = val[2][1]
-
+                
                 avg1 += v2 if j <= i else 0
                 avg2 += v3 if j <= i else 0
                 totalm1 += v2 if count == len(results) else 0
@@ -254,7 +254,8 @@ class BaseLogger(ABC):
         self.test_scores["Scores"] = all_res
         self.test_scores["Final Average " + metric1] = totalm1 / (count - 1)
         self.test_scores["Final Average " + metric2] = totalm2 / (count - 1)
-
+        
+        
     def get_val_scores(self):
         return self.val_scores
 

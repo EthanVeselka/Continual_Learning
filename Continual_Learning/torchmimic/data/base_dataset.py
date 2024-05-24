@@ -58,7 +58,7 @@ class BaseDataset(ABC):
         if self.transform:
             x = self.transform(x)
 
-        return x, y, sl, m
+        return x, y, sl, m, idx
 
     def __len__(self):
         return self.n_samples
