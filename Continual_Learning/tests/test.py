@@ -117,7 +117,9 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
         n = len(m1sorted)
 
     folder = (
-        "../results/pAUC/" + name + ".txt" if pAUC else "../results/" + name + ".txt"
+        "../new_results/pAUC/" + name + ".txt"
+        if pAUC
+        else "../new_results/" + name + ".txt"
     )
     with open(folder, "w") as f:
         print(f"Best {k} performances:", file=f)
