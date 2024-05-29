@@ -2,4 +2,5 @@ datasets/
 moveCL.py
 wandb/
 exp/
-*.png
+*.png 
+loss.* 
