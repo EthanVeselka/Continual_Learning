@@ -42,61 +42,12 @@ lf_map = ["south", "midwest", "west", "northeast"]
 
 
 # Server Paths
-# ihm_tasks = [
-#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-#     "/data/datasets/eICU2MIMIC/ihm",
-# ]
-# ihm_splits = [
-#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-#     "/data/datasets/eICU2MIMIC/ihm_split",
-#     "/data/datasets/eICU2MIMIC/ihm_split",
-#     "/data/datasets/eICU2MIMIC/ihm_split",
-#     "/data/datasets/eICU2MIMIC/ihm_split",
-# ]
-
-# phen_tasks = [
-#     "/data/datasets/mimic3-benchmarks/data/phenotyping",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
-# ]
-# phen_splits = [
-#     "/data/datasets/mimic3-benchmarks/data/phenotyping",
-#     "/data/datasets/eICU2MIMIC/phenotyping_split",
-#     "/data/datasets/eICU2MIMIC/phenotyping_split",
-#     "/data/datasets/eICU2MIMIC/phenotyping_split",
-#     "/data/datasets/eICU2MIMIC/phenotyping_split",
-# ]
-
-# los_tasks = [
-#     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
-# ]
-# los_splits = [
-#     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
-#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
-#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
-#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
-#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
-# ]
-
-# decomp_tasks = [
-#     "/data/datasets/mimic3-benchmarks/data/decompensation",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
-# ]
-# decomp_splits = [
-#     "/data/datasets/mimic3-benchmarks/data/decompensation",
-#     "/data/datasets/eICU2MIMIC/decompensation_split",
-#     "/data/datasets/eICU2MIMIC/decompensation_split",
-#     "/data/datasets/eICU2MIMIC/decompensation_split",
-#     "/data/datasets/eICU2MIMIC/decompensation_split",
-# ]
-
-# Local paths
 ihm_tasks = [
-    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
-    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality2",
+    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+    "/data/datasets/eICU2MIMIC/ihm",
 ]
 ihm_splits = [
-    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
     "/data/datasets/eICU2MIMIC/ihm_split",
     "/data/datasets/eICU2MIMIC/ihm_split",
     "/data/datasets/eICU2MIMIC/ihm_split",
@@ -104,11 +55,11 @@ ihm_splits = [
 ]
 
 phen_tasks = [
-    "../../datasets/mimic3-benchmarks/phenotyping",
+    "/data/datasets/mimic3-benchmarks/data/phenotyping",
     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
 ]
 phen_splits = [
-    "../../datasets/mimic3-benchmarks/phenotyping",
+    "/data/datasets/mimic3-benchmarks/data/phenotyping",
     "/data/datasets/eICU2MIMIC/phenotyping_split",
     "/data/datasets/eICU2MIMIC/phenotyping_split",
     "/data/datasets/eICU2MIMIC/phenotyping_split",
@@ -116,11 +67,11 @@ phen_splits = [
 ]
 
 los_tasks = [
-    "../../datasets/mimic3-benchmarks/length-of-stay",
+    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
 ]
 los_splits = [
-    "../../datasets/mimic3-benchmarks/length-of-stay",
+    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
     "/data/datasets/eICU2MIMIC/length-of-stay_split",
     "/data/datasets/eICU2MIMIC/length-of-stay_split",
     "/data/datasets/eICU2MIMIC/length-of-stay_split",
@@ -128,16 +79,65 @@ los_splits = [
 ]
 
 decomp_tasks = [
-    "../../datasets/mimic3-benchmarks/decompensation",
+    "/data/datasets/mimic3-benchmarks/data/decompensation",
     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
 ]
 decomp_splits = [
-    "../../datasets/mimic3-benchmarks/decompensation",
+    "/data/datasets/mimic3-benchmarks/data/decompensation",
     "/data/datasets/eICU2MIMIC/decompensation_split",
     "/data/datasets/eICU2MIMIC/decompensation_split",
     "/data/datasets/eICU2MIMIC/decompensation_split",
     "/data/datasets/eICU2MIMIC/decompensation_split",
 ]
+
+# Local paths
+# ihm_tasks = [
+#     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality2",
+# ]
+# ihm_splits = [
+#     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+# ]
+
+# phen_tasks = [
+#     "../../datasets/mimic3-benchmarks/phenotyping",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
+# ]
+# phen_splits = [
+#     "../../datasets/mimic3-benchmarks/phenotyping",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+# ]
+
+# los_tasks = [
+#     "../../datasets/mimic3-benchmarks/length-of-stay",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
+# ]
+# los_splits = [
+#     "../../datasets/mimic3-benchmarks/length-of-stay",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+# ]
+
+# decomp_tasks = [
+#     "../../datasets/mimic3-benchmarks/decompensation",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+# ]
+# decomp_splits = [
+#     "../../datasets/mimic3-benchmarks/decompensation",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+# ]
 
 
 def get_config(
