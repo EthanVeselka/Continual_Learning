@@ -1,0 +1,26 @@
+Best test performances:
+----------------------------------
+Model: Final Average AUC-ROC: 0.820656777692901, Final Average AUC-PR: 0.420795208456487
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 500, 'EWC': True, 'Importance': 6, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 2}
+
+
+Per Task Average: [array([0.84840522, 0.45636305]), array([0.82065678, 0.42079521])]
+Best Per Task Average: {'Task 1': {'Average AUC-ROC': 0.8484052184409675, 'Average AUC-PR': 0.456363054427291}, 'Task 2': {'Average AUC-ROC': 0.820656777692901, 'Average AUC-PR': 0.420795208456487}}
+
+
+Average performance:
+ [[[0.84840522 0.45636305]
+  [0.67167603 0.20255115]]
+
+ [[0.83741327 0.4310174 ]
+  [0.80390028 0.41057301]]]
+
+
+Standard deviation AUC-ROC:
+ [[0. 0.]
+ [0. 0.]]
+
+
+Standard deviation AUC-PR:
+ [[0. 0.]
+ [0. 0.]]

@@ -1,0 +1,74 @@
+Best test performances:
+----------------------------------
+Model: Final Average AUC-ROC Macro: 0.6853908383131554, Final Average AUC-ROC Micro: 0.772647986027363
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 125, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6837421951635945, Final Average AUC-ROC Micro: 0.7752381376088433
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 125, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6832036228021405, Final Average AUC-ROC Micro: 0.7707924277777278
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 125, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.679376845235143, Final Average AUC-ROC Micro: 0.7744429732399419
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 125, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Model: Final Average AUC-ROC Macro: 0.6788553726935896, Final Average AUC-ROC Micro: 0.7711956877783855
+Configuration: {'hidden_dim': 128, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 125, 'EWC': True, 'Importance': 4, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 6, 'Tasks': 5}
+
+
+Per Task Average: [array([0.76380797, 0.81514659]), array([0.71929307, 0.7942043 ]), array([0.70076623, 0.7832727 ]), array([0.68985846, 0.77791168]), array([0.68211377, 0.77286344])]
+Best Per Task Average: {'Task 1': {'Average AUC-ROC Macro': 0.7643948997563469, 'Average AUC-ROC Micro': 0.8154145796640384}, 'Task 2': {'Average AUC-ROC Macro': 0.7229772887825481, 'Average AUC-ROC Micro': 0.7952981350226299}, 'Task 3': {'Average AUC-ROC Macro': 0.7039315787662596, 'Average AUC-ROC Micro': 0.7854378881372966}, 'Task 4': {'Average AUC-ROC Macro': 0.685764507037868, 'Average AUC-ROC Micro': 0.7753222508901264}, 'Task 5': {'Average AUC-ROC Macro': 0.6853908383131554, 'Average AUC-ROC Micro': 0.772647986027363}}
+
+
+Average performance:
+ [[[0.76380797 0.81514659]
+  [0.46573753 0.51338359]
+  [0.47510286 0.52150493]
+  [0.49674772 0.51263145]
+  [0.48089216 0.55317301]]
+
+ [[0.72523766 0.78553637]
+  [0.71334848 0.80287223]
+  [0.66280341 0.77037086]
+  [0.63924939 0.75649586]
+  [0.66329937 0.76236739]]
+
+ [[0.70082071 0.76396149]
+  [0.68908254 0.77135953]
+  [0.71239543 0.81449707]
+  [0.65917761 0.75787314]
+  [0.64302682 0.72756746]]
+
+ [[0.69069218 0.75311868]
+  [0.67142722 0.76344496]
+  [0.67719577 0.78042485]
+  [0.72011867 0.81465823]
+  [0.64131912 0.73689528]]
+
+ [[0.69071684 0.75343468]
+  [0.68656768 0.76905095]
+  [0.6626251  0.77037288]
+  [0.65001399 0.75374627]
+  [0.72064526 0.81771243]]]
+
+
+Standard deviation AUC-ROC Macro:
+ [[0.00129702 0.01138677 0.00989654 0.01127756 0.01006864]
+ [0.0058983  0.00273488 0.00375499 0.01456137 0.00695187]
+ [0.00438353 0.00651303 0.00539295 0.0080888  0.00821091]
+ [0.00538574 0.0063899  0.00462524 0.00594673 0.00254917]
+ [0.00400643 0.00435212 0.00554786 0.00770765 0.00604336]]
+
+
+Standard deviation AUC-ROC Micro:
+ [[0.00137846 0.00812585 0.01679268 0.0192345  0.01043613]
+ [0.00455535 0.00190278 0.00307478 0.00746442 0.00386478]
+ [0.00346431 0.00172857 0.00150477 0.00375585 0.00492581]
+ [0.00534786 0.00378256 0.00280907 0.00100005 0.00244253]
+ [0.00542108 0.00156633 0.00309273 0.00429911 0.00240389]]
+
+

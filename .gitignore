@@ -2,3 +2,4 @@ datasets/
 moveCL.py
 wandb/
 exp/
+*.png
