@@ -37,7 +37,7 @@ los_perf = []
 dec_perf = []
 
 
-def get_best_perf(n, k, task_perf, name, num_tasks):
+def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
     m1_performances = []
 
     for _, perf in enumerate(task_perf):
@@ -116,7 +116,10 @@ def get_best_perf(n, k, task_perf, name, num_tasks):
     if n > len(m1sorted):
         n = len(m1sorted)
 
-    with open("../results/alt/" + name + ".txt", "w") as f:
+    folder = (
+        "../results/pAUC/" + name + ".txt" if pAUC else "../results/" + name + ".txt"
+    )
+    with open(folder, "w") as f:
         print(f"Best {k} performances:", file=f)
         print("----------------------------------", file=f)
         for idx, model in enumerate(m1sorted[:n]):
@@ -140,7 +143,7 @@ def get_best_perf(n, k, task_perf, name, num_tasks):
             print("Standard deviation " + metric2 + ":\n", std_dev_m2, file=f)
 
 
-def gridsearch(n, k, task, task_list):
+def gridsearch(n, k, task, task_list, pAUC=False):
     print("---------------------------------------")
     print("Initiating grid search for " + task + "...")
     print("---------------------------------------")
@@ -174,6 +177,7 @@ def gridsearch(n, k, task, task_list):
                 replay=True,
                 ewc_penalty=False,
                 importance=0,
+                pAUC=pAUC,
             )
         )
         for imp in param_grid["Importance"]:
@@ -190,6 +194,7 @@ def gridsearch(n, k, task, task_list):
                     replay=False,
                     ewc_penalty=True,
                     importance=imp,
+                    pAUC=pAUC,
                 )
             )
             print("\n")
@@ -205,11 +210,17 @@ def gridsearch(n, k, task, task_list):
                     replay=True,
                     ewc_penalty=True,
                     importance=imp,
+                    pAUC=pAUC,
                 )
             )
 
         get_best_perf(
-            n, k, task_perf, f"{task}_{str(bs)}_{str(len(task_list))}", len(task_list)
+            n,
+            k,
+            task_perf,
+            f"{task}_search_{str(bs)}_{str(len(task_list))}",
+            len(task_list),
+            pAUC,
         )
 
 
@@ -294,7 +305,7 @@ def main():
         help="Save top n model performances",
     )
     parser.add_argument(
-        "--alt",
+        "--pAUC",
         action="store_true",
         help="Use pAUC loss",
     )
@@ -342,8 +353,11 @@ def main():
                     ewc_penalty,
                     importance,
                     test=test,
+                    pAUC=args.pAUC,
                 )
             )
+
+        ext = "pAUC" if args.pAUC else "CE"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -353,7 +367,7 @@ def main():
         else:
             var = "base"
         get_best_perf(
-            n, k, ihm_perf, f"ihm_perf_{buffer_size}_{var}_alt_rev_mix2", num_tasks
+            n, k, ihm_perf, f"ihm_{buffer_size}_{var}_{ext}", num_tasks, args.pAUC
         )
         return
 
@@ -377,9 +391,11 @@ def main():
                     ewc_penalty,
                     importance,
                     test=test,
+                    pAUC=args.pAUC,
                 )
             )
 
+        ext = "pAUC" if args.pAUC else "CE"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -389,7 +405,12 @@ def main():
         else:
             var = "base"
         get_best_perf(
-            n, k, phen_perf, f"phen_perf_{buffer_size}_{var}_alt_rev_mix", num_tasks
+            n,
+            k,
+            phen_perf,
+            f"phen_{buffer_size}_{var}_{ext}",
+            num_tasks,
+            args.pAUC,
         )
         return
 
@@ -413,8 +434,11 @@ def main():
                     ewc_penalty,
                     importance,
                     test=test,
+                    pAUC=args.pAUC,
                 )
             )
+
+        ext = "pAUC" if args.pAUC else "CE"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -423,7 +447,7 @@ def main():
             var = "rep"
         else:
             var = "base"
-        get_best_perf(n, k, los_perf, f"los_perf_{buffer_size}_{var}", num_tasks)
+        get_best_perf(n, k, los_perf, f"los_{buffer_size}_{var}_{ext}", num_tasks)
         return
 
     if args.dec:
@@ -446,8 +470,11 @@ def main():
                     ewc_penalty,
                     importance,
                     test=test,
+                    pAUC=args.pAUC,
                 )
             )
+
+        ext = "pAUC" if args.pAUC else "CE"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -457,7 +484,7 @@ def main():
         else:
             var = "base"
         get_best_perf(
-            n, k, dec_perf, f"dec_perf_{buffer_size}_{var}_alt_rev_mix", num_tasks
+            n, k, dec_perf, f"dec_{buffer_size}_{var}_{ext}", num_tasks, args.pAUC
         )
         return
 
@@ -475,8 +502,9 @@ def main():
                     buffer_size=0,
                     replay=False,
                     ewc_penalty=False,
-                    importance=False,
+                    importance=0,
                     test=True,
+                    pAUC=args.pAUC,
                 )
             )
             phen_perf.append(
@@ -487,8 +515,9 @@ def main():
                     buffer_size=0,
                     replay=False,
                     ewc_penalty=False,
-                    importance=False,
+                    importance=0,
                     test=True,
+                    pAUC=args.pAUC,
                 )
             )
             # dec_perf.append(TestLSTM().test_standard_lstm(
@@ -511,8 +540,8 @@ def main():
             #     importance=False,
             #     test=True,
             # ))
-        get_best_perf(n, k, ihm_perf, "ihm_baseline", num_tasks)
-        get_best_perf(n, k, phen_perf, "phen_baseline", num_tasks)
+        get_best_perf(n, k, ihm_perf, "ihm_baseline", num_tasks, args.pAUC)
+        get_best_perf(n, k, phen_perf, "phen_baseline", num_tasks, args.pAUC)
         # get_best_perf(n, k, dec_perf, "dec_baseline", num_tasks)
         # get_best_perf(n, k, los_perf, "los_baseline", num_tasks)
         return

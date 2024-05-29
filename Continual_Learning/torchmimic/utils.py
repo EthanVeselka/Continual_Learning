@@ -77,6 +77,7 @@ def get_train_loader(
     sample_size,
     workers,
     device,
+    pAUC=False,
 ):
     ss = [1, 1, 1, 0.5, 0.25]
     clf = (
@@ -109,17 +110,26 @@ def get_train_loader(
         train_dataset = PhenotypingDataset(
             tasks[task_num], train=True, n_samples=sample_size, customListFile=clf
         )
+    kwargs = {"num_workers": workers, "pin_memory": True} if device else {}
 
-    sampler = DualSampler(train_dataset, train_batch_size, sampling_rate=0.5)
-    kwargs = {"num_workers": 0, "pin_memory": True} if device else {}
-    train_loader = DataLoader(
-        train_dataset,
-        sampler=sampler,
-        batch_size=train_batch_size,
-        # shuffle=True,
-        collate_fn=pad_colalte,
-        **kwargs,
-    )
+    if pAUC:
+        sampler = DualSampler(train_dataset, train_batch_size, sampling_rate=0.5)
+        train_loader = DataLoader(
+            train_dataset,
+            sampler=sampler,
+            batch_size=train_batch_size,
+            # shuffle=True,
+            collate_fn=pad_colalte,
+            **kwargs,
+        )
+    else:
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=train_batch_size,
+            shuffle=True,
+            collate_fn=pad_colalte,
+            **kwargs,
+        )
 
     return train_loader
 

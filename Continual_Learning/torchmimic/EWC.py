@@ -10,7 +10,9 @@ import torch.utils.data
 
 
 class EWC(object):
-    def __init__(self, model: nn.Module, dataset: list, loss, shift_map, device, task):
+    def __init__(
+        self, model: nn.Module, dataset: list, loss, shift_map, device, task, pAUC=False
+    ):
 
         self.model = model
         self.dataset = dataset
@@ -18,6 +20,7 @@ class EWC(object):
         self.task = task
         self.loss = loss
         self.shift_map = shift_map
+        self.pAUC = pAUC
 
         self.params = {
             n: p for n, p in self.model.named_parameters() if p.requires_grad
@@ -39,7 +42,6 @@ class EWC(object):
         for idx, (data, label, lens, mask, index, task_num) in enumerate(self.dataset):
             self.model.zero_grad()
             data = data.to(self.device)
-            # index = [idx] * 8
             index = torch.tensor(index, dtype=torch.int)
             index += self.shift_map[task_num]
             index = index.to(self.device)
@@ -48,21 +50,35 @@ class EWC(object):
                 label = label.type(torch.LongTensor)
                 label = label.to(self.device)
                 output = self.model((data, lens))
+                loss = self.loss
+                # output = torch.sigmoid(output)
 
-                loss = nn.CrossEntropyLoss()
-                loss = loss(output, label)
+                # loss = nn.CrossEntropyLoss()
+                loss = loss(output, label, index) if self.pAUC else loss(output, label)
 
             else:  # binary classification (phen uses ovr)
                 label = label.to(self.device)
                 output = self.model((data, lens))
                 loss = self.loss
+                # output = torch.sigmoid(output)
+
                 # loss = nn.BCELoss()
                 if self.task == "ihm":
-                    loss = loss(output, label[:, None], index)
+                    loss = (
+                        loss(output, label[:, None], index)
+                        if self.pAUC
+                        else loss(output, label[:, None])
+                    )
                 elif self.task == "decomp":
-                    loss = loss(output[:, 0], label, index)
+                    loss = (
+                        loss(output[:, 0], label, index)
+                        if self.pAUC
+                        else loss(output[:, None], label)
+                    )
                 elif self.task == "phen":
-                    loss = loss(output, label, index)
+                    loss = (
+                        loss(output, label, index) if self.pAUC else loss(output, label)
+                    )
 
             loss.backward()
 

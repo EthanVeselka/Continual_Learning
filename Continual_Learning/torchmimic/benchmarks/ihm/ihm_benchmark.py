@@ -18,6 +18,7 @@ class IHMBenchmark:
         loss=None,
         optimizer=None,
         shift_map=0,
+        pAUC=False,
     ):
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -42,6 +43,7 @@ class IHMBenchmark:
         self.optimizer = optimizer
         self.crit = loss
         self.shift_map = shift_map
+        self.pAUC = pAUC
 
     def fit(
         self,
@@ -55,6 +57,7 @@ class IHMBenchmark:
         ewc_penalty=False,
         importance=1,
     ):
+
         self.shift = self.shift_map[task_num]
         results = {}
         step = (
@@ -80,6 +83,7 @@ class IHMBenchmark:
                     self.shift_map,
                     self.device,
                     self.task,
+                    self.pAUC,
                 )
                 if task_num != 0 and ewc_penalty
                 else None
@@ -94,23 +98,30 @@ class IHMBenchmark:
                 index = index.to(self.device)
                 output = self.model((data, lens))
                 # output = torch.sigmoid(output)
-                # print(len(train_loader.dataset))
-                # print(index)
 
-                # add ewc penalty
+                # Add ewc penalty/switch between BCE and pAUC loss
                 if task_num == 0 or not ewc_penalty:
-                    loss = self.crit(output, label[:, None], index)
+                    if self.pAUC:
+                        loss = self.crit(output, label[:, None], index)
+                    else:
+                        loss = self.crit(output, label[:, None])
                 elif task_num > 0 and ewc_penalty:
-                    loss = self.crit(
-                        output, label[:, None], index
-                    ) + importance * ewc.penalty(self.model)
+                    if self.pAUC:
+                        loss = self.crit(
+                            output, label[:, None], index
+                        ) + importance * ewc.penalty(self.model)
+                    else:
+                        loss = self.crit(
+                            output, label[:, None]
+                        ) + importance * ewc.penalty(self.model)
 
-                # add replay loss
+                # Normal Replay
                 # if task_num > 0 and replay:
                 #     loss = (1 / (task_num + 1)) * loss + (
                 #         1 - (1 / (task_num + 1))
                 #     ) * self.replay_loss(random_samples)
 
+                # Reverse Mixed Replay
                 if (
                     task_num > 0
                     and replay
@@ -127,7 +138,6 @@ class IHMBenchmark:
                 self.optimizer.zero_grad(set_to_none=True)
 
                 self.logger.update(output, label, loss)
-
                 if (batch_idx + 1) % self.report_freq == 0:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
@@ -149,19 +159,29 @@ class IHMBenchmark:
                         output = self.model((data, lens))
                         # output = torch.sigmoid(output)
 
-                        # add ewc penalty
+                        # Add ewc penalty/switch between BCE and pAUC loss
                         if task_num == 0 or not ewc_penalty:
-                            loss = self.crit(output, label[:, None], index)
+                            if self.pAUC:
+                                loss = self.crit(output, label[:, None], index)
+                            else:
+                                loss = self.crit(output, label[:, None])
                         elif task_num > 0 and ewc_penalty:
-                            loss = self.crit(
-                                output, label[:, None], index
-                            ) + importance * ewc.penalty(self.model)
+                            if self.pAUC:
+                                loss = self.crit(
+                                    output, label[:, None], index
+                                ) + importance * ewc.penalty(self.model)
+                            else:
+                                loss = self.crit(
+                                    output, label[:, None]
+                                ) + importance * ewc.penalty(self.model)
 
-                        # add replay loss
+                        # Normal Replay
                         # if task_num > 0 and replay:
                         #     loss = (1 / (task_num + 1)) * loss + (
                         #         1 - (1 / (task_num + 1))
                         #     ) * self.replay_loss(random_samples)
+
+                        # Reverse Mixed Replay
                         if (
                             task_num > 0
                             and replay
@@ -174,7 +194,6 @@ class IHMBenchmark:
                             idx += 1
 
                         self.logger.update(output, label, loss)
-
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
@@ -204,15 +223,16 @@ class IHMBenchmark:
                         index = torch.tensor(index, dtype=torch.int)
                         index = index.to(self.device)
                         output = self.model((data, lens))
-
-                        # pos_mask = (label == 1).squeeze()
-                        # print(pos_mask)
-                        # print(pos_mask.shape)
-                        # print(sum(pos_mask))
-                        # assert sum(pos_mask) > 0
                         # output = torch.sigmoid(output)
 
-                        loss = self.crit(output, label[:, None], index)
+                        # Must have sum(pos_mask) > 0 if using pAUC
+                        # pos_mask = (label == 1).squeeze()
+                        # assert sum(pos_mask) > 0
+
+                        if self.pAUC:
+                            loss = self.crit(output, label[:, None], index)
+                        else:
+                            loss = self.crit(output, label[:, None])
 
                         self.logger.update(output, label, loss)
 
@@ -251,6 +271,10 @@ class IHMBenchmark:
         data = data.to(self.device)
         label = label.to(self.device)
         output = self.model((data, lens))
-        replay_loss = self.crit(output, label[:, None], index)
+        # output = torch.sigmoid(output)
+        if self.pAUC:
+            replay_loss = self.crit(output, label[:, None], index)
+        else:
+            replay_loss = self.crit(output, label[:, None])
 
         return replay_loss

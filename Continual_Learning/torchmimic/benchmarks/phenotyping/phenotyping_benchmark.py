@@ -17,6 +17,10 @@ class PhenotypingBenchmark:
         report_freq=200,
         logger=None,
         device="cpu",
+        loss=None,
+        optimizer=None,
+        shift_map=0,
+        pAUC=False,
     ):
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -30,14 +34,18 @@ class PhenotypingBenchmark:
         torch.cuda.set_device(self.device)
         self.model = self.model.to(self.device)
 
-        self.optimizer = optim.Adam(
-            model.parameters(),
-            lr=learning_rate,
-            weight_decay=weight_decay,
-            betas=(0.9, 0.98),
-        )
+        # self.optimizer = optim.Adam(
+        #     model.parameters(),
+        #     lr=learning_rate,
+        #     weight_decay=weight_decay,
+        #     betas=(0.9, 0.98),
+        # )
+        # self.crit = nn.BCELoss()
 
-        self.crit = nn.BCELoss()
+        self.optimizer = optimizer
+        self.crit = loss
+        self.shift_map = shift_map
+        self.pAUC = pAUC
 
     def fit(
         self,
@@ -51,18 +59,8 @@ class PhenotypingBenchmark:
         ewc_penalty=False,
         importance=1,
     ):
-        # rsc = len(random_samples) * train_loader.batch_size
-        rsc = len(random_samples)
-        self.crit_rep = pAUC_DRO_Loss(data_len=rsc)
-        self.crit = pAUC_DRO_Loss(data_len=len(train_loader.dataset))
-        self.optimizer = SOPAs(
-            self.model.parameters(),
-            mode="adam",
-            lr=self.learning_rate,
-            weight_decay=self.weight_decay,
-            betas=(0.9, 0.98),
-        )
 
+        self.shift = self.shift_map[task_num]
         results = {}
         step = (
             len(train_loader) // len(random_samples)
@@ -83,7 +81,8 @@ class PhenotypingBenchmark:
                 EWC(
                     model_copy,
                     random_samples,
-                    rsc,
+                    self.crit,
+                    self.shift_map,
                     self.device,
                     self.task,
                 )
@@ -96,30 +95,33 @@ class PhenotypingBenchmark:
                 data = data.to(self.device)
                 label = label.to(self.device)
                 index = torch.tensor(index, dtype=torch.int)
+                index += self.shift
                 index = index.to(self.device)
                 output = self.model((data, lens))
-                # output = torch.sigmoid(output)
-                # print(len(train_loader.dataset))
-                # print(index)
-                print(label)
-                pos_mask = (label == 1).squeeze()
-                print(pos_mask)
-                print(sum(pos_mask))
 
-                # add ewc penalty
+                # Add ewc penalty/switch between BCE and pAUC loss
                 if task_num == 0 or not ewc_penalty:
-                    loss = self.crit(output, label, index)
+                    if self.pAUC:
+                        loss = self.crit(output, label, index)
+                    else:
+                        loss = self.crit(output, label)
                 elif task_num > 0 and ewc_penalty:
-                    loss = self.crit(output, label, index) + importance * ewc.penalty(
-                        self.model
-                    )
+                    if self.pAUC:
+                        loss = self.crit(
+                            output, label, index
+                        ) + importance * ewc.penalty(self.model)
+                    else:
+                        loss = self.crit(output, label) + importance * ewc.penalty(
+                            self.model
+                        )
 
-                # add replay loss
+                # Normal Replay
                 # if task_num > 0 and replay:
                 #     loss = (1 / (task_num + 1)) * loss + (
                 #         1 - (1 / (task_num + 1))
                 #     ) * self.replay_loss(random_samples)
 
+                # Reverse Mixed Replay
                 if (
                     task_num > 0
                     and replay
@@ -128,7 +130,7 @@ class PhenotypingBenchmark:
                 ):
                     loss = (1 - (1 / (task_num + 1))) * loss + (
                         1 / (task_num + 1)
-                    ) * self.replay_loss(random_samples, idx, rsc)
+                    ) * self.replay_loss(random_samples, idx)
                     idx += 1
 
                 loss.backward()
@@ -136,7 +138,6 @@ class PhenotypingBenchmark:
                 self.optimizer.zero_grad(set_to_none=True)
 
                 self.logger.update(output, label, loss)
-
                 if (batch_idx + 1) % self.report_freq == 0:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
@@ -158,19 +159,29 @@ class PhenotypingBenchmark:
                         output = self.model((data, lens))
                         # output = torch.sigmoid(output)
 
-                        # add ewc penalty
+                        # Add ewc penalty/switch between BCE and pAUC loss
                         if task_num == 0 or not ewc_penalty:
-                            loss = self.crit(output, label, index)
+                            if self.pAUC:
+                                loss = self.crit(output, label, index)
+                            else:
+                                loss = self.crit(output, label)
                         elif task_num > 0 and ewc_penalty:
-                            loss = self.crit(
-                                output, label, index
-                            ) + importance * ewc.penalty(self.model)
+                            if self.pAUC:
+                                loss = self.crit(
+                                    output, label, index
+                                ) + importance * ewc.penalty(self.model)
+                            else:
+                                loss = self.crit(
+                                    output, label
+                                ) + importance * ewc.penalty(self.model)
 
-                        # add replay loss
+                        # Normal Replay
                         # if task_num > 0 and replay:
                         #     loss = (1 / (task_num + 1)) * loss + (
                         #         1 - (1 / (task_num + 1))
                         #     ) * self.replay_loss(random_samples)
+
+                        # Reverse Mixed Replay
                         if (
                             task_num > 0
                             and replay
@@ -179,11 +190,10 @@ class PhenotypingBenchmark:
                         ):
                             loss = (1 - (1 / (task_num + 1))) * loss + (
                                 1 / (task_num + 1)
-                            ) * self.replay_loss(random_samples, idx, rsc)
+                            ) * self.replay_loss(random_samples, idx)
                             idx += 1
 
                         self.logger.update(output, label, loss)
-
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
@@ -213,10 +223,18 @@ class PhenotypingBenchmark:
                         index = torch.tensor(index, dtype=torch.int)
                         index = index.to(self.device)
                         output = self.model((data, lens))
+                        # output = torch.sigmoid(output)
 
-                        loss = self.crit(output, label, index)
+                        # Must have sum(pos_mask) > 0 if using pAUC
+                        # pos_mask = (label == 1).squeeze()
+                        # assert sum(pos_mask) > 0
+
+                        if self.pAUC:
+                            loss = self.crit(output, label, index)
+                        else:
+                            loss = self.crit(output, label)
+
                         self.logger.update(output, label, loss)
-
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
@@ -242,7 +260,7 @@ class PhenotypingBenchmark:
         results["test"] = tests
         return results
 
-    def replay_loss(self, random_samples, idx=0, data_len=0):
+    def replay_loss(self, random_samples, idx=0):
         # idx = random.randint(0, len(random_samples) - 1)
         data, label, lens, mask, index = random_samples[idx]
         index = [idx] * 8
@@ -252,6 +270,10 @@ class PhenotypingBenchmark:
         data = data.to(self.device)
         label = label.to(self.device)
         output = self.model((data, lens))
-        replay_loss = self.crit_rep(output, label, index)
+        # output = torch.sigmoid(output)
+        if self.pAUC:
+            replay_loss = self.crit(output, label, index)
+        else:
+            replay_loss = self.crit(output, label)
 
         return replay_loss

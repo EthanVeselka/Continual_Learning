@@ -15,7 +15,14 @@ class LOSBenchmark:
         report_freq=200,
         logger=None,
         device="cpu",
+        loss=None,
+        optimizer=None,
+        shift_map=0,
+        pAUC=False,
     ):
+        self.learning_rate = learning_rate
+        self.weight_decay = weight_decay
+
         self.model = model
         self.device = device
         self.report_freq = report_freq
@@ -25,14 +32,18 @@ class LOSBenchmark:
         torch.cuda.set_device(self.device)
         self.model = self.model.to(self.device)
 
-        self.optimizer = optim.Adam(
-            model.parameters(),
-            lr=learning_rate,
-            weight_decay=weight_decay,
-            betas=(0.9, 0.98),
-        )
+        # self.optimizer = optim.Adam(
+        #     model.parameters(),
+        #     lr=learning_rate,
+        #     weight_decay=weight_decay,
+        #     betas=(0.9, 0.98),
+        # )
+        # self.crit = nn.CrossEntropyLoss()
 
-        self.crit = nn.CrossEntropyLoss()
+        self.optimizer = optimizer
+        self.crit = loss
+        self.shift_map = shift_map
+        self.pAUC = pAUC
 
     def fit(
         self,
@@ -46,8 +57,16 @@ class LOSBenchmark:
         ewc_penalty=False,
         importance=1,
     ):
-        results = {}
 
+        self.shift = self.shift_map[task_num]
+        results = {}
+        step = (
+            len(train_loader) // len(random_samples)
+            if len(random_samples) > 0
+            else len(train_loader)
+        )
+        if step == 0:
+            step = 1  # in the case of less training samples than buffer size
         for epoch in range(epochs):
             print("------------------------------------")
             print(f"Task: {task_num + 1}, Epoch: {epoch + 1}")
@@ -57,70 +76,122 @@ class LOSBenchmark:
             self.logger.reset()
 
             ewc = (
-                EWC(model_copy, random_samples, self.device, self.task)
+                EWC(
+                    model_copy,
+                    random_samples,
+                    self.crit,
+                    self.shift_map,
+                    self.device,
+                    self.task,
+                )
                 if task_num != 0 and ewc_penalty
                 else None
             )
 
-            for batch_idx, (data, label, lens, mask) in enumerate(train_loader):
+            idx = 0
+            for batch_idx, (data, label, lens, mask, index) in enumerate(train_loader):
                 data = data.to(self.device)
-                label = label.type(torch.LongTensor)
                 label = label.to(self.device)
+                index = torch.tensor(index, dtype=torch.int)
+                index += self.shift
+                index = index.to(self.device)
                 output = self.model((data, lens))
 
-                # add ewc penalty
+                # Add ewc penalty/switch between BCE and pAUC loss
                 if task_num == 0 or not ewc_penalty:
-                    loss = self.crit(output, label)
+                    if self.pAUC:
+                        loss = self.crit(output, label, index)
+                    else:
+                        loss = self.crit(output, label)
                 elif task_num > 0 and ewc_penalty:
-                    loss = self.crit(output, label) + importance * ewc.penalty(
-                        self.model
-                    )
+                    if self.pAUC:
+                        loss = self.crit(
+                            output, label, index
+                        ) + importance * ewc.penalty(self.model)
+                    else:
+                        loss = self.crit(output, label) + importance * ewc.penalty(
+                            self.model
+                        )
 
-                # add replay loss
-                if task_num > 0 and replay:
-                    loss = (1 / (task_num + 1)) * loss + (
-                        1 - (1 / (task_num + 1))
-                    ) * self.replay_loss(random_samples)
+                # Normal Replay
+                # if task_num > 0 and replay:
+                #     loss = (1 / (task_num + 1)) * loss + (
+                #         1 - (1 / (task_num + 1))
+                #     ) * self.replay_loss(random_samples)
+
+                # Reverse Mixed Replay
+                if (
+                    task_num > 0
+                    and replay
+                    and (batch_idx % step == 0)
+                    and idx < len(random_samples)
+                ):
+                    loss = (1 - (1 / (task_num + 1))) * loss + (
+                        1 / (task_num + 1)
+                    ) * self.replay_loss(random_samples, idx)
+                    idx += 1
 
                 loss.backward()
                 self.optimizer.step()
                 self.optimizer.zero_grad(set_to_none=True)
 
                 self.logger.update(output, label, loss)
-
                 if (batch_idx + 1) % self.report_freq == 0:
                     print(f"Train: epoch: {epoch+1}, loss = {self.logger.get_loss()}")
 
             self.logger.print_metrics(epoch, split="Train", task=None)
             print("-------------")
-
+            idx = 0
             # evaluate model on all tasks
             with torch.no_grad():
                 for eval_task, val_loader in enumerate(val_loaders):
                     self.logger.reset()
                     self.model.eval()
-                    for batch_idx, (data, label, lens, mask) in enumerate(val_loader):
+                    for batch_idx, (data, label, lens, mask, index) in enumerate(
+                        val_loader
+                    ):
                         data = data.to(self.device)
-                        label = label.type(torch.LongTensor)
                         label = label.to(self.device)
+                        index = torch.tensor(index, dtype=torch.int)
+                        index = index.to(self.device)
                         output = self.model((data, lens))
+                        # output = torch.sigmoid(output)
 
-                        # add ewc penalty
+                        # Add ewc penalty/switch between BCE and pAUC loss
                         if task_num == 0 or not ewc_penalty:
-                            loss = self.crit(output, label)
+                            if self.pAUC:
+                                loss = self.crit(output, label, index)
+                            else:
+                                loss = self.crit(output, label)
                         elif task_num > 0 and ewc_penalty:
-                            loss = self.crit(output, label) + importance * ewc.penalty(
-                                self.model
-                            )
+                            if self.pAUC:
+                                loss = self.crit(
+                                    output, label, index
+                                ) + importance * ewc.penalty(self.model)
+                            else:
+                                loss = self.crit(
+                                    output, label
+                                ) + importance * ewc.penalty(self.model)
 
-                        # add replay loss
-                        if task_num > 0 and replay:
-                            loss = (1 / (task_num + 1)) * loss + (
-                                1 - (1 / (task_num + 1))
-                            ) * self.replay_loss(random_samples)
+                        # Normal Replay
+                        # if task_num > 0 and replay:
+                        #     loss = (1 / (task_num + 1)) * loss + (
+                        #         1 - (1 / (task_num + 1))
+                        #     ) * self.replay_loss(random_samples)
+
+                        # Reverse Mixed Replay
+                        if (
+                            task_num > 0
+                            and replay
+                            and (batch_idx % step == 0)
+                            and idx < len(random_samples)
+                        ):
+                            loss = (1 - (1 / (task_num + 1))) * loss + (
+                                1 / (task_num + 1)
+                            ) * self.replay_loss(random_samples, idx)
+                            idx += 1
 
                         self.logger.update(output, label, loss)
-
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
@@ -135,23 +206,33 @@ class LOSBenchmark:
             if epoch == (epochs - 1):
                 results["val"] = self.logger.get_results()
 
-        # test model on all tasks
         tests = {}
         if test_loaders != None:
+            # test model on all tasks
             with torch.no_grad():
                 for eval_task, test_loader in enumerate(test_loaders):
                     self.logger.reset()
                     self.model.eval()
-                    for batch_idx, (data, label, lens, mask) in enumerate(test_loader):
+                    for batch_idx, (data, label, lens, mask, index) in enumerate(
+                        test_loader
+                    ):
                         data = data.to(self.device)
-                        label = label.type(torch.LongTensor)
                         label = label.to(self.device)
+                        index = torch.tensor(index, dtype=torch.int)
+                        index = index.to(self.device)
                         output = self.model((data, lens))
+                        # output = torch.sigmoid(output)
 
-                        loss = self.crit(output, label)
+                        # Must have sum(pos_mask) > 0 if using pAUC
+                        # pos_mask = (label == 1).squeeze()
+                        # assert sum(pos_mask) > 0
+
+                        if self.pAUC:
+                            loss = self.crit(output, label, index)
+                        else:
+                            loss = self.crit(output, label)
 
                         self.logger.update(output, label, loss)
-
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
@@ -177,14 +258,20 @@ class LOSBenchmark:
         results["test"] = tests
         return results
 
-    def replay_loss(self, random_samples):
-        idx = random.randint(0, len(random_samples) - 1)
-        data, label, lens, mask = random_samples[idx]
-        label = label.type(torch.LongTensor)
+    def replay_loss(self, random_samples, idx=0):
+        # idx = random.randint(0, len(random_samples) - 1)
+        data, label, lens, mask, index = random_samples[idx]
+        index = [idx] * 8
+        index = torch.tensor(index, dtype=torch.int)
+        index = index.to(self.device)
 
         data = data.to(self.device)
         label = label.to(self.device)
         output = self.model((data, lens))
-        replay_loss = self.crit(output, label)
+        # output = torch.sigmoid(output)
+        if self.pAUC:
+            replay_loss = self.crit(output, label, index)
+        else:
+            replay_loss = self.crit(output, label)
 
         return replay_loss

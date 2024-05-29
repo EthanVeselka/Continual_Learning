@@ -3,6 +3,9 @@ import sys
 import os
 import numpy as np
 
+import torch.nn as nn
+from torch import optim
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
 from torchmimic.EWC import EWC
@@ -37,12 +40,63 @@ from libauc.optimizers import SOPAs
 
 lf_map = ["south", "midwest", "west", "northeast"]
 
+
+# Server Paths
+# ihm_tasks = [
+#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+#     "/data/datasets/eICU2MIMIC/ihm",
+# ]
+# ihm_splits = [
+#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+#     "/data/datasets/eICU2MIMIC/ihm_split",
+# ]
+
+# phen_tasks = [
+#     "/data/datasets/mimic3-benchmarks/data/phenotyping",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
+# ]
+# phen_splits = [
+#     "/data/datasets/mimic3-benchmarks/data/phenotyping",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+#     "/data/datasets/eICU2MIMIC/phenotyping_split",
+# ]
+
+# los_tasks = [
+#     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
+# ]
+# los_splits = [
+#     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+#     "/data/datasets/eICU2MIMIC/length-of-stay_split",
+# ]
+
+# decomp_tasks = [
+#     "/data/datasets/mimic3-benchmarks/data/decompensation",
+#     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+# ]
+# decomp_splits = [
+#     "/data/datasets/mimic3-benchmarks/data/decompensation",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+#     "/data/datasets/eICU2MIMIC/decompensation_split",
+# ]
+
+# Local paths
 ihm_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-    "/data/datasets/eICU2MIMIC/ihm",
+    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality2",
 ]
 ihm_splits = [
-    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
     "/data/datasets/eICU2MIMIC/ihm_split",
     "/data/datasets/eICU2MIMIC/ihm_split",
     "/data/datasets/eICU2MIMIC/ihm_split",
@@ -50,11 +104,11 @@ ihm_splits = [
 ]
 
 phen_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/phenotyping",
+    "../../datasets/mimic3-benchmarks/phenotyping",
     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
 ]
 phen_splits = [
-    "/data/datasets/mimic3-benchmarks/data/phenotyping",
+    "../../datasets/mimic3-benchmarks/phenotyping",
     "/data/datasets/eICU2MIMIC/phenotyping_split",
     "/data/datasets/eICU2MIMIC/phenotyping_split",
     "/data/datasets/eICU2MIMIC/phenotyping_split",
@@ -62,11 +116,11 @@ phen_splits = [
 ]
 
 los_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
+    "../../datasets/mimic3-benchmarks/length-of-stay",
     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
 ]
 los_splits = [
-    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
+    "../../datasets/mimic3-benchmarks/length-of-stay",
     "/data/datasets/eICU2MIMIC/length-of-stay_split",
     "/data/datasets/eICU2MIMIC/length-of-stay_split",
     "/data/datasets/eICU2MIMIC/length-of-stay_split",
@@ -74,11 +128,11 @@ los_splits = [
 ]
 
 decomp_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/decompensation",
+    "../../datasets/mimic3-benchmarks/decompensation",
     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
 ]
 decomp_splits = [
-    "/data/datasets/mimic3-benchmarks/data/decompensation",
+    "../../datasets/mimic3-benchmarks/decompensation",
     "/data/datasets/eICU2MIMIC/decompensation_split",
     "/data/datasets/eICU2MIMIC/decompensation_split",
     "/data/datasets/eICU2MIMIC/decompensation_split",
@@ -123,10 +177,11 @@ class TestLSTM(unittest.TestCase):
         ewc_penalty=False,
         importance=0,
         test=False,
+        pAUC=False,
     ):
 
         device = 0
-        sample_size = None  # use all samples
+        sample_size = None  # use all samples (IHM & Phen only)
         train_batch_size = 8
         test_batch_size = 256
         learning_rate = 0.001
@@ -161,9 +216,9 @@ class TestLSTM(unittest.TestCase):
             )
             logger = IHMLogger
             benchmark = IHMBenchmark
-            # shift_map = [0, 14681, 32626, 49900, 58556,]
             shift_map = [0]
             data_len = 65000  # Place Holder
+            crit = nn.BCELoss()
 
         elif task == "phen":
             tasks = (
@@ -182,6 +237,7 @@ class TestLSTM(unittest.TestCase):
             benchmark = PhenotypingBenchmark
             shift_map = [0]
             data_len = 200000  # placeholder
+            crit = nn.BCELoss()
 
         elif task == "decomp":
             # use 100k for first three tasks, then 50k for task four, and 25k for task 5
@@ -204,6 +260,7 @@ class TestLSTM(unittest.TestCase):
             data_len = np.sum(
                 [x * sample_size for x in [1, 1, 1, 0.5, 0.25]]
             )  # 1, 1, 1, .5 .25 sample ratios
+            crit = nn.BCELoss()
 
         elif task == "los":
             # use 100k for first three tasks, then 50k for task four, and 25k for task 5
@@ -226,6 +283,7 @@ class TestLSTM(unittest.TestCase):
             data_len = np.sum(
                 [x * sample_size for x in [1, 1, 1, 0.5, 0.25]]
             )  # 1, 1, 1, .5 .25 sample ratios
+            crit = nn.CrossEntropyLoss()
 
         config.update(model.get_config())
         config.update(
@@ -276,27 +334,42 @@ class TestLSTM(unittest.TestCase):
         buffer = []
         shift = 0
 
-        crit = pAUC_DRO_Loss(data_len=int(data_len))
-        optimizer = SOPAs(  # initial optimizer
-            model.parameters(),
-            mode="adam",
-            lr=learning_rate,
-            weight_decay=weight_decay,
-            betas=(0.9, 0.98),
-        )
+        if pAUC:
+            crit = pAUC_DRO_Loss(data_len=int(data_len))
+            optimizer = SOPAs(  # initial optimizer
+                model.parameters(),
+                mode="adam",
+                lr=learning_rate,
+                weight_decay=weight_decay,
+                betas=(0.9, 0.98),
+            )
+        else:
+            optimizer = optim.Adam(
+                model.parameters(),
+                lr=learning_rate,
+                weight_decay=weight_decay,
+                betas=(0.9, 0.98),
+            )
 
         for task_num, task_data in enumerate(tasks):
-            # testn = True if (test and task_num == len(tasks) - 1) else False
-
             # use model from previous trainer for additional tasks
             if task_num > 0:
                 model = prev_model
-                optimizer = SOPAs(  # update model parameters
-                    model.parameters(),
-                    mode="adam",
-                    lr=learning_rate,
-                    weight_decay=weight_decay,
-                    betas=(0.9, 0.98),
+                optimizer = (
+                    SOPAs(  # update model parameters
+                        model.parameters(),
+                        mode="adam",
+                        lr=learning_rate,
+                        weight_decay=weight_decay,
+                        betas=(0.9, 0.98),
+                    )
+                    if pAUC
+                    else optim.Adam(
+                        model.parameters(),
+                        lr=learning_rate,
+                        weight_decay=weight_decay,
+                        betas=(0.9, 0.98),
+                    )
                 )
 
             trainer = benchmark(
@@ -309,7 +382,7 @@ class TestLSTM(unittest.TestCase):
                 loss=crit,
                 optimizer=optimizer,
                 shift_map=shift_map,
-                # shift=shift_map[task_num],
+                pAUC=pAUC,
             )
             # train model, evaluate on all testing data
             train_loader = get_train_loader(
@@ -321,6 +394,7 @@ class TestLSTM(unittest.TestCase):
                 sample_size,
                 workers,
                 device,
+                pAUC,
             )
             result = trainer.fit(
                 epochs,
@@ -334,7 +408,7 @@ class TestLSTM(unittest.TestCase):
                 importance=importance,
             )
 
-            shift += len(train_loader.dataset)
+            shift += len(train_loader.dataset)  # keep track of index shift for pAUC
             shift_map.append(shift)
             if test:
                 test_results["Task " + str(task_num + 1)] = result["test"]

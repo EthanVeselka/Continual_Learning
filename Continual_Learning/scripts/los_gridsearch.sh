@@ -1,1 +1,1 @@
-python3 ../tests/test.py --tasks 5 --los --grid --n 3
+python3 ../tests/test.py --tasks 5 --los --grid --n 10
