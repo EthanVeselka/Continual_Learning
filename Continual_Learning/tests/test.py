@@ -136,6 +136,12 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
                 f"Per Task Average: {[np.mean(averages[i][0:i+1,:], axis=0) for i in range(num_tasks)]}",
                 file=f,
             )
+            print(
+                f"Std Dev: {metric1} {[np.mean(std_dev_m1[i][0:i+1]) for i in range(num_tasks)]}"
+            )
+            print(
+                f"Std Dev: {metric2} {[np.mean(std_dev_m2[i][0:i+1]) for i in range(num_tasks)]}"
+            )
             print(f"Best Per Task Average: {m1sorted[0][5]}", file=f)
             print("\n", file=f)
             print("Average performance:\n", averages, file=f)
