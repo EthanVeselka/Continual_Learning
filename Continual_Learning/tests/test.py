@@ -163,10 +163,10 @@ def gridsearch(n, k, task, task_list, pAUC=False):
         param_grid["buffer_size"] = [500, 425, 350, 275, 200, 125, 50]
         epochs = param_grid["phen_epochs"]
     elif task == "los":
-        param_grid["buffer_size"] = [2750, 2340, 1925, 1515, 1100, 690, 275]
+        param_grid["buffer_size"] = [x * 7 for x in [500, 425, 350, 275, 200, 125, 50]]
         epochs = param_grid["los_epochs"]
     elif task == "decomp":
-        param_grid["buffer_size"] = [2750, 2340, 1925, 1515, 1100, 690, 275]
+        param_grid["buffer_size"] = [x * 7 for x in [500, 425, 350, 275, 200, 125, 50]]
         epochs = param_grid["dec_epochs"]
 
     for bs in param_grid["buffer_size"]:

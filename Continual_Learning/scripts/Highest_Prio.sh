@@ -13,50 +13,95 @@
 
 
 
-# These are the highest priority tests; does not include the various buffer size tests
-# All tests are run from the scripts/ dir, comment out what you are not running.
+# These highest priority tests
+# All tests are run from the scripts/ dir, comment out what you do not want to run.
 
 # Arguments
-# --------------------------------
+# --------------------------------#
 # --i is the number of iterations to run, results show the average of all results over --i iterations
 # --n limits the number of individual test results shown up to the best <n>, will default to 5 (usual number of iterations)
 
-# Baselines: 
-# --------------------------------
+# Baselines:
+# --------------------------------#
 # baselines for IHM/Pheno only
-python3 ../tests/test.py --tasks 5 --bl --test --rt --i 5 --n 5
+python3 ../tests/test.py --tasks 5 --bl --test --rt --i 5 --n 5                             # Baseline
 
 
 # IHM: (4 epochs, all samples)
-# --------------------------------
-python3 ../tests/test.py --tasks 5 --phen --b <max buff size> --replay --ewc --imp 6 --test --rt --i 5  # Combined (old best)
-python3 ../tests/test.py --tasks 5 --phen --b <max buff size> --replay --test --rt --i 5                # Replay
-python3 ../tests/test.py --tasks 5 --phen --b <max buff size> --ewc --imp 6  --test --rt --i 5          # EWC 
+# --------------------------------#
+python3 ../tests/test.py --tasks 5 --phen --b 500 --replay --ewc --imp 6 --test --rt --i 5  # Combined (old best)
+python3 ../tests/test.py --tasks 5 --phen --b 500 --replay --test --rt --i 5                # Replay
+python3 ../tests/test.py --tasks 5 --phen --b 500 --ewc --imp 6 --test --rt --i 5           # EWC 
 
 
 # Phenotyping: (6 epochs, all samples)
-# --------------------------------
-python3 ../tests/test.py --tasks 5 --phen --b <max buff size> --replay --ewc --imp 4 --test --rt --i 5  # Combined (old best)
-python3 ../tests/test.py --tasks 5 --phen --b <max buff size> --replay --test --rt --i 5                # Replay
-python3 ../tests/test.py --tasks 5 --phen --b <max buff size> --ewc --imp 4  --test --rt --i 5          # EWC 
+# --------------------------------#
+python3 ../tests/test.py --tasks 5 --phen --b 500 --replay --ewc --imp 4 --test --rt --i 5  # Combined (old best)
+python3 ../tests/test.py --tasks 5 --phen --b 500 --replay --test --rt --i 5                # Replay
+python3 ../tests/test.py --tasks 5 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC 
 
 
 # Decompensation: (1 epoch, 100k:100k:100k:50k:25k samples)
-# --------------------------------
-python3 ../tests/test.py --tasks 5 --dec --test --rt --i 5                                             # Baseline
-python3 ../tests/test.py --tasks 5 --dec --b <max buff size> --replay --ewc --imp 6 --test --rt --i 5  # Combined
-python3 ../tests/test.py --tasks 5 --dec --b <max buff size> --replay --test --rt --i 5                # Replay
-python3 ../tests/test.py --tasks 5 --dec --b <max buff size> --ewc --imp 6  --test --rt --i 5          # EWC (old best)
+# --------------------------------#
+python3 ../tests/test.py --tasks 5 --dec --test --rt --i 5                              # Baseline
+python3 ../tests/test.py --tasks 5 --dec --b 3500 --replay --ewc --imp 6 --test --rt --i 5  # Combined
+python3 ../tests/test.py --tasks 5 --dec --b 3500 --replay --test --rt --i 5                # Replay
+python3 ../tests/test.py --tasks 5 --dec --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC (old best)
 
 
 # LoS has not been thoroughly tested, parameters are educated guesses, 
 # SAMPLE SIZE is likely most important factor
 
 # LoS: (1 epoch, 100k:100k:100k:50k:25k samples)
-# --------------------------------
-# python3 ../tests/test.py --tasks 5 --los --test --rt --i 5                                             # Baseline
-# python3 ../tests/test.py --tasks 5 --los --b <max buff size> --replay --ewc --imp 6 --test --rt --i 5  # Combined
-# python3 ../tests/test.py --tasks 5 --los --b <max buff size> --replay --test --rt --i 5                # Replay
-# python3 ../tests/test.py --tasks 5 --los --b <max buff size> --ewc --imp 6  --test --rt --i 5          # EWC
+# --------------------------------#
+python3 ../tests/test.py --tasks 5 --los --test --rt --i 5                              # Baseline
+python3 ../tests/test.py --tasks 5 --los --b 3500 --replay --ewc --imp 6 --test --rt --i 5  # Combined
+python3 ../tests/test.py --tasks 5 --los --b 3500 --replay --test --rt --i 5                # Replay
+python3 ../tests/test.py --tasks 5 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
+
+
+# These are the varying buffer size tests. Each command below runs a script that tests all three methods 
+# at each of 7 buffer sizes. These will take a long time to run, so they are commented out by default.
+
+# IHM: (Varying Buffer Size Tests) [500, 425, 350, 275, 200, 125, 50]
+# These will take a long time to run
+# -------------------------------------#
+sh test_ihm_comb.sh # Combined
+sh test_ihm_ewc.sh  # EWC
+sh test_ihm_rep.sh  # Replay
+
+# Phenotyping: (Varying Buffer Size Tests) [500, 425, 350, 275, 200, 125, 50]
+# These will take a long time to run
+# -------------------------------------#
+sh test_phen_comb.sh # Combined
+sh test_phen_ewc.sh  # EWC
+sh test_phen_rep.sh  # Replay
+
+# Decompensation: (Varying Buffer Size Tests)
+# These will take multiple days to run
+# -------------------------------------#
+# sh test_dec_comb.sh # Combined
+# sh test_dec_ewc.sh  # EWC
+# sh test_dec_rep.sh  # Replay
+
+# LoS: (Varying Buffer Size Tests)
+# These will take multiple days to run
+# -------------------------------------#
+# sh test_los_comb.sh # Combined
+# sh test_los_ewc.sh  # EWC
+# sh test_los_rep.sh  # Replay
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

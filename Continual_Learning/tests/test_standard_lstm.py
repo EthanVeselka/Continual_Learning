@@ -216,8 +216,9 @@ class TestLSTM(unittest.TestCase):
             )
             logger = IHMLogger
             benchmark = IHMBenchmark
+            # For use in pAUC
             shift_map = [0]
-            data_len = 65000  # Place Holder
+            data_len = 62475  # Total number of IHM Samples
             crit = nn.BCELoss()
 
         elif task == "phen":
@@ -235,8 +236,9 @@ class TestLSTM(unittest.TestCase):
             )
             logger = PhenotypingLogger
             benchmark = PhenotypingBenchmark
+            # For use in pAUC
             shift_map = [0]
-            data_len = 200000  # placeholder
+            data_len = 60891  # Total number of Pheno Samples
             crit = nn.BCELoss()
 
         elif task == "decomp":
@@ -256,6 +258,7 @@ class TestLSTM(unittest.TestCase):
             )
             logger = DecompensationLogger
             benchmark = DecompensationBenchmark
+            # For use in pAUC
             shift_map = [0]
             data_len = np.sum(
                 [x * sample_size for x in [1, 1, 1, 0.5, 0.25]]
@@ -279,6 +282,7 @@ class TestLSTM(unittest.TestCase):
             )
             logger = LOSLogger
             benchmark = LOSBenchmark
+            # For use in pAUC
             shift_map = [0]
             data_len = np.sum(
                 [x * sample_size for x in [1, 1, 1, 0.5, 0.25]]
