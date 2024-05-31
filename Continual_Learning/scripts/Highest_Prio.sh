@@ -24,7 +24,7 @@
 # Baselines:
 # --------------------------------#
 # baselines for IHM/Pheno only
-python3 ../tests/test.py --tasks 5 --bl --test --rt --i 5 --n 5                             # Baseline
+# python3 ../tests/test.py --tasks 5 --bl --test --rt --i 5 --n 5                             # Baseline
 
 
 # IHM: (4 epochs, all samples)
@@ -43,7 +43,7 @@ python3 ../tests/test.py --tasks 5 --phen --b 500 --ewc --imp 4 --test --rt --i 
 
 # Decompensation: (1 epoch, 100k:100k:100k:50k:25k samples)
 # --------------------------------#
-python3 ../tests/test.py --tasks 5 --dec --test --rt --i 5                              # Baseline
+python3 ../tests/test.py --tasks 5 --dec --test --rt --i 5                                  # Baseline
 python3 ../tests/test.py --tasks 5 --dec --b 3500 --replay --ewc --imp 6 --test --rt --i 5  # Combined
 python3 ../tests/test.py --tasks 5 --dec --b 3500 --replay --test --rt --i 5                # Replay
 python3 ../tests/test.py --tasks 5 --dec --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC (old best)
@@ -54,7 +54,7 @@ python3 ../tests/test.py --tasks 5 --dec --b 3500 --ewc --imp 6 --test --rt --i 
 
 # LoS: (1 epoch, 100k:100k:100k:50k:25k samples)
 # --------------------------------#
-python3 ../tests/test.py --tasks 5 --los --test --rt --i 5                              # Baseline
+python3 ../tests/test.py --tasks 5 --los --test --rt --i 5                                  # Baseline
 python3 ../tests/test.py --tasks 5 --los --b 3500 --replay --ewc --imp 6 --test --rt --i 5  # Combined
 python3 ../tests/test.py --tasks 5 --los --b 3500 --replay --test --rt --i 5                # Replay
 python3 ../tests/test.py --tasks 5 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
