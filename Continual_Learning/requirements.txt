@@ -9,3 +9,5 @@ torch
     # via torchmimic (setup.py)
 wandb
     # via torchmimic (setup.py)
+libauc
+    # via pip install libauc

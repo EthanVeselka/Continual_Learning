@@ -6,9 +6,10 @@ import numpy as np
 import torch.nn as nn
 from torch import optim
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
+from libauc.losses import pAUC_DRO_Loss
+from libauc.optimizers import SOPAs
 
-from torchmimic.EWC import EWC
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
 from torchmimic.benchmarks import (
     IHMBenchmark,
@@ -32,11 +33,6 @@ from torchmimic.utils import (
     update_buffer,
     get_samples,
 )
-
-
-from libauc.losses import pAUC_DRO_Loss
-from libauc.optimizers import SOPAs
-
 
 lf_map = ["south", "midwest", "west", "northeast"]
 

@@ -29,9 +29,9 @@
 
 # IHM: (4 epochs, all samples)
 # --------------------------------#
-python3 ../tests/test.py --tasks 5 --phen --b 500 --replay --ewc --imp 6 --test --rt --i 5  # Combined (old best)
-python3 ../tests/test.py --tasks 5 --phen --b 500 --replay --test --rt --i 5                # Replay
-python3 ../tests/test.py --tasks 5 --phen --b 500 --ewc --imp 6 --test --rt --i 5           # EWC 
+python3 ../tests/test.py --tasks 5 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined (old best)
+python3 ../tests/test.py --tasks 5 --ihm --b 500 --replay --test --rt --i 5                 # Replay
+python3 ../tests/test.py --tasks 5 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC 
 
 
 # Phenotyping: (6 epochs, all samples)
