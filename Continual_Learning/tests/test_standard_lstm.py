@@ -52,7 +52,7 @@ ihm_splits = [
 
 phen_tasks = [
     "/data/datasets/mimic3-benchmarks/data/phenotyping",
-    "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
+    "/data/datasets/eICU2MIMIC/phenotyping",
 ]
 phen_splits = [
     "/data/datasets/mimic3-benchmarks/data/phenotyping",
@@ -64,7 +64,7 @@ phen_splits = [
 
 los_tasks = [
     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
-    "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
+    "/data/datasets/eICU2MIMIC/length-of-stay",
 ]
 los_splits = [
     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
@@ -76,7 +76,7 @@ los_splits = [
 
 decomp_tasks = [
     "/data/datasets/mimic3-benchmarks/data/decompensation",
-    "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+    "/data/datasets/eICU2MIMIC/decompensation",
 ]
 decomp_splits = [
     "/data/datasets/mimic3-benchmarks/data/decompensation",

@@ -3,10 +3,22 @@ import random
 import numpy as np
 
 
+eICU_paths = [
+    "/data/datasets/eICU2MIMIC/ihm",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/phenotyping",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/decompensation",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+]
+
+
 class Reader:
     def __init__(self, dataset_dir, listfile=None):
         self._dataset_dir = dataset_dir
-        self._current_index = 0  # potential issue with corrupted file, track by batch
+        self._current_index = 0
         if listfile is None:
             listfile_path = os.path.join(dataset_dir, "listfile.csv")
         else:
@@ -17,6 +29,8 @@ class Reader:
             )  # python list might have memory issues for lots of files
         self._listfile_header = self._data[0]
         self._data = self._data[1:]
+        parts = dataset_dir.split("/")
+        self.path = "/".join(parts[:-1])
 
     def get_number_of_examples(self):
         return len(self._data)
@@ -59,7 +73,14 @@ class DecompensationReader(Reader):
                 if t > time_bound + 1e-6:
                     break
                 ret.append(np.array(mas))
-        return (np.stack(ret), header)
+        # return (np.stack(ret), header)
+
+        stack = np.stack(ret)
+        if self.path in eICU_paths:
+            for i in range(len(stack)):
+                if not stack[i, 3] == "":
+                    stack[i, 3] = np.round((float(stack[i, 3]) / 100), decimals=2)
+        return (stack, header)
 
     def read_example(self, index):
         """Read the example with given index.
@@ -112,13 +133,21 @@ class InHospitalMortalityReader(Reader):
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))
+
         # if len(ret) == 0:
         #   print(self._dataset_dir, ts_filename)
         # Empty files:
         # Deleted file: 1565204_episode1_timeseries.csv
         # Deleted file: 2170432_episode1_timeseries.csv
         # Deleted file: 2447241_episode1_timeseries.csv
-        return (np.stack(ret), header)
+        # return (np.stack(ret), header)
+
+        stack = np.stack(ret)
+        if self.path in eICU_paths:
+            for i in range(len(stack)):
+                if not stack[i, 3] == "":
+                    stack[i, 3] = np.round((float(stack[i, 3]) / 100), decimals=2)
+        return (stack, header)
 
     def read_example(self, index):
         """Reads the example with given index.
@@ -172,7 +201,14 @@ class LengthOfStayReader(Reader):
                 if t > time_bound + 1e-6:
                     break
                 ret.append(np.array(mas))
-        return (np.stack(ret), header)
+        # return (np.stack(ret), header)
+
+        stack = np.stack(ret)
+        if self.path in eICU_paths:
+            for i in range(len(stack)):
+                if not stack[i, 3] == "":
+                    stack[i, 3] = np.round((float(stack[i, 3]) / 100), decimals=2)
+        return (stack, header)
 
     def read_example(self, index):
         """Reads the example with given index.
@@ -225,7 +261,14 @@ class PhenotypingReader(Reader):
             for line in tsfile:
                 mas = line.strip().split(",")
                 ret.append(np.array(mas))
-        return (np.stack(ret), header)
+        # return (np.stack(ret), header)
+
+        stack = np.stack(ret)
+        if self.path in eICU_paths:
+            for i in range(len(stack)):
+                if not stack[i, 3] == "":
+                    stack[i, 3] = np.round((float(stack[i, 3]) / 100), decimals=2)
+        return (stack, header)
 
     def read_example(self, index):
         """Reads the example with given index.

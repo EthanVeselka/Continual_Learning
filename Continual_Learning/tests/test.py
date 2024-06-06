@@ -8,14 +8,11 @@ import random
 import pandas as pd
 
 
-# git status --porcelain | grep -v 'exp/' | grep -v 'wandb/' | grep -v 'loss' | awk '{print $2}'
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 np.set_printoptions(suppress=True)
 
 from test_standard_lstm import TestLSTM
 
-# ssh veselka@cse-stmi-s1.cse.tamu.edu
 # buffer size must be <= samplesize/train_batch_size = 1000/8 = 125
 
 
