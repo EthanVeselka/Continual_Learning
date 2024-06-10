@@ -150,7 +150,7 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
             print("Standard deviation " + metric2 + ":\n", std_dev_m2, file=f)
 
 
-def gridsearch(n, k, task, task_list, pAUC=False):
+def gridsearch(n, k, task, task_list, region=0, pAUC=False):
     print("---------------------------------------")
     print("Initiating grid search for " + task + "...")
     print("---------------------------------------")
@@ -185,6 +185,7 @@ def gridsearch(n, k, task, task_list, pAUC=False):
                 ewc_penalty=False,
                 importance=0,
                 pAUC=pAUC,
+                region=region,
             )
         )
         for imp in param_grid["Importance"]:
@@ -202,6 +203,7 @@ def gridsearch(n, k, task, task_list, pAUC=False):
                     ewc_penalty=True,
                     importance=imp,
                     pAUC=pAUC,
+                    region=region,
                 )
             )
             print("\n")
@@ -218,6 +220,7 @@ def gridsearch(n, k, task, task_list, pAUC=False):
                     ewc_penalty=True,
                     importance=imp,
                     pAUC=pAUC,
+                    region=region,
                 )
             )
 
@@ -233,6 +236,9 @@ def gridsearch(n, k, task, task_list, pAUC=False):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--region", type=int, default=0, help="Run test for MIMIC to specified region"
+    )
     parser.add_argument(
         "--tasks", type=int, help="Run tasks 1 through <task#>, defaults to 1"
     )
@@ -319,6 +325,9 @@ def main():
 
     args = parser.parse_args()
 
+    region = args.region
+    splits = ["all", "south", "midwest", "west", "northeast"]
+
     task_list = [i for i in range(0, args.tasks)] if args.tasks else [0]
     num_tasks = len(task_list)
     iterations = args.i if args.i else 1
@@ -361,6 +370,7 @@ def main():
                     importance,
                     test=test,
                     pAUC=args.pAUC,
+                    region=region,
                 )
             )
 
@@ -373,9 +383,12 @@ def main():
             var = "rep"
         else:
             var = "base"
-        get_best_perf(
-            n, k, ihm_perf, f"ihm_{buffer_size}_{var}_{ext}", num_tasks, args.pAUC
+        name = (
+            f"{splits[region]}/ihm_{buffer_size}_{var}_{ext}"
+            if args.pAUC
+            else f"ihm/{splits[region]}/ihm_{buffer_size}_{var}_{ext}"
         )
+        get_best_perf(n, k, ihm_perf, name, num_tasks, args.pAUC)
         return
 
     if args.phen:
@@ -399,6 +412,7 @@ def main():
                     importance,
                     test=test,
                     pAUC=args.pAUC,
+                    region=region,
                 )
             )
 
@@ -411,14 +425,12 @@ def main():
             var = "rep"
         else:
             var = "base"
-        get_best_perf(
-            n,
-            k,
-            phen_perf,
-            f"phen_{buffer_size}_{var}_{ext}",
-            num_tasks,
-            args.pAUC,
+        name = (
+            f"{splits[region]}/phen_{buffer_size}_{var}_{ext}"
+            if args.pAUC
+            else f"phen/{splits[region]}/phen_{buffer_size}_{var}_{ext}"
         )
+        get_best_perf(n, k, phen_perf, name, num_tasks, args.pAUC)
         return
 
     if args.los:
@@ -442,6 +454,7 @@ def main():
                     importance,
                     test=test,
                     pAUC=args.pAUC,
+                    region=region,
                 )
             )
 
@@ -454,7 +467,12 @@ def main():
             var = "rep"
         else:
             var = "base"
-        get_best_perf(n, k, los_perf, f"los_{buffer_size}_{var}_{ext}", num_tasks)
+        name = (
+            f"{splits[region]}/los_{buffer_size}_{var}_{ext}"
+            if args.pAUC
+            else f"los/{splits[region]}/los_{buffer_size}_{var}_{ext}"
+        )
+        get_best_perf(n, k, los_perf, name, num_tasks, args.pAUC)
         return
 
     if args.dec:
@@ -478,6 +496,7 @@ def main():
                     importance,
                     test=test,
                     pAUC=args.pAUC,
+                    region=region,
                 )
             )
 
@@ -490,9 +509,12 @@ def main():
             var = "rep"
         else:
             var = "base"
-        get_best_perf(
-            n, k, dec_perf, f"dec_{buffer_size}_{var}_{ext}", num_tasks, args.pAUC
+        name = (
+            f"{splits[region]}/dec_{buffer_size}_{var}_{ext}"
+            if args.pAUC
+            else f"dec/{splits[region]}/dec_{buffer_size}_{var}_{ext}"
         )
+        get_best_perf(n, k, dec_perf, name, num_tasks, args.pAUC)
         return
 
     if args.bl:
@@ -512,6 +534,7 @@ def main():
                     importance=0,
                     test=True,
                     pAUC=args.pAUC,
+                    region=region,
                 )
             )
             phen_perf.append(
@@ -525,6 +548,7 @@ def main():
                     importance=0,
                     test=True,
                     pAUC=args.pAUC,
+                    region=region,
                 )
             )
             # dec_perf.append(TestLSTM().test_standard_lstm(
@@ -547,8 +571,11 @@ def main():
             #     importance=False,
             #     test=True,
             # ))
-        get_best_perf(n, k, ihm_perf, "ihm_baseline", num_tasks, args.pAUC)
-        get_best_perf(n, k, phen_perf, "phen_baseline", num_tasks, args.pAUC)
+        if region == 0:
+            name1 = f"{splits[region]}/" if args.pAUC else f"ihm/{splits[region]}/"
+            name2 = f"{splits[region]}/" if args.pAUC else f"phen/{splits[region]}/"
+        get_best_perf(n, k, ihm_perf, name1 + "ihm_baseline", num_tasks, args.pAUC)
+        get_best_perf(n, k, phen_perf, name2 + "phen_baseline", num_tasks, args.pAUC)
         # get_best_perf(n, k, dec_perf, "dec_baseline", num_tasks)
         # get_best_perf(n, k, los_perf, "los_baseline", num_tasks)
         return

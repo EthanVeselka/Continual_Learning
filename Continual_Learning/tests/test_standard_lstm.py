@@ -36,63 +36,13 @@ from torchmimic.utils import (
 
 lf_map = ["south", "midwest", "west", "northeast"]
 
-
 # Server Paths
-ihm_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-    "/data/datasets/eICU2MIMIC/ihm",
-]
-ihm_splits = [
-    "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
-    "/data/datasets/eICU2MIMIC/ihm_split",
-    "/data/datasets/eICU2MIMIC/ihm_split",
-    "/data/datasets/eICU2MIMIC/ihm_split",
-    "/data/datasets/eICU2MIMIC/ihm_split",
-]
-
-phen_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/phenotyping",
-    "/data/datasets/eICU2MIMIC/phenotyping",
-]
-phen_splits = [
-    "/data/datasets/mimic3-benchmarks/data/phenotyping",
-    "/data/datasets/eICU2MIMIC/phenotyping_split",
-    "/data/datasets/eICU2MIMIC/phenotyping_split",
-    "/data/datasets/eICU2MIMIC/phenotyping_split",
-    "/data/datasets/eICU2MIMIC/phenotyping_split",
-]
-
-los_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
-    "/data/datasets/eICU2MIMIC/length-of-stay",
-]
-los_splits = [
-    "/data/datasets/mimic3-benchmarks/data/length-of-stay",
-    "/data/datasets/eICU2MIMIC/length-of-stay_split",
-    "/data/datasets/eICU2MIMIC/length-of-stay_split",
-    "/data/datasets/eICU2MIMIC/length-of-stay_split",
-    "/data/datasets/eICU2MIMIC/length-of-stay_split",
-]
-
-decomp_tasks = [
-    "/data/datasets/mimic3-benchmarks/data/decompensation",
-    "/data/datasets/eICU2MIMIC/decompensation",
-]
-decomp_splits = [
-    "/data/datasets/mimic3-benchmarks/data/decompensation",
-    "/data/datasets/eICU2MIMIC/decompensation_split",
-    "/data/datasets/eICU2MIMIC/decompensation_split",
-    "/data/datasets/eICU2MIMIC/decompensation_split",
-    "/data/datasets/eICU2MIMIC/decompensation_split",
-]
-
-# Local paths
 # ihm_tasks = [
-#     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality2",
+#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
+#     "/data/datasets/eICU2MIMIC/ihm",
 # ]
 # ihm_splits = [
-#     "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+#     "/data/datasets/mimic3-benchmarks/data/in-hospital-mortality",
 #     "/data/datasets/eICU2MIMIC/ihm_split",
 #     "/data/datasets/eICU2MIMIC/ihm_split",
 #     "/data/datasets/eICU2MIMIC/ihm_split",
@@ -100,11 +50,11 @@ decomp_splits = [
 # ]
 
 # phen_tasks = [
-#     "../../datasets/mimic3-benchmarks/phenotyping",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
+#     "/data/datasets/mimic3-benchmarks/data/phenotyping",
+#     "/data/datasets/eICU2MIMIC/phenotyping",
 # ]
 # phen_splits = [
-#     "../../datasets/mimic3-benchmarks/phenotyping",
+#     "/data/datasets/mimic3-benchmarks/data/phenotyping",
 #     "/data/datasets/eICU2MIMIC/phenotyping_split",
 #     "/data/datasets/eICU2MIMIC/phenotyping_split",
 #     "/data/datasets/eICU2MIMIC/phenotyping_split",
@@ -112,11 +62,11 @@ decomp_splits = [
 # ]
 
 # los_tasks = [
-#     "../../datasets/mimic3-benchmarks/length-of-stay",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
+#     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
+#     "/data/datasets/eICU2MIMIC/length-of-stay",
 # ]
 # los_splits = [
-#     "../../datasets/mimic3-benchmarks/length-of-stay",
+#     "/data/datasets/mimic3-benchmarks/data/length-of-stay",
 #     "/data/datasets/eICU2MIMIC/length-of-stay_split",
 #     "/data/datasets/eICU2MIMIC/length-of-stay_split",
 #     "/data/datasets/eICU2MIMIC/length-of-stay_split",
@@ -124,16 +74,65 @@ decomp_splits = [
 # ]
 
 # decomp_tasks = [
-#     "../../datasets/mimic3-benchmarks/decompensation",
-#     "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+#     "/data/datasets/mimic3-benchmarks/data/decompensation",
+#     "/data/datasets/eICU2MIMIC/decompensation",
 # ]
 # decomp_splits = [
-#     "../../datasets/mimic3-benchmarks/decompensation",
+#     "/data/datasets/mimic3-benchmarks/data/decompensation",
 #     "/data/datasets/eICU2MIMIC/decompensation_split",
 #     "/data/datasets/eICU2MIMIC/decompensation_split",
 #     "/data/datasets/eICU2MIMIC/decompensation_split",
 #     "/data/datasets/eICU2MIMIC/decompensation_split",
 # ]
+
+# Local paths
+ihm_tasks = [
+    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+    "../../datasets/eICU-benchmarks/data_mimicformat/in-hospital-mortality2",
+]
+ihm_splits = [
+    "../../datasets/mimic3-benchmarks/in-hospital-mortality",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+    "/data/datasets/eICU2MIMIC/ihm_split",
+]
+
+phen_tasks = [
+    "../../datasets/mimic3-benchmarks/phenotyping",
+    "../../datasets/eICU-benchmarks/data_mimicformat/phenotyping",
+]
+phen_splits = [
+    "../../datasets/mimic3-benchmarks/phenotyping",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+    "/data/datasets/eICU2MIMIC/phenotyping_split",
+]
+
+los_tasks = [
+    "../../datasets/mimic3-benchmarks/length-of-stay",
+    "../../datasets/eICU-benchmarks/data_mimicformat/length-of-stay",
+]
+los_splits = [
+    "../../datasets/mimic3-benchmarks/length-of-stay",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+    "/data/datasets/eICU2MIMIC/length-of-stay_split",
+]
+
+decomp_tasks = [
+    "../../datasets/mimic3-benchmarks/decompensation",
+    "../../datasets/eICU-benchmarks/data_mimicformat/decompensation",
+]
+decomp_splits = [
+    "../../datasets/mimic3-benchmarks/decompensation",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+    "/data/datasets/eICU2MIMIC/decompensation_split",
+]
 
 
 def get_config(
@@ -174,6 +173,7 @@ class TestLSTM(unittest.TestCase):
         importance=0,
         test=False,
         pAUC=False,
+        region=0,
     ):
 
         device = 0
@@ -189,7 +189,7 @@ class TestLSTM(unittest.TestCase):
         config = {}
         test_loaders = None
         exp_name = task
-
+        exp_name += f"_{lf_map[region]}" if region != 0 else ""
         if buffer_size == 0:
             ewc_penalty = False
             replay = False
@@ -198,11 +198,14 @@ class TestLSTM(unittest.TestCase):
 
         # specify tasks
         if task == "ihm":
-            tasks = (
-                [ihm_tasks[i] for i in task_list]
-                if len(task_list) <= 2
-                else [ihm_splits[i] for i in task_list]
-            )
+            if region == 0:
+                tasks = (
+                    [ihm_tasks[i] for i in task_list]
+                    if len(task_list) <= 2
+                    else [ihm_splits[i] for i in task_list]
+                )
+            else:
+                tasks = [ihm_splits[0], ihm_splits[1]]
             model = StandardLSTM(
                 n_classes=1,
                 hidden_dim=16,
@@ -218,11 +221,14 @@ class TestLSTM(unittest.TestCase):
             crit = nn.BCELoss()
 
         elif task == "phen":
-            tasks = (
-                [phen_tasks[i] for i in task_list]
-                if len(task_list) <= 2
-                else [phen_splits[i] for i in task_list]
-            )
+            if region == 0:
+                tasks = (
+                    [phen_tasks[i] for i in task_list]
+                    if len(task_list) <= 2
+                    else [phen_splits[i] for i in task_list]
+                )
+            else:
+                tasks = [phen_splits[0], phen_splits[1]]
             model = StandardLSTM(
                 n_classes=25,
                 hidden_dim=256,
@@ -240,11 +246,14 @@ class TestLSTM(unittest.TestCase):
         elif task == "decomp":
             # use 100k for first three tasks, then 50k for task four, and 25k for task 5
             sample_size = 100000
-            tasks = (
-                [decomp_tasks[i] for i in task_list]
-                if len(task_list) <= 2
-                else [decomp_splits[i] for i in task_list]
-            )
+            if region == 0:
+                tasks = (
+                    [decomp_tasks[i] for i in task_list]
+                    if len(task_list) <= 2
+                    else [decomp_splits[i] for i in task_list]
+                )
+            else:
+                tasks = [decomp_splits[0], decomp_splits[1]]
             model = StandardLSTM(
                 n_classes=1,
                 hidden_dim=128,
@@ -264,11 +273,14 @@ class TestLSTM(unittest.TestCase):
         elif task == "los":
             # use 100k for first three tasks, then 50k for task four, and 25k for task 5
             sample_size = 100000
-            tasks = (
-                [los_tasks[i] for i in task_list]
-                if len(task_list) <= 2
-                else [los_splits[i] for i in task_list]
-            )
+            if region == 0:
+                tasks = (
+                    [los_tasks[i] for i in task_list]
+                    if len(task_list) <= 2
+                    else [los_splits[i] for i in task_list]
+                )
+            else:
+                tasks = [los_splits[0], los_splits[1]]
             model = StandardLSTM(
                 n_classes=10,
                 hidden_dim=64,
@@ -306,13 +318,7 @@ class TestLSTM(unittest.TestCase):
 
         # get test loaders for each task
         val_loaders = get_val_loaders(
-            task,
-            tasks,
-            lf_map,
-            test_batch_size,
-            sample_size,
-            workers,
-            device,
+            task, tasks, lf_map, test_batch_size, sample_size, workers, device, region
         )
 
         if test:
@@ -324,6 +330,7 @@ class TestLSTM(unittest.TestCase):
                 sample_size,
                 workers,
                 device,
+                region,
             )
 
         # train on current task, test on all tasks
@@ -395,6 +402,7 @@ class TestLSTM(unittest.TestCase):
                 workers,
                 device,
                 pAUC,
+                region,
             )
             result = trainer.fit(
                 epochs,

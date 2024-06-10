@@ -78,13 +78,19 @@ def get_train_loader(
     workers,
     device,
     pAUC=False,
+    region=0,
 ):
     ss = [1, 1, 1, 0.5, 0.25]
-    clf = (
-        (lf_map[task_num - 1] + "_train.csv")
-        if (task_num > 0 and len(tasks) > 2)
-        else "train_listfile.csv"
-    )
+    if region == 0:
+        clf = (
+            (lf_map[task_num - 1] + "_train.csv")
+            if (task_num > 0 and len(tasks) > 2)
+            else "train_listfile.csv"
+        )
+    else:
+        clf = f"{lf_map[region]}_train.csv"
+        ss = [1, ss[region]]
+
     if task_name == "ihm":
         train_dataset = IHMDataset(
             tasks[task_num],
@@ -136,23 +142,22 @@ def get_train_loader(
 
 # Returns validation loaders for each task
 def get_val_loaders(
-    task_name,
-    tasks,
-    lf_map,
-    val_batch_size,
-    sample_size,
-    workers,
-    device,
+    task_name, tasks, lf_map, val_batch_size, sample_size, workers, device, region
 ):
     val_loaders = []
     clf = None
     ss = [1, 1, 1, 0.5, 0.25]
     for task_num, task_data in enumerate(tasks):
-        clf = (
-            (lf_map[task_num - 1] + "_val.csv")
-            if (task_num > 0 and len(tasks) > 2)
-            else "val_listfile.csv"
-        )
+        if region == 0:
+            clf = (
+                (lf_map[task_num - 1] + "_val.csv")
+                if (task_num > 0 and len(tasks) > 2)
+                else "val_listfile.csv"
+            )
+        else:
+            clf = f"{lf_map[region]}_val.csv"
+            ss = [1, ss[region]]
+
         if task_name == "ihm":
             val_dataset = IHMDataset(
                 task_data,
@@ -195,23 +200,22 @@ def get_val_loaders(
 
 
 def get_test_loaders(
-    task_name,
-    tasks,
-    lf_map,
-    test_batch_size,
-    sample_size,
-    workers,
-    device,
+    task_name, tasks, lf_map, test_batch_size, sample_size, workers, device, region
 ):
     test_loaders = []
     clf = None
     ss = [1, 1, 1, 0.5, 0.25]
     for task_num, task_data in enumerate(tasks):
-        clf = (
-            (lf_map[task_num - 1] + "_test.csv")
-            if (task_num > 0 and len(tasks) > 2)
-            else "test_listfile.csv"
-        )
+        if region == 0:
+            clf = (
+                (lf_map[task_num - 1] + "_test.csv")
+                if (task_num > 0 and len(tasks) > 2)
+                else "test_listfile.csv"
+            )
+        else:
+            clf = f"{lf_map[region]}_test.csv"
+            ss = [1, ss[region]]
+
         if task_name == "ihm":
             test_dataset = IHMDataset(
                 task_data,
