@@ -88,7 +88,7 @@ def get_train_loader(
             else "train_listfile.csv"
         )
     else:
-        clf = f"{lf_map[region]}_train.csv"
+        clf = f"{lf_map[region]}_train.csv" if task_num > 0 else "train_listfile.csv"
         ss = [1, ss[region]]
 
     if task_name == "ihm":
@@ -155,7 +155,7 @@ def get_val_loaders(
                 else "val_listfile.csv"
             )
         else:
-            clf = f"{lf_map[region]}_val.csv"
+            clf = f"{lf_map[region]}_val.csv" if task_num > 0 else "val_listfile.csv"
             ss = [1, ss[region]]
 
         if task_name == "ihm":
@@ -213,7 +213,7 @@ def get_test_loaders(
                 else "test_listfile.csv"
             )
         else:
-            clf = f"{lf_map[region]}_test.csv"
+            clf = f"{lf_map[region]}_test.csv" if task_num > 0 else "test_listfile.csv"
             ss = [1, ss[region]]
 
         if task_name == "ihm":
