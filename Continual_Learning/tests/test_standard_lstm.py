@@ -189,7 +189,7 @@ class TestLSTM(unittest.TestCase):
         config = {}
         test_loaders = None
         exp_name = task
-        exp_name += f"_{lf_map[region]}" if region != 0 else ""
+        exp_name += f"_{lf_map[region-1]}" if region != 0 else ""
         if buffer_size == 0:
             ewc_penalty = False
             replay = False
