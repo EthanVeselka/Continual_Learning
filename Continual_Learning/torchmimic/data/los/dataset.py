@@ -68,6 +68,7 @@ class LOSDataset(BaseDataset):
     def __getitem__(self, idx):
         x = torch.Tensor(self.data[idx])
         sl = len(x)
+        index = idx
 
         if self.partition == 10:
             y = get_bin_custom(self.labels[idx], 10)
