@@ -92,7 +92,7 @@ class LOSBenchmark:
             for batch_idx, (data, label, lens, mask, index) in enumerate(train_loader):
                 data = data.to(self.device)
                 label = label.to(self.device)
-                label = label.to(torch.float64)
+                label = label.to(torch.int64)
                 index = torch.tensor(index, dtype=torch.int)
                 index += self.shift
                 index = index.to(self.device)
@@ -153,7 +153,7 @@ class LOSBenchmark:
                     ):
                         data = data.to(self.device)
                         label = label.to(self.device)
-                        label = label.to(torch.float64)
+                        label = label.to(torch.int64)
                         index = torch.tensor(index, dtype=torch.int)
                         index = index.to(self.device)
                         output = self.model((data, lens))
@@ -220,7 +220,7 @@ class LOSBenchmark:
                     ):
                         data = data.to(self.device)
                         label = label.to(self.device)
-                        label = label.to(torch.float64)
+                        label = label.to(torch.int64)
                         index = torch.tensor(index, dtype=torch.int)
                         index = index.to(self.device)
                         output = self.model((data, lens))
@@ -270,7 +270,7 @@ class LOSBenchmark:
 
         data = data.to(self.device)
         label = label.to(self.device)
-        label = label.to(torch.float64)
+        label = label.to(torch.int64)
         output = self.model((data, lens))
         # output = torch.sigmoid(output)
         if self.pAUC:
