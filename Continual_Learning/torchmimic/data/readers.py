@@ -202,7 +202,10 @@ class LengthOfStayReader(Reader):
                     break
                 ret.append(np.array(mas))
         # return (np.stack(ret), header)
-
+        if not ret:
+            print("Shape: ", ret.shape)
+            print("File name: ", ts_filename)
+            print("Path: ", os.path.join(self._dataset_dir, ts_filename))
         stack = np.stack(ret)
         if self.path in eICU_paths:
             for i in range(len(stack)):
