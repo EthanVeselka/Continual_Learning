@@ -47,7 +47,7 @@ class EWC(object):
             index = index.to(self.device)
 
             if self.task == "los":  # multiclass classification
-                label = label.to(torch.long)
+                label = label.type(torch.LongTensor)
                 label = label.to(self.device)
                 output = self.model((data, lens))
                 loss = self.loss
