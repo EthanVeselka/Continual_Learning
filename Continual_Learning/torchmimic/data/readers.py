@@ -203,7 +203,7 @@ class LengthOfStayReader(Reader):
                 ret.append(np.array(mas))
         # return (np.stack(ret), header)
         if not ret:
-            print("Shape: ", ret.shape)
+            print("Shape: ", np.array(ret).shape)
             print("File name: ", ts_filename)
             print("Path: ", os.path.join(self._dataset_dir, ts_filename))
         stack = np.stack(ret)
