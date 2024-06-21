@@ -65,6 +65,20 @@ class LOSDataset(BaseDataset):
         self.n_samples = len(self.data)
         self.partition = partition
 
+    def __getitem__(self, idx):
+        x = torch.Tensor(self.data[idx])
+        sl = len(x)
+
+        if self.partition == 10:
+            y = get_bin_custom(self.labels[idx], 10)
+        else:
+            y = self.labels[idx]
+
+        return x, y, sl, None, index
+
+    def __len__(self):
+        return self.n_samples
+
     def _read_data(self, root, listfile):
         if "test" in listfile:
             self.reader = LengthOfStayReader(
@@ -96,13 +110,42 @@ class LOSDataset(BaseDataset):
         normalizer_state = os.path.join(os.path.dirname(__file__), normalizer_state)
         self.normalizer.load_params(normalizer_state)
 
-    def __getitem__(self, idx):
-        x = torch.Tensor(self.data[idx])
-        sl = len(x)
+    def _load_data(self, sample_size):
+        N = self.reader.get_number_of_examples()
 
-        if self.partition == 10:
-            y = get_bin_custom(self.labels[idx], 10)
-        else:
-            y = self.labels[idx]
+        if sample_size is None:
+            sample_size = N
 
-        return x, y, sl, None
+        # print(sample_size)
+        ret = read_chunk(self.reader, sample_size)
+
+        data = ret["X"]
+        ts = ret["t"]
+        ys = ret["y"]
+        names = ret["name"]
+
+        data_tmp = []
+        self.mask = []
+
+        for X, t in zip(data, ts):
+            d = self.discretizer.transform(X, end=t)[0]
+            data_tmp.append(d)
+            self.mask.append(self.expand_mask(d[:, 59:]))
+
+        # data = [self.discretizer.transform(X, end=t)[0] for (X, t) in zip(data, ts)]
+        if self.normalizer is not None:
+            self.data = [self.normalizer.transform(X) for X in data_tmp]
+        self.labels = ys
+        self.ts = ts
+        self.names = names
+        self.targets = ys
+
+    def expand_mask(self, mask):
+        expanded_mask = torch.ones((mask.shape[0], 59))
+
+        for i, pv in enumerate(self.discretizer._possible_values.values()):
+            n_values = len(pv) if not pv == [] else 1
+            for p in range(n_values):
+                expanded_mask[:, p + i] = torch.from_numpy(mask[:, i])
+
+        return expanded_mask
