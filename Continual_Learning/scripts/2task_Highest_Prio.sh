@@ -32,20 +32,20 @@ python3 ../tests/test.py --region 4 --tasks 2 --bl --test --rt --i 5
 
 # IHM: (4 epochs, all samples)
 # --------------------------------#
-python3 ../tests/test.py --region 1 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
-python3 ../tests/test.py --region 2 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
-python3 ../tests/test.py --region 3 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
-python3 ../tests/test.py --region 4 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
+# python3 ../tests/test.py --region 1 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
+# python3 ../tests/test.py --region 2 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
+# python3 ../tests/test.py --region 3 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
+# python3 ../tests/test.py --region 4 --tasks 2 --ihm --b 500 --replay --ewc --imp 6 --test --rt --i 5   # Combined
 
-python3 ../tests/test.py --region 1 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
-python3 ../tests/test.py --region 2 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
-python3 ../tests/test.py --region 3 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
-python3 ../tests/test.py --region 4 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
+# python3 ../tests/test.py --region 1 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
+# python3 ../tests/test.py --region 2 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
+# python3 ../tests/test.py --region 3 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
+# python3 ../tests/test.py --region 4 --tasks 2 --ihm --b 500 --replay --test --rt --i 5                 # Replay
 
-python3 ../tests/test.py --region 1 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC
-python3 ../tests/test.py --region 2 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC
-python3 ../tests/test.py --region 3 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC
-python3 ../tests/test.py --region 4 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC 
+# python3 ../tests/test.py --region 1 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC
+# python3 ../tests/test.py --region 2 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC
+# python3 ../tests/test.py --region 3 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC
+# python3 ../tests/test.py --region 4 --tasks 2 --ihm --b 500 --ewc --imp 6 --test --rt --i 5            # EWC 
 
 
 # Phenotyping: (6 epochs, all samples)
@@ -109,10 +109,10 @@ python3 ../tests/test.py --region 2 --tasks 2 --los --b 3500 --replay --test --r
 python3 ../tests/test.py --region 3 --tasks 2 --los --b 3500 --replay --test --rt --i 5                # Replay
 python3 ../tests/test.py --region 4 --tasks 2 --los --b 3500 --replay --test --rt --i 5                # Replay
 
-python3 ../tests/test.py --region 1 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
-python3 ../tests/test.py --region 2 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
-python3 ../tests/test.py --region 3 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
-python3 ../tests/test.py --region 4 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 1 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 2 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 3 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 4 --tasks 2 --los --b 3500 --ewc --imp 6 --test --rt --i 5           # EWC
 
 
 # These are the varying buffer size tests. Each command below runs a script that tests all three methods 
