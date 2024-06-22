@@ -572,8 +572,10 @@ def main():
             #     test=True,
             # ))
         if region == 0:
-            name1 = f"{splits[region]}/" if args.pAUC else f"ihm/{splits[region]}/"
-            name2 = f"{splits[region]}/" if args.pAUC else f"phen/{splits[region]}/"
+            name1 = f"ihm/{splits[region]}/" if args.pAUC else f"ihm/{splits[region]}/"
+            name2 = (
+                f"phen/{splits[region]}/" if args.pAUC else f"phen/{splits[region]}/"
+            )
         get_best_perf(n, k, ihm_perf, name1 + "ihm_baseline", num_tasks, args.pAUC)
         get_best_perf(n, k, phen_perf, name2 + "phen_baseline", num_tasks, args.pAUC)
         # get_best_perf(n, k, dec_perf, "dec_baseline", num_tasks)

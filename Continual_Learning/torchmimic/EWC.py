@@ -71,9 +71,10 @@ class EWC(object):
                     )
                 elif self.task == "decomp":
                     loss = (
-                        loss(output[:, 0], label, index)
+                        # loss(output[:, 0], label, index)
+                        loss(output[:, None], label, index)
                         if self.pAUC
-                        else loss(output[:, None], label)
+                        else loss(output, label[:, None])
                     )
                 elif self.task == "phen":
                     loss = (

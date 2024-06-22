@@ -101,17 +101,17 @@ class DecompensationBenchmark:
                 # Add ewc penalty/switch between BCE and pAUC loss
                 if task_num == 0 or not ewc_penalty:
                     if self.pAUC:
-                        loss = self.crit(output[:, None], label, index)
+                        loss = self.crit(output, label[:, None], index)
                     else:
-                        loss = self.crit(output[:, None], label)
+                        loss = self.crit(output, label[:, None])
                 elif task_num > 0 and ewc_penalty:
                     if self.pAUC:
                         loss = self.crit(
-                            output[:, None], label, index
+                            output, label[:, None], index
                         ) + importance * ewc.penalty(self.model)
                     else:
                         loss = self.crit(
-                            output[:, None], label
+                            output, label[:, None]
                         ) + importance * ewc.penalty(self.model)
 
                 # Normal Replay
@@ -161,17 +161,17 @@ class DecompensationBenchmark:
                         # Add ewc penalty/switch between BCE and pAUC loss
                         if task_num == 0 or not ewc_penalty:
                             if self.pAUC:
-                                loss = self.crit(output[:, None], label, index)
+                                loss = self.crit(output, label[:, None], index)
                             else:
-                                loss = self.crit(output[:, None], label)
+                                loss = self.crit(output, label[:, None])
                         elif task_num > 0 and ewc_penalty:
                             if self.pAUC:
                                 loss = self.crit(
-                                    output[:, None], label, index
+                                    output, label[:, None], index
                                 ) + importance * ewc.penalty(self.model)
                             else:
                                 loss = self.crit(
-                                    output[:, None], label
+                                    output, label[:, None]
                                 ) + importance * ewc.penalty(self.model)
 
                         # Normal Replay
@@ -230,9 +230,9 @@ class DecompensationBenchmark:
                         # assert sum(pos_mask) > 0
 
                         if self.pAUC:
-                            loss = self.crit(output[:, None], label, index)
+                            loss = self.crit(output, label[:, None], index)
                         else:
-                            loss = self.crit(output[:, None], label)
+                            loss = self.crit(output, label[:, None])
 
                         self.logger.update(output, label, loss)
                         if (batch_idx + 1) % self.report_freq == 0:
@@ -273,8 +273,8 @@ class DecompensationBenchmark:
         output = self.model((data, lens))
         # output = torch.sigmoid(output)
         if self.pAUC:
-            replay_loss = self.crit(output[:, None], label, index)
+            replay_loss = self.crit(output, label[:, None], index)
         else:
-            replay_loss = self.crit(output[:, None], label)
+            replay_loss = self.crit(output, label[:, None])
 
         return replay_loss
