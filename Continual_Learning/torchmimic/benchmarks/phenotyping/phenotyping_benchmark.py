@@ -263,8 +263,8 @@ class PhenotypingBenchmark:
     def replay_loss(self, random_samples, idx=0):
         # idx = random.randint(0, len(random_samples) - 1)
         data, label, lens, mask, index, task_num = random_samples[idx]
-        index += self.shift_map[task_num]
         index = torch.tensor(index, dtype=torch.int)
+        index += self.shift_map[task_num]
         index = index.to(self.device)
 
         data = data.to(self.device)

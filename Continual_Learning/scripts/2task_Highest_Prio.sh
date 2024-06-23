@@ -24,10 +24,10 @@
 # Baselines:
 # --------------------------------#
 # baselines for IHM/Pheno only
-python3 ../tests/test.py --region 1 --tasks 2 --bl --test --rt --i 5
-python3 ../tests/test.py --region 2 --tasks 2 --bl --test --rt --i 5
-python3 ../tests/test.py --region 3 --tasks 2 --bl --test --rt --i 5
-python3 ../tests/test.py --region 4 --tasks 2 --bl --test --rt --i 5
+# python3 ../tests/test.py --region 1 --tasks 2 --bl --test --rt --i 5
+# python3 ../tests/test.py --region 2 --tasks 2 --bl --test --rt --i 5
+# python3 ../tests/test.py --region 3 --tasks 2 --bl --test --rt --i 5
+# python3 ../tests/test.py --region 4 --tasks 2 --bl --test --rt --i 5
 
 
 # IHM: (4 epochs, all samples)
@@ -60,10 +60,10 @@ python3 ../tests/test.py --region 2 --tasks 2 --phen --b 500 --replay --test --r
 python3 ../tests/test.py --region 3 --tasks 2 --phen --b 500 --replay --test --rt --i 5                # Replay
 python3 ../tests/test.py --region 4 --tasks 2 --phen --b 500 --replay --test --rt --i 5                # Replay
 
-python3 ../tests/test.py --region 1 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC
-python3 ../tests/test.py --region 2 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC
-python3 ../tests/test.py --region 3 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC
-python3 ../tests/test.py --region 4 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC 
+# python3 ../tests/test.py --region 1 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 2 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 3 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC
+# python3 ../tests/test.py --region 4 --tasks 2 --phen --b 500 --ewc --imp 4 --test --rt --i 5           # EWC 
 
 
 # Decompensation: (1 epoch, 100k:100k:100k:50k:25k samples)
