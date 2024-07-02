@@ -380,7 +380,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "rep"
+            var = "trrep"
         else:
             var = "base"
         name = (
@@ -422,7 +422,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "rep"
+            var = "trrep"
         else:
             var = "base"
         name = (
@@ -464,7 +464,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "rep"
+            var = "trrep"
         else:
             var = "base"
         name = (
@@ -506,7 +506,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "rep"
+            var = "trrep"
         else:
             var = "base"
         name = (

@@ -116,22 +116,22 @@ class PhenotypingBenchmark:
                         )
 
                 # Normal Replay
-                # if task_num > 0 and replay:
-                #     loss = (1 / (task_num + 1)) * loss + (
-                #         1 - (1 / (task_num + 1))
-                #     ) * self.replay_loss(random_samples)
+                if task_num > 0 and replay:
+                    loss = (1 / (task_num + 1)) * loss + (
+                        1 - (1 / (task_num + 1))
+                    ) * self.replay_loss(random_samples)
 
                 # Reverse Mixed Replay
-                if (
-                    task_num > 0
-                    and replay
-                    and (batch_idx % step == 0)
-                    and idx < len(random_samples)
-                ):
-                    loss = (1 - (1 / (task_num + 1))) * loss + (
-                        1 / (task_num + 1)
-                    ) * self.replay_loss(random_samples, idx)
-                    idx += 1
+                # if (
+                #     task_num > 0
+                #     and replay
+                #     and (batch_idx % step == 0)
+                #     and idx < len(random_samples)
+                # ):
+                #     loss = (1 - (1 / (task_num + 1))) * loss + (
+                #         1 / (task_num + 1)
+                #     ) * self.replay_loss(random_samples, idx)
+                #     idx += 1
 
                 loss.backward()
                 self.optimizer.step()
@@ -176,22 +176,22 @@ class PhenotypingBenchmark:
                                 ) + importance * ewc.penalty(self.model)
 
                         # Normal Replay
-                        # if task_num > 0 and replay:
-                        #     loss = (1 / (task_num + 1)) * loss + (
-                        #         1 - (1 / (task_num + 1))
-                        #     ) * self.replay_loss(random_samples)
+                        if task_num > 0 and replay:
+                            loss = (1 / (task_num + 1)) * loss + (
+                                1 - (1 / (task_num + 1))
+                            ) * self.replay_loss(random_samples)
 
                         # Reverse Mixed Replay
-                        if (
-                            task_num > 0
-                            and replay
-                            and (batch_idx % step == 0)
-                            and idx < len(random_samples)
-                        ):
-                            loss = (1 - (1 / (task_num + 1))) * loss + (
-                                1 / (task_num + 1)
-                            ) * self.replay_loss(random_samples, idx)
-                            idx += 1
+                        # if (
+                        #     task_num > 0
+                        #     and replay
+                        #     and (batch_idx % step == 0)
+                        #     and idx < len(random_samples)
+                        # ):
+                        #     loss = (1 - (1 / (task_num + 1))) * loss + (
+                        #         1 / (task_num + 1)
+                        #     ) * self.replay_loss(random_samples, idx)
+                        #     idx += 1
 
                         self.logger.update(output, label, loss)
                         if (batch_idx + 1) % self.report_freq == 0:
@@ -261,7 +261,7 @@ class PhenotypingBenchmark:
         return results
 
     def replay_loss(self, random_samples, idx=0):
-        # idx = random.randint(0, len(random_samples) - 1)
+        idx = random.randint(0, len(random_samples) - 1)
         data, label, lens, mask, index, task_num = random_samples[idx]
         index = torch.tensor(index, dtype=torch.int)
         index += self.shift_map[task_num]
