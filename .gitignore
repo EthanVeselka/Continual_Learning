@@ -3,4 +3,6 @@ moveCL.py
 wandb/
 exp/
 *.png 
-loss.* 
+loss.*
+.vscode/
+Data_notes.md

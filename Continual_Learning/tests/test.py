@@ -571,7 +571,7 @@ def main():
             #     importance=False,
             #     test=True,
             # ))
-        if region == 0:
+        if region != 0:
             name1 = f"ihm/{splits[region]}/" if args.pAUC else f"ihm/{splits[region]}/"
             name2 = (
                 f"phen/{splits[region]}/" if args.pAUC else f"phen/{splits[region]}/"

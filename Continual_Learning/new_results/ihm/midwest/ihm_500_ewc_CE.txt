@@ -1,0 +1,44 @@
+Best test performances:
+----------------------------------
+Model: Final Average AUC-ROC: 0.860795465786291, Final Average AUC-PR: 0.5316538504848602
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 500, 'EWC': True, 'Importance': 6, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 2}
+
+
+Model: Final Average AUC-ROC: 0.8563976595825892, Final Average AUC-PR: 0.5126008308347412
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 500, 'EWC': True, 'Importance': 6, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 2}
+
+
+Model: Final Average AUC-ROC: 0.8557322609267297, Final Average AUC-PR: 0.522163233523683
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 500, 'EWC': True, 'Importance': 6, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 2}
+
+
+Model: Final Average AUC-ROC: 0.8474230841505096, Final Average AUC-PR: 0.530065030083791
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 500, 'EWC': True, 'Importance': 6, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 2}
+
+
+Model: Final Average AUC-ROC: 0.8456199650656261, Final Average AUC-PR: 0.4946446870037568
+Configuration: {'hidden_dim': 8, 'num_layers': 2, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 500, 'EWC': True, 'Importance': 6, 'Replay': False, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 4, 'Tasks': 2}
+
+
+Per Task Average: [array([0.8348513 , 0.45896253]), array([0.85319369, 0.51822553])]
+Std Dev: AUC-ROC [0.0029081409618740054, 0.008400061529932227]
+Std Dev: AUC-PR [0.015101289534996702, 0.01569294602709488]
+Best Per Task Average: {'Task 1': {'Average AUC-ROC': 0.8309154969538459, 'Average AUC-PR': 0.4383307807891322}, 'Task 2': {'Average AUC-ROC': 0.860795465786291, 'Average AUC-PR': 0.5316538504848602}}
+
+
+Average performance:
+ [[[0.8348513  0.45896253]
+  [0.82091493 0.48830511]]
+
+ [[0.81050353 0.3950059 ]
+  [0.89588384 0.64144516]]]
+
+
+Standard deviation AUC-ROC:
+ [[0.00290814 0.00607675]
+ [0.00587147 0.01092865]]
+
+
+Standard deviation AUC-PR:
+ [[0.01510129 0.01783489]
+ [0.02375604 0.00762985]]
