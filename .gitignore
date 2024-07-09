@@ -1,9 +1,6 @@
 datasets/
-moveCL.py
 wandb/
 exp/
-*.png 
-loss.*
 .vscode/
 Data_notes.md
 Continual_Learning/docs/
