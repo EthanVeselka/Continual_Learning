@@ -78,7 +78,7 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
             conf_mat = perf["conf_matrix"]
             l1 = []
             l2 = []
-            for _, source in enumerate(conf_mat):
+            for region, source in enumerate(conf_mat):
                 l1.append(source[0])
                 l2.append(source[1])
             sens.append(l1)

@@ -473,13 +473,13 @@ def get_conf_matrix_stats(task, model, test_loaders, device):
             if task == "phen":
                 report = classification_report(y_true, y_pred, output_dict=True)
                 sensitivity = [report[i]["recall"] for i in range(25)]
-                specificity = calculate_specificity(y_true, y_pred)
+                specificity = multilabel_specificity(y_true, y_pred)
                 assert len(sensitivity) == 25 and len(specificity) == 25
                 sources[f"{lf_map[source]}"] = (sensitivity, specificity)
             elif task == "los":
                 report = classification_report(y_true, y_pred, output_dict=True)
                 sensitivity = [report[i]["recall"] for i in range(10)]
-                specificity = calculate_specificity(y_true, y_pred)
+                specificity = multiclass_specificity(y_true, y_pred)
                 assert len(sensitivity) == 10 and len(specificity) == 10
                 sources[f"{lf_map[source]}"] = (sensitivity, specificity)
             else:
@@ -490,7 +490,7 @@ def get_conf_matrix_stats(task, model, test_loaders, device):
         return sources
 
 
-def calculate_specificity(y_true, y_pred):
+def multilabel_specificity(y_true, y_pred):
     num_labels = y_true.shape[1]
     specificity_scores = []
 
@@ -498,6 +498,21 @@ def calculate_specificity(y_true, y_pred):
         true_label = y_true[:, label]
         pred_label = y_pred[:, label]
         tn, fp, fn, tp = confusion_matrix(true_label, pred_label).ravel()
+
+        specificity = tn / (tn + fp)
+        specificity_scores.append(specificity)
+
+    return specificity_scores
+
+
+def multiclass_specificity(y_true, y_pred, num_classes=10):
+    cm = confusion_matrix(y_true, y_pred, labels=np.arange(num_classes))
+    specificity_scores = []
+    for i in range(num_classes):
+        tp = cm[i, i]
+        fp = cm[:, i].sum() - tp
+        fn = cm[i, :].sum() - tp
+        tn = cm.sum() - (tp + fp + fn)
 
         specificity = tn / (tn + fp)
         specificity_scores.append(specificity)
