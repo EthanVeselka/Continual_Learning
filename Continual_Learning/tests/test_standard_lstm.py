@@ -473,10 +473,14 @@ def get_conf_matrix_stats(task, model, test_loaders, device):
             if task == "phen":
                 report = classification_report(y_true, y_pred, output_dict=True)
                 sensitivity = [report[i]["recall"] for i in range(25)]
+                specificity = calculate_specificity(y_true, y_pred)
+                assert len(sensitivity) == 25 and len(specificity) == 25
                 sources[f"{lf_map[source]}"] = (sensitivity, 0)
             elif task == "los":
                 report = classification_report(y_true, y_pred, output_dict=True)
                 sensitivity = [report[i]["recall"] for i in range(10)]
+                specificity = calculate_specificity(y_true, y_pred)
+                assert len(sensitivity) == 10 and len(specificity) == 10
                 sources[f"{lf_map[source]}"] = (sensitivity, 0)
             else:
                 tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
@@ -484,3 +488,18 @@ def get_conf_matrix_stats(task, model, test_loaders, device):
                 specificity = tn / (tn + fp)
                 sources[f"{lf_map[source]}"] = (sensitivity, specificity)
         return sources
+
+
+def calculate_specificity(y_true, y_pred):
+    num_labels = y_true.shape[1]
+    specificity_scores = []
+
+    for label in range(num_labels):
+        true_label = y_true[:, label]
+        pred_label = y_pred[:, label]
+        tn, fp, fn, tp = confusion_matrix(true_label, pred_label).ravel()
+
+        specificity = tn / (tn + fp)
+        specificity_scores.append(specificity)
+
+    return specificity_scores
