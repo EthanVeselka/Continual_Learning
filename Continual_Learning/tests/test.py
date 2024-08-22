@@ -85,6 +85,12 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
             spec.append(l2)
         sens = np.array(sens)
         spec = np.array(spec)
+        print("-------")
+        print(sens)
+        print("-------")
+        print(spec)
+        sens = sens.astpye(int)
+        spec = spec.astype(int)
         avg_sens = np.mean(sens, axis=0)
         avg_spec = np.mean(spec, axis=0)
 
@@ -93,37 +99,6 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
         std_dev = np.std(stacked, axis=-1)
         std_dev_m1 = std_dev[:, :, 0]
         std_dev_m2 = std_dev[:, :, 1]
-        m = averages.shape[0]
-
-        first_values = averages[:, :, 0]
-        second_values = averages[:, :, 1]
-
-        tasks = [f"Task {i}" for i in range(1, m + 1)]
-        df1 = pd.DataFrame(first_values, tasks, tasks)
-        df2 = pd.DataFrame(second_values, tasks, tasks)
-
-        # Plot confusion matrices
-        plt.figure(figsize=(12, 4))
-
-        plt.subplot(1, 2, 1)
-        sns.heatmap(df1, annot=True, cmap="Blues", fmt=".3f")
-        plt.yticks(rotation=0)
-        plt.xlabel("Evaluated")
-        plt.ylabel("Trained")
-        plt.gca().xaxis.set_ticks_position("top")
-        plt.gca().xaxis.set_label_position("top")
-        plt.title("Trained vs. Evaluated " + metric1, pad=20)
-
-        plt.subplot(1, 2, 2)
-        sns.heatmap(df2, annot=True, cmap="Blues", fmt=".3f")
-        plt.yticks(rotation=0)
-        plt.xlabel("Evaluated")
-        plt.ylabel("Trained")
-        plt.gca().xaxis.set_ticks_position("top")
-        plt.gca().xaxis.set_label_position("top")
-        plt.title("Trained vs. Evaluated " + metric2, pad=20)
-
-        # plt.savefig("../results/" + name + ".png")
 
     m1sorted = sorted(m1_performances, key=lambda x: x[1], reverse=True)
     if n > len(m1sorted):
