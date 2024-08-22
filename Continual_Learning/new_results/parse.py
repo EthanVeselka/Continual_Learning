@@ -16,7 +16,7 @@ for task in ["ihm", "phen", "dec", "los"]:
     for region in ["south", "midwest", "west", "northeast"]:
         bst = 0
         loc = i, j
-        for method in ["base", "ewc", "trrep", "rep", "comb"]:
+        for method in ["base", "ewc", "trrep", "adjrep", "comb"]:
             bs = 3500 if (task == "dec" or task == "los") else 500
             bs = 0 if method == "base" else bs
             print(bs)
@@ -52,6 +52,10 @@ for task in ["ihm", "phen", "dec", "los"]:
                             else:
                                 res[3] = arr[1]
                                 mimic_second_std_arr.append(arr[0])
+                        # add sensitivity/specificity arrays
+                        # if "Avg Sensitivity:" in line:
+
+                        # if "Avg Specificity:" in line:
                     # print(i)
                     GRID[i][j] = f"{res[0]:.3f} ({res[1]:.3f})"
                     GRID[i][j + 1] = f"{res[2]:.3f} ({res[3]:.3f})"

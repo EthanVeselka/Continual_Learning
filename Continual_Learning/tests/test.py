@@ -72,6 +72,22 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
 
             data.append(np.array(perf_data))
 
+        sens = []
+        spec = []
+        for _, perf in enumerate(task_perf):
+            conf_mat = perf["conf_matrix"]
+            l1 = []
+            l2 = []
+            for _, source in enumerate(conf_mat):
+                l1.append(source[0])
+                l2.append(source[1])
+            sens.append(l1)
+            spec.append(l2)
+        sens = np.array(sens)
+        spec = np.array(spec)
+        avg_sens = np.mean(sens, axis=0)
+        avg_spec = np.mean(spec, axis=0)
+
         averages = np.mean(data, axis=0)
         stacked = np.stack(data, axis=-1)
         std_dev = np.std(stacked, axis=-1)
@@ -141,6 +157,9 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
                 f"Std Dev: {metric2} {[np.mean(std_dev_m2[i][0:i+1]) for i in range(num_tasks)]}",
                 file=f,
             )
+            print(f"Avg Sensitivity: {avg_sens}", file=f)
+            print(f"Avg Specificity: {avg_spec}", file=f)
+            print("\n", file=f)
             print(f"Best Per Task Average: {m1sorted[0][5]}", file=f)
             print("\n", file=f)
             print("Average performance:\n", averages, file=f)
@@ -150,7 +169,7 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
             print("Standard deviation " + metric2 + ":\n", std_dev_m2, file=f)
 
 
-def gridsearch(n, k, task, task_list, region=0, pAUC=False):
+def gridsearch(n, k, task, task_list, rpl_type, region=0, pAUC=False):
     print("---------------------------------------")
     print("Initiating grid search for " + task + "...")
     print("---------------------------------------")
@@ -182,6 +201,7 @@ def gridsearch(n, k, task, task_list, region=0, pAUC=False):
                 task_list,
                 buffer_size=bs,
                 replay=True,
+                rpl_type=rpl_type,
                 ewc_penalty=False,
                 importance=0,
                 pAUC=pAUC,
@@ -200,6 +220,7 @@ def gridsearch(n, k, task, task_list, region=0, pAUC=False):
                     task_list,
                     buffer_size=bs,
                     replay=False,
+                    rpl_type=rpl_type,
                     ewc_penalty=True,
                     importance=imp,
                     pAUC=pAUC,
@@ -217,6 +238,7 @@ def gridsearch(n, k, task, task_list, region=0, pAUC=False):
                     task_list,
                     buffer_size=bs,
                     replay=True,
+                    rpl_type=rpl_type,
                     ewc_penalty=True,
                     importance=imp,
                     pAUC=pAUC,
@@ -322,6 +344,11 @@ def main():
         action="store_true",
         help="Use pAUC loss",
     )
+    parser.add_argument(
+        "--trrep",
+        action="store_true",
+        help="Replay loss type, defaults to 'mix', else traditional",
+    )
 
     args = parser.parse_args()
 
@@ -337,6 +364,7 @@ def main():
     ewc_penalty = args.ewc if (args.ewc and buffer_size > 0) else False
     k = "test" if args.rt else "val"
     n = args.n if args.n else 5
+    rpl_type = "trrep" if args.trrep else "adjrep"
 
     if args.test:
         test = True
@@ -352,7 +380,7 @@ def main():
     if args.ihm:
         epochs = args.epochs if args.epochs else param_grid["ihm_epochs"]
         if args.grid:
-            gridsearch(n, "val", "ihm", task_list)
+            gridsearch(n, "val", "ihm", task_list, rpl_type)
             return
         print("---------------------------------------")
         print("Testing standard LSTM on IHM dataset...")
@@ -366,6 +394,7 @@ def main():
                     task_list,
                     buffer_size,
                     replay,
+                    rpl_type,
                     ewc_penalty,
                     importance,
                     test=test,
@@ -380,7 +409,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "trrep"
+            var = "trrep" if args.trrep else "adjrep"
         else:
             var = "base"
         name = (
@@ -394,7 +423,7 @@ def main():
     if args.phen:
         epochs = args.epochs if args.epochs else param_grid["phen_epochs"]
         if args.grid:
-            gridsearch(n, "val", "phen", task_list)
+            gridsearch(n, "val", "phen", task_list, rpl_type)
             return
         print("-----------------------------------------------")
         print("Testing standard LSTM on Phenotyping dataset...")
@@ -408,6 +437,7 @@ def main():
                     task_list,
                     buffer_size,
                     replay,
+                    rpl_type,
                     ewc_penalty,
                     importance,
                     test=test,
@@ -422,7 +452,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "trrep"
+            var = "trrep" if args.trrep else "adjrep"
         else:
             var = "base"
         name = (
@@ -436,7 +466,7 @@ def main():
     if args.los:
         epochs = args.epochs if args.epochs else param_grid["los_epochs"]
         if args.grid:
-            gridsearch(n, "val", "los", task_list)
+            gridsearch(n, "val", "los", task_list, rpl_type)
             return
         print("---------------------------------------")
         print("Testing standard LSTM on LoS dataset...")
@@ -450,6 +480,7 @@ def main():
                     task_list,
                     buffer_size,
                     replay,
+                    rpl_type,
                     ewc_penalty,
                     importance,
                     test=test,
@@ -464,7 +495,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "trrep"
+            var = "trrep" if args.trrep else "adjrep"
         else:
             var = "base"
         name = (
@@ -478,7 +509,7 @@ def main():
     if args.dec:
         epochs = args.epochs if args.epochs else param_grid["dec_epochs"]
         if args.grid:
-            gridsearch(n, "val", "decomp", task_list)
+            gridsearch(n, "val", "decomp", task_list, rpl_type)
             return
         print("--------------------------------------------------")
         print("Testing standard LSTM on Decompensation dataset...")
@@ -492,6 +523,7 @@ def main():
                     task_list,
                     buffer_size,
                     replay,
+                    rpl_type,
                     ewc_penalty,
                     importance,
                     test=test,
@@ -506,7 +538,7 @@ def main():
         elif ewc_penalty and not replay:
             var = "ewc"
         elif replay and not ewc_penalty:
-            var = "trrep"
+            var = "trrep" if args.trrep else "adjrep"
         else:
             var = "base"
         name = (
@@ -517,70 +549,74 @@ def main():
         get_best_perf(n, k, dec_perf, name, num_tasks, args.pAUC)
         return
 
-    if args.bl:
-        print("--------------------------------------")
-        print("Testing standard LSTM for baselines...")
-        print("--------------------------------------")
-        print("\n")
-        for i in range(iterations):
-            ihm_perf.append(
-                TestLSTM().test_standard_lstm(
-                    "ihm",
-                    param_grid["ihm_epochs"],
-                    task_list,
-                    buffer_size=0,
-                    replay=False,
-                    ewc_penalty=False,
-                    importance=0,
-                    test=True,
-                    pAUC=args.pAUC,
-                    region=region,
-                )
-            )
-            phen_perf.append(
-                TestLSTM().test_standard_lstm(
-                    "phen",
-                    param_grid["phen_epochs"],
-                    task_list,
-                    buffer_size=0,
-                    replay=False,
-                    ewc_penalty=False,
-                    importance=0,
-                    test=True,
-                    pAUC=args.pAUC,
-                    region=region,
-                )
-            )
-            # dec_perf.append(TestLSTM().test_standard_lstm(
-            #     "decomp",
-            #     param_grid["dec_epochs"],
-            #     task_list,
-            #     buffer_size=0,
-            #     replay=False,
-            #     ewc_penalty=False,
-            #     importance=False,
-            #     test=True,
-            # ))
-            # los_perf.append(TestLSTM().test_standard_lstm(
-            #     "los",
-            #     param_grid["los_epochs"],
-            #     task_list,
-            #     buffer_size=0,
-            #     replay=False,
-            #     ewc_penalty=False,
-            #     importance=False,
-            #     test=True,
-            # ))
-        if region != 0:
-            name1 = f"ihm/{splits[region]}/" if args.pAUC else f"ihm/{splits[region]}/"
-            name2 = (
-                f"phen/{splits[region]}/" if args.pAUC else f"phen/{splits[region]}/"
-            )
-        get_best_perf(n, k, ihm_perf, name1 + "ihm_baseline", num_tasks, args.pAUC)
-        get_best_perf(n, k, phen_perf, name2 + "phen_baseline", num_tasks, args.pAUC)
-        # get_best_perf(n, k, dec_perf, "dec_baseline", num_tasks)
-        # get_best_perf(n, k, los_perf, "los_baseline", num_tasks)
-        return
+    # if args.bl:
+    #     print("--------------------------------------")
+    #     print("Testing standard LSTM for baselines...")
+    #     print("--------------------------------------")
+    #     print("\n")
+    #     for i in range(iterations):
+    #         ihm_perf.append(
+    #             TestLSTM().test_standard_lstm(
+    #                 "ihm",
+    #                 param_grid["ihm_epochs"],
+    #                 task_list,
+    #                 buffer_size=0,
+    #                 replay=False,
+    #                 rpl_type,
+    #                 ewc_penalty=False,
+    #                 importance=0,
+    #                 test=True,
+    #                 pAUC=args.pAUC,
+    #                 region=region,
+    #             )
+    #         )
+    #         phen_perf.append(
+    #             TestLSTM().test_standard_lstm(
+    #                 "phen",
+    #                 param_grid["phen_epochs"],
+    #                 task_list,
+    #                 buffer_size=0,
+    #                 replay=False,
+    #                 rpl_type,
+    #                 ewc_penalty=False,
+    #                 importance=0,
+    #                 test=True,
+    #                 pAUC=args.pAUC,
+    #                 region=region,
+    #             )
+    #         )
+    #         # dec_perf.append(TestLSTM().test_standard_lstm(
+    #         #     "decomp",
+    #         #     param_grid["dec_epochs"],
+    #         #     task_list,
+    #         #     buffer_size=0,
+    #         #     replay=False,
+    #         rpl_type,
+    #         #     ewc_penalty=False,
+    #         #     importance=False,
+    #         #     test=True,
+    #         # ))
+    #         # los_perf.append(TestLSTM().test_standard_lstm(
+    #         #     "los",
+    #         #     param_grid["los_epochs"],
+    #         #     task_list,
+    #         #     buffer_size=0,
+    #         #     replay=False,
+    #         rpl_type,
+    #         #     ewc_penalty=False,
+    #         #     importance=False,
+    #         #     test=True,
+    #         # ))
+    #     if region != 0:
+    #         name1 = f"ihm/{splits[region]}/" if args.pAUC else f"ihm/{splits[region]}/"
+    #         name2 = (
+    #             f"phen/{splits[region]}/" if args.pAUC else f"phen/{splits[region]}/"
+    #         )
+    #     get_best_perf(n, k, ihm_perf, name1 + "ihm_baseline", num_tasks, args.pAUC)
+    #     get_best_perf(n, k, phen_perf, name2 + "phen_baseline", num_tasks, args.pAUC)
+    #     # get_best_perf(n, k, dec_perf, "dec_baseline", num_tasks)
+    #     # get_best_perf(n, k, los_perf, "los_baseline", num_tasks)
+    #     return
 
 
 main()

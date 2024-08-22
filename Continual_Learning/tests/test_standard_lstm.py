@@ -2,12 +2,14 @@ import unittest
 import sys
 import os
 import numpy as np
+import torch
 
 import torch.nn as nn
 from torch import optim
 
 from libauc.losses import pAUC_DRO_Loss
 from libauc.optimizers import SOPAs
+from sklearn.metrics import confusion_matrix, classification_report
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), "..")))
 
@@ -169,6 +171,7 @@ class TestLSTM(unittest.TestCase):
         task_list=[0],
         buffer_size=0,
         replay=False,
+        rpl_type="adjrep",
         ewc_penalty=False,
         importance=0,
         test=False,
@@ -412,6 +415,7 @@ class TestLSTM(unittest.TestCase):
                 task_num,
                 buffer,
                 replay=replay,
+                rpl_type=rpl_type,
                 ewc_penalty=ewc_penalty,
                 importance=importance,
             )
@@ -439,4 +443,43 @@ class TestLSTM(unittest.TestCase):
         if test:
             logger.update_wandb_test(test_results)
             results["test"] = ((m1, m2), logger.get_test_scores(), config)
+            results["conf_matrix"] = get_conf_matrix_stats(
+                task, model, test_loaders, device
+            )
         return results
+
+
+def get_conf_matrix_stats(task, model, test_loaders, device):
+    model.eval()
+    sources = {}
+    with torch.no_grad():
+        for source, test_loader in enumerate(test_loaders):
+            y_true = []
+            y_pred = []
+            for batch_idx, (data, label, lens, mask, index) in enumerate(test_loader):
+                data = data.to(device)
+                label = label.to(device)
+                outputs = model((data, lens))
+                if task == "los":
+                    _, predicted = torch.max(outputs, 1)
+                else:
+                    threshold = 0.5
+                    predicted = (outputs > threshold).long()
+
+                y_true.extend(label.cpu().numpy())
+                y_pred.extend(predicted.cpu().numpy())
+
+            if task == "phen":
+                report = classification_report(y_true, y_pred, output_dict=True)
+                sensitivity = [report[i]["recall"] for i in range(25)]
+                sources[f"{lf_map[source]}"] = (sensitivity, 0)
+            elif task == "los":
+                report = classification_report(y_true, y_pred, output_dict=True)
+                sensitivity = [report[i]["recall"] for i in range(10)]
+                sources[f"{lf_map[source]}"] = (sensitivity, 0)
+            else:
+                tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+                sensitivity = tp / (tp + fn)
+                specificity = tn / (tn + fp)
+                sources[f"{lf_map[source]}"] = (sensitivity, specificity)
+        return sources

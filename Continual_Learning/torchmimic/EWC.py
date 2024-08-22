@@ -22,6 +22,8 @@ class EWC(object):
         self.shift_map = shift_map
         self.pAUC = pAUC
 
+        self.model = self.model.to(self.device)
+
         self.params = {
             n: p for n, p in self.model.named_parameters() if p.requires_grad
         }

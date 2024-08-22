@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import random
+import copy
 
 from torch import optim
 from torchmimic.EWC import EWC
@@ -54,6 +55,7 @@ class IHMBenchmark:
         task_num,
         random_samples,
         replay=False,
+        rpl_type="adjrep",
         ewc_penalty=False,
         importance=1,
     ):
@@ -71,7 +73,8 @@ class IHMBenchmark:
             print("------------------------------------")
             print(f"Task: {task_num + 1}, Epoch: {epoch + 1}")
 
-            model_copy = self.model
+            # model_copy = self.model
+            model_copy = copy.deepcopy(self.model)
             self.model.train()
             self.logger.reset()
 
@@ -115,23 +118,17 @@ class IHMBenchmark:
                             output, label[:, None]
                         ) + importance * ewc.penalty(self.model)
 
-                # Normal Replay
-                # if task_num > 0 and replay:
-                #     loss = (1 / (task_num + 1)) * loss + (
-                #         1 - (1 / (task_num + 1))
-                #     ) * self.replay_loss(random_samples)
-
-                # Reverse Mixed Replay
-                if (
-                    task_num > 0
-                    and replay
-                    and (batch_idx % step == 0)
-                    and idx < len(random_samples)
-                ):
-                    loss = (1 - (1 / (task_num + 1))) * loss + (
-                        1 / (task_num + 1)
-                    ) * self.replay_loss(random_samples, idx)
-                    idx += 1
+                if replay and task_num > 0:
+                    if rpl_type == "trrep":  # Normal Replay
+                        loss = (1 / (task_num + 1)) * loss + (
+                            1 - (1 / (task_num + 1))
+                        ) * self.replay_loss(random_samples, rpl_type=rpl_type)
+                    elif rpl_type == "adjrep":  # Reverse Mixed Replay
+                        if (batch_idx % step == 0) and idx < len(random_samples):
+                            loss = (1 - (1 / (task_num + 1))) * loss + (
+                                1 / (task_num + 1)
+                            ) * self.replay_loss(random_samples, idx, rpl_type=rpl_type)
+                            idx += 1
 
                 loss.backward()
                 self.optimizer.step()
@@ -175,25 +172,23 @@ class IHMBenchmark:
                                     output, label[:, None]
                                 ) + importance * ewc.penalty(self.model)
 
-                        # Normal Replay
-                        # if task_num > 0 and replay:
-                        #     loss = (1 / (task_num + 1)) * loss + (
-                        #         1 - (1 / (task_num + 1))
-                        #     ) * self.replay_loss(random_samples)
+                        if replay and task_num > 0:
+                            if rpl_type == "trrep":  # Normal Replay
+                                loss = (1 / (task_num + 1)) * loss + (
+                                    1 - (1 / (task_num + 1))
+                                ) * self.replay_loss(random_samples, rpl_type=rpl_type)
+                            elif rpl_type == "adjrep":  # Reverse Mixed Replay
+                                if (batch_idx % step == 0) and idx < len(
+                                    random_samples
+                                ):
+                                    loss = (1 - (1 / (task_num + 1))) * loss + (
+                                        1 / (task_num + 1)
+                                    ) * self.replay_loss(
+                                        random_samples, idx, rpl_type=rpl_type
+                                    )
+                                    idx += 1
 
-                        # Reverse Mixed Replay
-                        if (
-                            task_num > 0
-                            and replay
-                            and (batch_idx % step == 0)
-                            and idx < len(random_samples)
-                        ):
-                            loss = (1 - (1 / (task_num + 1))) * loss + (
-                                1 / (task_num + 1)
-                            ) * self.replay_loss(random_samples, idx)
-                            idx += 1
-
-                        self.logger.update(output, label, loss)
+                            self.logger.update(output, label, loss)
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
@@ -261,8 +256,9 @@ class IHMBenchmark:
         results["test"] = tests
         return results
 
-    def replay_loss(self, random_samples, idx=0):
-        # idx = random.randint(0, len(random_samples) - 1) # uncomment for normal replay
+    def replay_loss(self, random_samples, idx=0, rpl_type="adjrep"):
+        if rpl_type == "trrep":
+            idx = random.randint(0, len(random_samples) - 1)
         data, label, lens, mask, index, task_num = random_samples[idx]
         index = torch.tensor(index, dtype=torch.int)
         index += self.shift_map[task_num]
