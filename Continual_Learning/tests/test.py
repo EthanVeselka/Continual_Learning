@@ -169,7 +169,7 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
             print("Standard deviation " + metric2 + ":\n", std_dev_m2, file=f)
 
 
-def gridsearch(n, k, task, task_list, rpl_type, region=0, pAUC=False):
+def gridsearch(n, k, task, task_list, rpl_type, bilstm, region=0, pAUC=False):
     print("---------------------------------------")
     print("Initiating grid search for " + task + "...")
     print("---------------------------------------")
@@ -206,6 +206,7 @@ def gridsearch(n, k, task, task_list, rpl_type, region=0, pAUC=False):
                 importance=0,
                 pAUC=pAUC,
                 region=region,
+                bilstm=bilstm,
             )
         )
         for imp in param_grid["Importance"]:
@@ -225,6 +226,7 @@ def gridsearch(n, k, task, task_list, rpl_type, region=0, pAUC=False):
                     importance=imp,
                     pAUC=pAUC,
                     region=region,
+                    bilstm=bilstm,
                 )
             )
             print("\n")
@@ -243,6 +245,7 @@ def gridsearch(n, k, task, task_list, rpl_type, region=0, pAUC=False):
                     importance=imp,
                     pAUC=pAUC,
                     region=region,
+                    bilstm=bilstm,
                 )
             )
 
@@ -349,6 +352,11 @@ def main():
         action="store_true",
         help="Replay loss type, defaults to 'mix', else traditional",
     )
+    parser.add_argument(
+        "--lstm",
+        action="store_true",
+        help="Model type, defaults to BiLSTM",
+    )
 
     args = parser.parse_args()
 
@@ -365,6 +373,7 @@ def main():
     k = "test" if args.rt else "val"
     n = args.n if args.n else 5
     rpl_type = "trrep" if args.trrep else "adjrep"
+    bilstm = False if args.lstm else True
 
     if args.test:
         test = True
@@ -400,6 +409,7 @@ def main():
                     test=test,
                     pAUC=args.pAUC,
                     region=region,
+                    bilstm=bilstm,
                 )
             )
 
@@ -443,6 +453,7 @@ def main():
                     test=test,
                     pAUC=args.pAUC,
                     region=region,
+                    bilstm=bilstm,
                 )
             )
 
@@ -486,6 +497,7 @@ def main():
                     test=test,
                     pAUC=args.pAUC,
                     region=region,
+                    bilstm=bilstm,
                 )
             )
 
@@ -529,6 +541,7 @@ def main():
                     test=test,
                     pAUC=args.pAUC,
                     region=region,
+                    bilstm=bilstm,
                 )
             )
 
@@ -568,6 +581,7 @@ def main():
     #                 test=True,
     #                 pAUC=args.pAUC,
     #                 region=region,
+    bilstm = (bilstm,)
     #             )
     #         )
     #         phen_perf.append(
@@ -583,6 +597,7 @@ def main():
     #                 test=True,
     #                 pAUC=args.pAUC,
     #                 region=region,
+    bilstm = (bilstm,)
     #             )
     #         )
     #         # dec_perf.append(TestLSTM().test_standard_lstm(

@@ -177,6 +177,7 @@ class TestLSTM(unittest.TestCase):
         test=False,
         pAUC=False,
         region=0,
+        bilstm=True,
     ):
 
         device = 0
@@ -214,7 +215,7 @@ class TestLSTM(unittest.TestCase):
                 hidden_dim=16,
                 num_layers=2,
                 dropout_rate=0.3,
-                bidirectional=True,
+                bidirectional=bilstm,
             )
             logger = IHMLogger
             benchmark = IHMBenchmark
@@ -237,7 +238,7 @@ class TestLSTM(unittest.TestCase):
                 hidden_dim=256,
                 num_layers=1,
                 dropout_rate=0.3,
-                bidirectional=True,
+                bidirectional=bilstm,
             )
             logger = PhenotypingLogger
             benchmark = PhenotypingBenchmark
@@ -262,7 +263,7 @@ class TestLSTM(unittest.TestCase):
                 hidden_dim=128,
                 num_layers=1,
                 dropout_rate=0.3,
-                bidirectional=True,
+                bidirectional=bilstm,
             )
             logger = DecompensationLogger
             benchmark = DecompensationBenchmark
@@ -289,7 +290,7 @@ class TestLSTM(unittest.TestCase):
                 hidden_dim=64,
                 num_layers=1,
                 dropout_rate=0.3,
-                bidirectional=True,
+                bidirectional=bilstm,
             )
             logger = LOSLogger
             benchmark = LOSBenchmark
