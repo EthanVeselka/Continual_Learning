@@ -414,6 +414,7 @@ def main():
             )
 
         ext = "pAUC" if args.pAUC else "CE"
+        model = "BiLSTM" if bilstm else "LSTM"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -423,9 +424,9 @@ def main():
         else:
             var = "base"
         name = (
-            f"{splits[region]}/ihm_{buffer_size}_{var}_{ext}"
+            f"{splits[region]}/ihm_{buffer_size}_{var}_{ext}_{model}"
             if args.pAUC
-            else f"ihm/{splits[region]}/ihm_{buffer_size}_{var}_{ext}"
+            else f"ihm/{splits[region]}/ihm_{buffer_size}_{var}_{ext}_{model}"
         )
         get_best_perf(n, k, ihm_perf, name, num_tasks, args.pAUC)
         return
@@ -458,6 +459,7 @@ def main():
             )
 
         ext = "pAUC" if args.pAUC else "CE"
+        model = "BiLSTM" if bilstm else "LSTM"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -467,9 +469,9 @@ def main():
         else:
             var = "base"
         name = (
-            f"{splits[region]}/phen_{buffer_size}_{var}_{ext}"
+            f"{splits[region]}/phen_{buffer_size}_{var}_{ext}_{model}"
             if args.pAUC
-            else f"phen/{splits[region]}/phen_{buffer_size}_{var}_{ext}"
+            else f"phen/{splits[region]}/phen_{buffer_size}_{var}_{ext}_{model}"
         )
         get_best_perf(n, k, phen_perf, name, num_tasks, args.pAUC)
         return
@@ -502,6 +504,7 @@ def main():
             )
 
         ext = "pAUC" if args.pAUC else "CE"
+        model = "BiLSTM" if bilstm else "LSTM"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -511,9 +514,9 @@ def main():
         else:
             var = "base"
         name = (
-            f"{splits[region]}/los_{buffer_size}_{var}_{ext}"
+            f"{splits[region]}/los_{buffer_size}_{var}_{ext}_{model}"
             if args.pAUC
-            else f"los/{splits[region]}/los_{buffer_size}_{var}_{ext}"
+            else f"los/{splits[region]}/los_{buffer_size}_{var}_{ext}_{model}"
         )
         get_best_perf(n, k, los_perf, name, num_tasks, args.pAUC)
         return
@@ -546,6 +549,7 @@ def main():
             )
 
         ext = "pAUC" if args.pAUC else "CE"
+        model = "BiLSTM" if bilstm else "LSTM"
         if ewc_penalty and replay:
             var = "comb"
         elif ewc_penalty and not replay:
@@ -555,9 +559,9 @@ def main():
         else:
             var = "base"
         name = (
-            f"{splits[region]}/dec_{buffer_size}_{var}_{ext}"
+            f"{splits[region]}/dec_{buffer_size}_{var}_{ext}_{model}"
             if args.pAUC
-            else f"dec/{splits[region]}/dec_{buffer_size}_{var}_{ext}"
+            else f"dec/{splits[region]}/dec_{buffer_size}_{var}_{ext}_{model}"
         )
         get_best_perf(n, k, dec_perf, name, num_tasks, args.pAUC)
         return
