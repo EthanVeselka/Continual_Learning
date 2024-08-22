@@ -188,7 +188,7 @@ class IHMBenchmark:
                                     )
                                     idx += 1
 
-                            self.logger.update(output, label, loss)
+                        self.logger.update(output, label, loss)
                         if (batch_idx + 1) % self.report_freq == 0:
                             print(
                                 f"Eval: epoch: {epoch+1}, loss = {self.logger.get_loss()}"
