@@ -89,8 +89,8 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
         print(sens)
         print("-------")
         print(spec)
-        sens = sens.astpye(int)
-        spec = spec.astype(int)
+        sens = sens.astpye(float)
+        spec = spec.astype(float)
         avg_sens = np.mean(sens, axis=0)
         avg_spec = np.mean(spec, axis=0)
 
