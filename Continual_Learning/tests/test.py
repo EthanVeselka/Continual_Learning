@@ -78,7 +78,7 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
             conf_mat = perf["conf_matrix"]
             l1 = []
             l2 = []
-            for region, source in enumerate(conf_mat):
+            for source in conf_mat:
                 l1.append(source[0])
                 l2.append(source[1])
             sens.append(l1)
@@ -89,8 +89,6 @@ def get_best_perf(n, k, task_perf, name, num_tasks, pAUC=False):
         print(sens)
         print("-------")
         print(spec)
-        sens = sens.astpye(float)
-        spec = spec.astype(float)
         avg_sens = np.mean(sens, axis=0)
         avg_spec = np.mean(spec, axis=0)
 
