@@ -451,7 +451,6 @@ class TestLSTM(unittest.TestCase):
                 print("------")
                 print("All elements are floats.")
                 print(results["conf_matrix"])
-
             else:
                 print("------")
                 print("Not all elements are floats.")
