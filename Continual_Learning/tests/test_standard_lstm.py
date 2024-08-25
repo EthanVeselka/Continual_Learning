@@ -486,7 +486,8 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                     zero_division=0,
                     labels=list(range(25)),
                 )
-                sensitivity = [report[key]["recall"] for key in report]
+                print(report)
+                sensitivity = [report[str(i)]["recall"] for i in range(25)]
                 specificity = multilabel_specificity(y_true, y_pred)
                 assert len(y_pred) == 25
                 assert len(sensitivity) == 25 and len(specificity) == 25
@@ -499,7 +500,8 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                     zero_division=0,
                     labels=list(range(10)),
                 )
-                sensitivity = [report[key]["recall"] for key in report]
+                print(report)
+                sensitivity = [report[str(i)]["recall"] for i in range(10)]
                 specificity = multiclass_specificity(y_true, y_pred)
                 assert len(y_pred) == 10
                 assert len(sensitivity) == 10 and len(specificity) == 10
