@@ -479,15 +479,29 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                 y_pred.extend(predicted.cpu().numpy())
 
             if task == "phen":
-                report = classification_report(y_true, y_pred, output_dict=True)
-                sensitivity = [report[i]["recall"] for i in range(25)]
+                report = classification_report(
+                    y_true,
+                    y_pred,
+                    output_dict=True,
+                    zero_division=0,
+                    labels=list(range(25)),
+                )
+                sensitivity = [report[key]["recall"] for key in report]
                 specificity = multilabel_specificity(y_true, y_pred)
+                assert len(y_pred) == 25
                 assert len(sensitivity) == 25 and len(specificity) == 25
                 sources.append[sensitivity, specificity]
             elif task == "los":
-                report = classification_report(y_true, y_pred, output_dict=True)
-                sensitivity = [report[i]["recall"] for i in range(10)]
+                report = classification_report(
+                    y_true,
+                    y_pred,
+                    output_dict=True,
+                    zero_division=0,
+                    labels=list(range(10)),
+                )
+                sensitivity = [report[key]["recall"] for key in report]
                 specificity = multiclass_specificity(y_true, y_pred)
+                assert len(y_pred) == 10
                 assert len(sensitivity) == 10 and len(specificity) == 10
                 sources.append[sensitivity, specificity]
             else:
