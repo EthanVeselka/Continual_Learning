@@ -511,8 +511,7 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
         return np.array(sources)
 
 
-def multilabel_specificity(y_true, y_pred):
-    num_labels = y_true.shape[1]
+def multilabel_specificity(y_true, y_pred, num_labels=25):
     specificity_scores = []
 
     for label in range(num_labels):
