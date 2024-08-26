@@ -512,8 +512,9 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
 
 
 def multilabel_specificity(y_true, y_pred, num_labels=25):
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
     specificity_scores = []
-
     for label in range(num_labels):
         true_label = y_true[:, label]
         pred_label = y_pred[:, label]
