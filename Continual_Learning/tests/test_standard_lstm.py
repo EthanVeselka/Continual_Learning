@@ -439,7 +439,6 @@ class TestLSTM(unittest.TestCase):
         m1, m2 = logger.update_wandb_val(val_results)
         results = {}
         results["val"] = ((m1, m2), logger.get_val_scores(), config)
-        print(shift_map)
 
         if test:
             logger.update_wandb_test(test_results)
