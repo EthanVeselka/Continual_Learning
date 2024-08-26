@@ -489,7 +489,7 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                 sensitivity = [report[str(i)]["recall"] for i in range(25)]
                 specificity = multilabel_specificity(y_true, y_pred)
                 assert len(sensitivity) == 25 and len(specificity) == 25
-                sources.append[sensitivity, specificity]
+                sources.append([sensitivity, specificity])
             elif task == "los":
                 report = classification_report(
                     y_true,
@@ -502,12 +502,12 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                 sensitivity = [report[str(i)]["recall"] for i in range(10)]
                 specificity = multiclass_specificity(y_true, y_pred)
                 assert len(sensitivity) == 10 and len(specificity) == 10
-                sources.append[sensitivity, specificity]
+                sources.append([sensitivity, specificity])
             else:
                 tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
                 sensitivity = tp / (tp + fn)
                 specificity = tn / (tn + fp)
-                sources.append[sensitivity, specificity]
+                sources.append([sensitivity, specificity])
         return np.array(sources)
 
 
