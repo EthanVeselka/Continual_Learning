@@ -446,15 +446,15 @@ class TestLSTM(unittest.TestCase):
             results["test"] = ((m1, m2), logger.get_test_scores(), config)
             sources = get_conf_matrix_stats(task, model, test_loaders, device, region)
             results["conf_matrix"] = sources
-            is_float = np.vectorize(lambda x: isinstance(x, float))(sources)
-            if np.all(is_float):
-                print("------")
-                print("All elements are floats.")
-                print(results["conf_matrix"])
-            else:
-                print("------")
-                print("Not all elements are floats.")
-                print(results["conf_matrix"])
+            # is_float = np.vectorize(lambda x: isinstance(x, float))(sources)
+            # if np.all(is_float):
+            #     print("------")
+            #     print("All elements are floats.")
+            #     print(results["conf_matrix"])
+            # else:
+            #     print("------")
+            #     print("Not all elements are floats.")
+            #     print(results["conf_matrix"])
         return results
 
 
@@ -489,7 +489,6 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                 print(report)
                 sensitivity = [report[str(i)]["recall"] for i in range(25)]
                 specificity = multilabel_specificity(y_true, y_pred)
-                assert len(y_pred) == 25
                 assert len(sensitivity) == 25 and len(specificity) == 25
                 sources.append[sensitivity, specificity]
             elif task == "los":
@@ -503,7 +502,6 @@ def get_conf_matrix_stats(task, model, test_loaders, device, region):
                 print(report)
                 sensitivity = [report[str(i)]["recall"] for i in range(10)]
                 specificity = multiclass_specificity(y_true, y_pred)
-                assert len(y_pred) == 10
                 assert len(sensitivity) == 10 and len(specificity) == 10
                 sources.append[sensitivity, specificity]
             else:
