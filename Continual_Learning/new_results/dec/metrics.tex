@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\usepackage{graphicx} % For including images
+\usepackage{longtable} % For long tables that span multiple pages
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+%\end{document}
+
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{cccccc}
+\toprule
+\multicolumn{6}{c}{\textbf{Decompensation}} \\
+\midrule
+Method & Region & Sensitivity MIMIC-III & Sensitivity eICU Region & Specificity MIMIC-III & Specificity eICU Region \\
+\midrule
+Baseline & \multirow{5}{*}{South} &  0.0 & 0.001 & 1.0 & 1.0 \\
+EWC & & 0.004 & 0.008 & 1.0 & 1.0 \\
+Replay & & 0.009 & 0.001 & 1.0 & 1.0 \\
+Adj Replay & & 0.0 & 0.001 & 1.0 & 1.0 \\
+Combined & & 0.001 & 0.005 & 1.0 & 1.0 \\
+\midrule
+Baseline & \multirow{5}{*}{Midwest} &  0.003 & 0.006 & 1.0 & 1.0 \\
+EWC & & 0.0 & 0.003 & 1.0 & 1.0 \\
+Replay & & 0.007 & 0.001 & 1.0 & 1.0 \\
+Adj Replay & & 0.001 & 0.005 & 1.0 & 1.0 \\
+Combined & & 0.004 & 0.001 & 1.0 & 1.0 \\
+\midrule
+Baseline & \multirow{5}{*}{West} &  0.015 & 0.028 & 0.999 & 0.998 \\
+EWC & & 0.03 & 0.039 & 0.999 & 0.997 \\
+Replay & & 0.012 & 0.036 & 1.0 & 0.997 \\
+Adj Replay & & 0.006 & 0.031 & 1.0 & 0.997 \\
+Combined & & 0.012 & 0.034 & 1.0 & 0.997 \\
+\midrule
+Baseline & \multirow{5}{*}{Northeast} &  0.033 & 0.073 & 1.0 & 0.996 \\
+EWC & & 0.035 & 0.078 & 1.0 & 0.995 \\
+Replay & & 0.009 & 0.082 & 1.0 & 0.996 \\
+Adj Replay & & 0.011 & 0.108 & 1.0 & 0.995 \\
+Combined & & 0.014 & 0.165 & 1.0 & 0.987 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\end{document}
+
+

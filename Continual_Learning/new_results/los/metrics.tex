@@ -1,0 +1,292 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\usepackage{graphicx} % For including images
+\usepackage{longtable} % For long tables that span multiple pages
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+
+\begin{longtable}{lcc}
+\toprule
+\multicolumn{3}{c}{\textbf{Length of Stay}} \\
+\toprule
+\endfirsthead
+
+\midrule
+\endhead
+
+\multicolumn{3}{c}{\textbf{Region: South}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Less than 24 hours & 0.125 & 0.932 \\
+Over 24 hours & 0.908 & 0.092 \\
+48 hours & 0.002 & 1.0 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.002 & 1.0 \\
+Over 2 weeks & 0.0 & 0.992 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Less than 24 hours & 0.157 & 0.913 \\
+Over 24 hours & 0.725 & 0.439 \\
+48 hours & 0.003 & 0.999 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.106 & 0.952 \\
+Over 2 weeks & 0.465 & 0.77 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Less than 24 hours & 0.766 & 0.57 \\
+Over 24 hours & 0.258 & 0.826 \\
+48 hours & 0.008 & 0.995 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.129 & 0.941 \\
+Over 2 weeks & 0.476 & 0.803 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Less than 24 hours & 0.471 & 0.741 \\
+Over 24 hours & 0.512 & 0.576 \\
+48 hours & 0.008 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.158 & 0.926 \\
+Over 2 weeks & 0.33 & 0.856 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Less than 24 hours & 0.334 & 0.826 \\
+Over 24 hours & 0.627 & 0.515 \\
+48 hours & 0.018 & 0.986 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.248 & 0.906 \\
+Over 2 weeks & 0.297 & 0.863 \\
+\midrule
+\midrule
+\multicolumn{3}{c}{\textbf{Region: Midwest}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Less than 24 hours & 0.36 & 0.813 \\
+Over 24 hours & 0.719 & 0.231 \\
+48 hours & 0.001 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.015 & 0.998 \\
+Over 2 weeks & 0.0 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Less than 24 hours & 0.412 & 0.773 \\
+Over 24 hours & 0.624 & 0.427 \\
+48 hours & 0.004 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.381 & 0.892 \\
+Over 2 weeks & 0.027 & 0.997 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Less than 24 hours & 0.685 & 0.633 \\
+Over 24 hours & 0.351 & 0.755 \\
+48 hours & 0.01 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.27 & 0.844 \\
+Over 2 weeks & 0.253 & 0.9 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Less than 24 hours & 0.585 & 0.664 \\
+Over 24 hours & 0.451 & 0.638 \\
+48 hours & 0.009 & 0.996 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.293 & 0.896 \\
+Over 2 weeks & 0.166 & 0.914 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Less than 24 hours & 0.53 & 0.713 \\
+Over 24 hours & 0.476 & 0.651 \\
+48 hours & 0.008 & 0.999 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.562 & 0.778 \\
+Over 2 weeks & 0.039 & 0.98 \\
+\midrule
+\midrule
+\multicolumn{3}{c}{\textbf{Region: West}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Less than 24 hours & 0.323 & 0.784 \\
+Over 24 hours & 0.712 & 0.337 \\
+48 hours & 0.042 & 0.957 \\
+72 hours & 0.0 & 0.999 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.153 & 0.972 \\
+Over 2 weeks & 0.0 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Less than 24 hours & 0.733 & 0.574 \\
+Over 24 hours & 0.313 & 0.726 \\
+48 hours & 0.0 & 0.999 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.308 & 0.888 \\
+Over 2 weeks & 0.112 & 0.923 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Less than 24 hours & 0.859 & 0.487 \\
+Over 24 hours & 0.162 & 0.873 \\
+48 hours & 0.001 & 1.0 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.346 & 0.853 \\
+Over 2 weeks & 0.178 & 0.912 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Less than 24 hours & 0.508 & 0.713 \\
+Over 24 hours & 0.529 & 0.571 \\
+48 hours & 0.003 & 0.998 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.27 & 0.879 \\
+Over 2 weeks & 0.155 & 0.937 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Less than 24 hours & 0.835 & 0.507 \\
+Over 24 hours & 0.184 & 0.846 \\
+48 hours & 0.0 & 1.0 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.151 & 0.926 \\
+Over 2 weeks & 0.296 & 0.837 \\
+\midrule
+\midrule
+\multicolumn{3}{c}{\textbf{Region: Northeast}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Less than 24 hours & 0.091 & 0.938 \\
+Over 24 hours & 0.925 & 0.125 \\
+48 hours & 0.005 & 0.994 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.076 & 0.984 \\
+Over 2 weeks & 0.043 & 0.984 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Less than 24 hours & 0.343 & 0.824 \\
+Over 24 hours & 0.687 & 0.468 \\
+48 hours & 0.021 & 0.982 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.32 & 0.877 \\
+Over 2 weeks & 0.114 & 0.945 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Less than 24 hours & 0.699 & 0.616 \\
+Over 24 hours & 0.334 & 0.769 \\
+48 hours & 0.007 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.442 & 0.81 \\
+Over 2 weeks & 0.156 & 0.943 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Less than 24 hours & 0.802 & 0.534 \\
+Over 24 hours & 0.218 & 0.853 \\
+48 hours & 0.005 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.332 & 0.854 \\
+Over 2 weeks & 0.24 & 0.893 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Less than 24 hours & 0.718 & 0.594 \\
+Over 24 hours & 0.315 & 0.787 \\
+48 hours & 0.009 & 0.997 \\
+72 hours & 0.0 & 1.0 \\
+96 hours & 0.0 & 1.0 \\
+120 hours & 0.0 & 1.0 \\
+144 hours & 0.0 & 1.0 \\
+168 hours & 0.0 & 1.0 \\
+Over 1 week & 0.404 & 0.836 \\
+Over 2 weeks & 0.202 & 0.921 \\
+\bottomrule
+\end{longtable}
+
+\end{document}
+

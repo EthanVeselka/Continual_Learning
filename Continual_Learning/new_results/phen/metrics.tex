@@ -1,0 +1,594 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\usepackage{graphicx} % For including images
+\usepackage{longtable} % For long tables that span multiple pages
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+% \end{document}
+
+\begin{longtable}{lcc}
+\toprule
+\multicolumn{3}{c}{\textbf{Phenotyping}} \\
+\toprule
+\endfirsthead
+
+\midrule
+\endhead
+
+\multicolumn{3}{c}{\textbf{Region: South}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Acute and unspecified renal failure & 0.487 & 0.69 \\
+Acute cerebrovascular disease & 0.243 & 0.886 \\
+Acute myocardial infarction & 0.002 & 0.999 \\
+Cardiac dysrhythmias & 0.1 & 0.939 \\
+Chronic kidney disease & 0.111 & 0.956 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.046 & 0.964 \\
+Complications of surgical procedures or medical care & 0.074 & 0.965 \\
+Conduction disorders & 0.008 & 0.992 \\
+Congestive heart failure; nonhypertensive & 0.011 & 0.997 \\
+Coronary atherosclerosis and other heart disease & 0.008 & 0.996 \\
+Diabetes mellitus with complications & 0.022 & 0.992 \\
+Diabetes mellitus without complication & 0.002 & 0.999 \\
+Disorders of lipid metabolism & 0.015 & 0.992 \\
+Essential hypertension & 0.075 & 0.894 \\
+Fluid and electrolyte disorders & 0.031 & 0.904 \\
+Gastrointestinal hemorrhage & 0.028 & 0.976 \\
+Hypertension with complications and secondary hypertension & 0.02 & 0.968 \\
+Other liver diseases & 0.002 & 1.0 \\
+Other lower respiratory disease & 0.002 & 1.0 \\
+Other upper respiratory disease & 0.016 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.0 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.004 & 1.0 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.0 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Acute and unspecified renal failure & 0.457 & 0.727 \\
+Acute cerebrovascular disease & 0.363 & 0.863 \\
+Acute myocardial infarction & 0.002 & 0.998 \\
+Cardiac dysrhythmias & 0.061 & 0.966 \\
+Chronic kidney disease & 0.068 & 0.977 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.012 & 0.99 \\
+Complications of surgical procedures or medical care & 0.064 & 0.972 \\
+Conduction disorders & 0.004 & 0.996 \\
+Congestive heart failure; nonhypertensive & 0.022 & 0.993 \\
+Coronary atherosclerosis and other heart disease & 0.004 & 0.999 \\
+Diabetes mellitus with complications & 0.066 & 0.972 \\
+Diabetes mellitus without complication & 0.01 & 0.992 \\
+Disorders of lipid metabolism & 0.027 & 0.985 \\
+Essential hypertension & 0.052 & 0.929 \\
+Fluid and electrolyte disorders & 0.069 & 0.869 \\
+Gastrointestinal hemorrhage & 0.02 & 0.979 \\
+Hypertension with complications and secondary hypertension & 0.02 & 0.974 \\
+Other liver diseases & 0.001 & 1.0 \\
+Other lower respiratory disease & 0.001 & 1.0 \\
+Other upper respiratory disease & 0.019 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.0 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.019 & 0.998 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.001 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.314 & 0.92 \\
+Acute cerebrovascular disease & 0.44 & 0.977 \\
+Acute myocardial infarction & 0.127 & 0.975 \\
+Cardiac dysrhythmias & 0.312 & 0.843 \\
+Chronic kidney disease & 0.185 & 0.956 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.067 & 0.98 \\
+Complications of surgical procedures or medical care & 0.217 & 0.932 \\
+Conduction disorders & 0.039 & 0.991 \\
+Congestive heart failure; nonhypertensive & 0.376 & 0.865 \\
+Coronary atherosclerosis and other heart disease & 0.512 & 0.845 \\
+Diabetes mellitus with complications & 0.351 & 0.97 \\
+Diabetes mellitus without complication & 0.285 & 0.91 \\
+Disorders of lipid metabolism & 0.324 & 0.876 \\
+Essential hypertension & 0.49 & 0.681 \\
+Fluid and electrolyte disorders & 0.302 & 0.885 \\
+Gastrointestinal hemorrhage & 0.028 & 0.991 \\
+Hypertension with complications and secondary hypertension & 0.176 & 0.953 \\
+Other liver diseases & 0.09 & 0.983 \\
+Other lower respiratory disease & 0.009 & 0.998 \\
+Other upper respiratory disease & 0.092 & 0.993 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.023 & 0.992 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.254 & 0.953 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.556 & 0.925 \\
+Septicemia (except in labor) & 0.318 & 0.951 \\
+Shock & 0.239 & 0.977 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.323 & 0.918 \\
+Acute cerebrovascular disease & 0.376 & 0.983 \\
+Acute myocardial infarction & 0.025 & 0.996 \\
+Cardiac dysrhythmias & 0.222 & 0.903 \\
+Chronic kidney disease & 0.11 & 0.982 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.019 & 0.994 \\
+Complications of surgical procedures or medical care & 0.156 & 0.967 \\
+Conduction disorders & 0.004 & 0.999 \\
+Congestive heart failure; nonhypertensive & 0.328 & 0.896 \\
+Coronary atherosclerosis and other heart disease & 0.48 & 0.878 \\
+Diabetes mellitus with complications & 0.319 & 0.979 \\
+Diabetes mellitus without complication & 0.207 & 0.949 \\
+Disorders of lipid metabolism & 0.28 & 0.906 \\
+Essential hypertension & 0.399 & 0.77 \\
+Fluid and electrolyte disorders & 0.246 & 0.922 \\
+Gastrointestinal hemorrhage & 0.005 & 0.998 \\
+Hypertension with complications and secondary hypertension & 0.101 & 0.979 \\
+Other liver diseases & 0.031 & 0.996 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.04 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.004 & 0.999 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.212 & 0.968 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.493 & 0.948 \\
+Septicemia (except in labor) & 0.228 & 0.976 \\
+Shock & 0.184 & 0.987 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Acute and unspecified renal failure & 0.323 & 0.92 \\
+Acute cerebrovascular disease & 0.399 & 0.984 \\
+Acute myocardial infarction & 0.044 & 0.994 \\
+Cardiac dysrhythmias & 0.241 & 0.891 \\
+Chronic kidney disease & 0.128 & 0.977 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.011 & 0.996 \\
+Complications of surgical procedures or medical care & 0.15 & 0.963 \\
+Conduction disorders & 0.01 & 0.998 \\
+Congestive heart failure; nonhypertensive & 0.342 & 0.888 \\
+Coronary atherosclerosis and other heart disease & 0.506 & 0.859 \\
+Diabetes mellitus with complications & 0.324 & 0.979 \\
+Diabetes mellitus without complication & 0.193 & 0.952 \\
+Disorders of lipid metabolism & 0.285 & 0.902 \\
+Essential hypertension & 0.398 & 0.79 \\
+Fluid and electrolyte disorders & 0.286 & 0.904 \\
+Gastrointestinal hemorrhage & 0.006 & 0.998 \\
+Hypertension with complications and secondary hypertension & 0.116 & 0.976 \\
+Other liver diseases & 0.057 & 0.992 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.06 & 0.996 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.01 & 0.998 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.203 & 0.968 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.538 & 0.942 \\
+Septicemia (except in labor) & 0.304 & 0.958 \\
+Shock & 0.233 & 0.983 \\
+\midrule
+\midrule
+\multicolumn{3}{c}{\textbf{Region: Midwest}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Acute and unspecified renal failure & 0.405 & 0.73 \\
+Acute cerebrovascular disease & 0.12 & 0.984 \\
+Acute myocardial infarction & 0.013 & 0.991 \\
+Cardiac dysrhythmias & 0.006 & 0.998 \\
+Chronic kidney disease & 0.063 & 0.958 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.025 & 0.984 \\
+Complications of surgical procedures or medical care & 0.083 & 0.965 \\
+Conduction disorders & 0.04 & 0.956 \\
+Congestive heart failure; nonhypertensive & 0.01 & 0.998 \\
+Coronary atherosclerosis and other heart disease & 0.011 & 0.998 \\
+Diabetes mellitus with complications & 0.041 & 0.978 \\
+Diabetes mellitus without complication & 0.001 & 0.999 \\
+Disorders of lipid metabolism & 0.015 & 0.992 \\
+Essential hypertension & 0.021 & 0.969 \\
+Fluid and electrolyte disorders & 0.003 & 1.0 \\
+Gastrointestinal hemorrhage & 0.014 & 0.987 \\
+Hypertension with complications and secondary hypertension & 0.0 & 0.999 \\
+Other liver diseases & 0.005 & 1.0 \\
+Other lower respiratory disease & 0.002 & 0.999 \\
+Other upper respiratory disease & 0.02 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.0 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.007 & 1.0 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.002 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Acute and unspecified renal failure & 0.368 & 0.771 \\
+Acute cerebrovascular disease & 0.055 & 0.993 \\
+Acute myocardial infarction & 0.007 & 0.997 \\
+Cardiac dysrhythmias & 0.01 & 0.996 \\
+Chronic kidney disease & 0.073 & 0.964 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.034 & 0.98 \\
+Complications of surgical procedures or medical care & 0.08 & 0.968 \\
+Conduction disorders & 0.037 & 0.958 \\
+Congestive heart failure; nonhypertensive & 0.009 & 0.997 \\
+Coronary atherosclerosis and other heart disease & 0.003 & 0.999 \\
+Diabetes mellitus with complications & 0.023 & 0.99 \\
+Diabetes mellitus without complication & 0.002 & 0.999 \\
+Disorders of lipid metabolism & 0.014 & 0.993 \\
+Essential hypertension & 0.024 & 0.974 \\
+Fluid and electrolyte disorders & 0.001 & 1.0 \\
+Gastrointestinal hemorrhage & 0.02 & 0.983 \\
+Hypertension with complications and secondary hypertension & 0.002 & 0.999 \\
+Other liver diseases & 0.004 & 1.0 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.014 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.0 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.003 & 1.0 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.0 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.319 & 0.919 \\
+Acute cerebrovascular disease & 0.423 & 0.978 \\
+Acute myocardial infarction & 0.124 & 0.976 \\
+Cardiac dysrhythmias & 0.307 & 0.84 \\
+Chronic kidney disease & 0.177 & 0.958 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.07 & 0.978 \\
+Complications of surgical procedures or medical care & 0.207 & 0.938 \\
+Conduction disorders & 0.031 & 0.993 \\
+Congestive heart failure; nonhypertensive & 0.38 & 0.861 \\
+Coronary atherosclerosis and other heart disease & 0.527 & 0.833 \\
+Diabetes mellitus with complications & 0.326 & 0.976 \\
+Diabetes mellitus without complication & 0.268 & 0.922 \\
+Disorders of lipid metabolism & 0.337 & 0.868 \\
+Essential hypertension & 0.529 & 0.658 \\
+Fluid and electrolyte disorders & 0.333 & 0.864 \\
+Gastrointestinal hemorrhage & 0.015 & 0.995 \\
+Hypertension with complications and secondary hypertension & 0.165 & 0.955 \\
+Other liver diseases & 0.071 & 0.988 \\
+Other lower respiratory disease & 0.003 & 0.999 \\
+Other upper respiratory disease & 0.06 & 0.996 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.018 & 0.993 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.276 & 0.945 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.566 & 0.924 \\
+Septicemia (except in labor) & 0.301 & 0.956 \\
+Shock & 0.242 & 0.977 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.316 & 0.923 \\
+Acute cerebrovascular disease & 0.379 & 0.982 \\
+Acute myocardial infarction & 0.064 & 0.991 \\
+Cardiac dysrhythmias & 0.24 & 0.893 \\
+Chronic kidney disease & 0.086 & 0.986 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.026 & 0.993 \\
+Complications of surgical procedures or medical care & 0.142 & 0.968 \\
+Conduction disorders & 0.013 & 0.994 \\
+Congestive heart failure; nonhypertensive & 0.276 & 0.915 \\
+Coronary atherosclerosis and other heart disease & 0.408 & 0.897 \\
+Diabetes mellitus with complications & 0.303 & 0.978 \\
+Diabetes mellitus without complication & 0.136 & 0.969 \\
+Disorders of lipid metabolism & 0.264 & 0.915 \\
+Essential hypertension & 0.321 & 0.828 \\
+Fluid and electrolyte disorders & 0.249 & 0.922 \\
+Gastrointestinal hemorrhage & 0.009 & 0.996 \\
+Hypertension with complications and secondary hypertension & 0.09 & 0.982 \\
+Other liver diseases & 0.047 & 0.994 \\
+Other lower respiratory disease & 0.001 & 1.0 \\
+Other upper respiratory disease & 0.066 & 0.997 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.009 & 0.997 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.172 & 0.974 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.455 & 0.955 \\
+Septicemia (except in labor) & 0.244 & 0.97 \\
+Shock & 0.176 & 0.987 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Acute and unspecified renal failure & 0.338 & 0.92 \\
+Acute cerebrovascular disease & 0.35 & 0.986 \\
+Acute myocardial infarction & 0.067 & 0.99 \\
+Cardiac dysrhythmias & 0.212 & 0.913 \\
+Chronic kidney disease & 0.149 & 0.973 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.038 & 0.992 \\
+Complications of surgical procedures or medical care & 0.145 & 0.966 \\
+Conduction disorders & 0.007 & 0.998 \\
+Congestive heart failure; nonhypertensive & 0.302 & 0.903 \\
+Coronary atherosclerosis and other heart disease & 0.424 & 0.895 \\
+Diabetes mellitus with complications & 0.314 & 0.977 \\
+Diabetes mellitus without complication & 0.213 & 0.945 \\
+Disorders of lipid metabolism & 0.243 & 0.925 \\
+Essential hypertension & 0.318 & 0.838 \\
+Fluid and electrolyte disorders & 0.237 & 0.927 \\
+Gastrointestinal hemorrhage & 0.003 & 0.998 \\
+Hypertension with complications and secondary hypertension & 0.123 & 0.973 \\
+Other liver diseases & 0.03 & 0.996 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.053 & 0.997 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.006 & 0.998 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.19 & 0.973 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.496 & 0.948 \\
+Septicemia (except in labor) & 0.262 & 0.972 \\
+Shock & 0.247 & 0.981 \\
+\midrule
+\midrule
+\multicolumn{3}{c}{\textbf{Region: West}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Acute and unspecified renal failure & 0.39 & 0.745 \\
+Acute cerebrovascular disease & 0.098 & 0.988 \\
+Acute myocardial infarction & 0.009 & 0.998 \\
+Cardiac dysrhythmias & 0.003 & 0.998 \\
+Chronic kidney disease & 0.178 & 0.907 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.01 & 0.993 \\
+Complications of surgical procedures or medical care & 0.078 & 0.97 \\
+Conduction disorders & 0.027 & 0.963 \\
+Congestive heart failure; nonhypertensive & 0.006 & 1.0 \\
+Coronary atherosclerosis and other heart disease & 0.002 & 0.999 \\
+Diabetes mellitus with complications & 0.006 & 1.0 \\
+Diabetes mellitus without complication & 0.02 & 0.994 \\
+Disorders of lipid metabolism & 0.005 & 0.997 \\
+Essential hypertension & 0.034 & 0.957 \\
+Fluid and electrolyte disorders & 0.0 & 1.0 \\
+Gastrointestinal hemorrhage & 0.019 & 0.984 \\
+Hypertension with complications and secondary hypertension & 0.0 & 1.0 \\
+Other liver diseases & 0.003 & 1.0 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.015 & 0.999 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.0 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.002 & 1.0 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.0 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Acute and unspecified renal failure & 0.419 & 0.745 \\
+Acute cerebrovascular disease & 0.112 & 0.99 \\
+Acute myocardial infarction & 0.006 & 0.998 \\
+Cardiac dysrhythmias & 0.005 & 0.998 \\
+Chronic kidney disease & 0.2 & 0.896 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.02 & 0.985 \\
+Complications of surgical procedures or medical care & 0.067 & 0.983 \\
+Conduction disorders & 0.013 & 0.981 \\
+Congestive heart failure; nonhypertensive & 0.013 & 0.997 \\
+Coronary atherosclerosis and other heart disease & 0.002 & 0.999 \\
+Diabetes mellitus with complications & 0.01 & 0.999 \\
+Diabetes mellitus without complication & 0.018 & 0.994 \\
+Disorders of lipid metabolism & 0.012 & 0.994 \\
+Essential hypertension & 0.057 & 0.935 \\
+Fluid and electrolyte disorders & 0.001 & 1.0 \\
+Gastrointestinal hemorrhage & 0.017 & 0.981 \\
+Hypertension with complications and secondary hypertension & 0.0 & 1.0 \\
+Other liver diseases & 0.012 & 0.999 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.018 & 0.999 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.002 & 0.999 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.018 & 0.999 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.0 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.326 & 0.922 \\
+Acute cerebrovascular disease & 0.404 & 0.983 \\
+Acute myocardial infarction & 0.086 & 0.989 \\
+Cardiac dysrhythmias & 0.238 & 0.891 \\
+Chronic kidney disease & 0.137 & 0.971 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.037 & 0.992 \\
+Complications of surgical procedures or medical care & 0.182 & 0.956 \\
+Conduction disorders & 0.01 & 0.996 \\
+Congestive heart failure; nonhypertensive & 0.323 & 0.899 \\
+Coronary atherosclerosis and other heart disease & 0.489 & 0.871 \\
+Diabetes mellitus with complications & 0.331 & 0.977 \\
+Diabetes mellitus without complication & 0.289 & 0.922 \\
+Disorders of lipid metabolism & 0.298 & 0.903 \\
+Essential hypertension & 0.476 & 0.718 \\
+Fluid and electrolyte disorders & 0.274 & 0.915 \\
+Gastrointestinal hemorrhage & 0.01 & 0.998 \\
+Hypertension with complications and secondary hypertension & 0.133 & 0.97 \\
+Other liver diseases & 0.062 & 0.993 \\
+Other lower respiratory disease & 0.001 & 0.999 \\
+Other upper respiratory disease & 0.053 & 0.997 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.015 & 0.996 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.231 & 0.963 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.542 & 0.94 \\
+Septicemia (except in labor) & 0.266 & 0.966 \\
+Shock & 0.224 & 0.98 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.287 & 0.935 \\
+Acute cerebrovascular disease & 0.416 & 0.981 \\
+Acute myocardial infarction & 0.084 & 0.99 \\
+Cardiac dysrhythmias & 0.199 & 0.917 \\
+Chronic kidney disease & 0.108 & 0.984 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.013 & 0.997 \\
+Complications of surgical procedures or medical care & 0.138 & 0.973 \\
+Conduction disorders & 0.006 & 0.999 \\
+Congestive heart failure; nonhypertensive & 0.299 & 0.909 \\
+Coronary atherosclerosis and other heart disease & 0.488 & 0.866 \\
+Diabetes mellitus with complications & 0.342 & 0.975 \\
+Diabetes mellitus without complication & 0.227 & 0.944 \\
+Disorders of lipid metabolism & 0.267 & 0.917 \\
+Essential hypertension & 0.371 & 0.805 \\
+Fluid and electrolyte disorders & 0.219 & 0.937 \\
+Gastrointestinal hemorrhage & 0.004 & 0.999 \\
+Hypertension with complications and secondary hypertension & 0.095 & 0.983 \\
+Other liver diseases & 0.037 & 0.996 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.034 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.004 & 0.999 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.195 & 0.974 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.488 & 0.95 \\
+Septicemia (except in labor) & 0.249 & 0.971 \\
+Shock & 0.237 & 0.981 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Acute and unspecified renal failure & 0.349 & 0.912 \\
+Acute cerebrovascular disease & 0.376 & 0.984 \\
+Acute myocardial infarction & 0.072 & 0.993 \\
+Cardiac dysrhythmias & 0.272 & 0.875 \\
+Chronic kidney disease & 0.126 & 0.979 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.016 & 0.996 \\
+Complications of surgical procedures or medical care & 0.139 & 0.971 \\
+Conduction disorders & 0.008 & 0.998 \\
+Congestive heart failure; nonhypertensive & 0.331 & 0.893 \\
+Coronary atherosclerosis and other heart disease & 0.467 & 0.88 \\
+Diabetes mellitus with complications & 0.322 & 0.979 \\
+Diabetes mellitus without complication & 0.205 & 0.949 \\
+Disorders of lipid metabolism & 0.25 & 0.928 \\
+Essential hypertension & 0.367 & 0.813 \\
+Fluid and electrolyte disorders & 0.266 & 0.917 \\
+Gastrointestinal hemorrhage & 0.003 & 0.999 \\
+Hypertension with complications and secondary hypertension & 0.125 & 0.975 \\
+Other liver diseases & 0.051 & 0.994 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.049 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.004 & 0.999 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.218 & 0.966 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.531 & 0.942 \\
+Septicemia (except in labor) & 0.284 & 0.966 \\
+Shock & 0.242 & 0.981 \\
+\midrule
+\midrule
+\multicolumn{3}{c}{\textbf{Region: Northeast}} \\
+\multicolumn{3}{c}{\textbf{Method: Baseline}} \\
+\midrule
+Acute and unspecified renal failure & 0.477 & 0.76 \\
+Acute cerebrovascular disease & 0.477 & 0.936 \\
+Acute myocardial infarction & 0.104 & 0.94 \\
+Cardiac dysrhythmias & 0.525 & 0.523 \\
+Chronic kidney disease & 0.111 & 0.949 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.108 & 0.932 \\
+Complications of surgical procedures or medical care & 0.212 & 0.893 \\
+Conduction disorders & 0.004 & 0.996 \\
+Congestive heart failure; nonhypertensive & 0.019 & 0.995 \\
+Coronary atherosclerosis and other heart disease & 0.009 & 0.996 \\
+Diabetes mellitus with complications & 0.085 & 0.974 \\
+Diabetes mellitus without complication & 0.002 & 0.999 \\
+Disorders of lipid metabolism & 0.005 & 0.998 \\
+Essential hypertension & 0.046 & 0.943 \\
+Fluid and electrolyte disorders & 0.024 & 0.972 \\
+Gastrointestinal hemorrhage & 0.008 & 0.996 \\
+Hypertension with complications and secondary hypertension & 0.004 & 0.999 \\
+Other liver diseases & 0.033 & 0.987 \\
+Other lower respiratory disease & 0.001 & 0.999 \\
+Other upper respiratory disease & 0.048 & 0.996 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.0 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.02 & 0.999 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.006 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: EWC}} \\
+\midrule
+Acute and unspecified renal failure & 0.5 & 0.757 \\
+Acute cerebrovascular disease & 0.517 & 0.936 \\
+Acute myocardial infarction & 0.044 & 0.971 \\
+Cardiac dysrhythmias & 0.39 & 0.655 \\
+Chronic kidney disease & 0.084 & 0.966 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.035 & 0.972 \\
+Complications of surgical procedures or medical care & 0.196 & 0.899 \\
+Conduction disorders & 0.003 & 0.997 \\
+Congestive heart failure; nonhypertensive & 0.031 & 0.993 \\
+Coronary atherosclerosis and other heart disease & 0.012 & 0.997 \\
+Diabetes mellitus with complications & 0.117 & 0.979 \\
+Diabetes mellitus without complication & 0.003 & 0.999 \\
+Disorders of lipid metabolism & 0.001 & 1.0 \\
+Essential hypertension & 0.019 & 0.973 \\
+Fluid and electrolyte disorders & 0.034 & 0.953 \\
+Gastrointestinal hemorrhage & 0.001 & 0.999 \\
+Hypertension with complications and secondary hypertension & 0.001 & 1.0 \\
+Other liver diseases & 0.062 & 0.977 \\
+Other lower respiratory disease & 0.0 & 0.999 \\
+Other upper respiratory disease & 0.032 & 0.997 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.0 & 1.0 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.001 & 1.0 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.046 & 0.997 \\
+Septicemia (except in labor) & 0.0 & 1.0 \\
+Shock & 0.005 & 1.0 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.297 & 0.934 \\
+Acute cerebrovascular disease & 0.42 & 0.982 \\
+Acute myocardial infarction & 0.072 & 0.991 \\
+Cardiac dysrhythmias & 0.264 & 0.879 \\
+Chronic kidney disease & 0.104 & 0.983 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.019 & 0.996 \\
+Complications of surgical procedures or medical care & 0.163 & 0.965 \\
+Conduction disorders & 0.003 & 1.0 \\
+Congestive heart failure; nonhypertensive & 0.341 & 0.898 \\
+Coronary atherosclerosis and other heart disease & 0.49 & 0.877 \\
+Diabetes mellitus with complications & 0.319 & 0.981 \\
+Diabetes mellitus without complication & 0.202 & 0.954 \\
+Disorders of lipid metabolism & 0.311 & 0.902 \\
+Essential hypertension & 0.429 & 0.774 \\
+Fluid and electrolyte disorders & 0.252 & 0.925 \\
+Gastrointestinal hemorrhage & 0.002 & 1.0 \\
+Hypertension with complications and secondary hypertension & 0.106 & 0.982 \\
+Other liver diseases & 0.029 & 0.996 \\
+Other lower respiratory disease & 0.001 & 1.0 \\
+Other upper respiratory disease & 0.037 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.011 & 0.997 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.203 & 0.973 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.536 & 0.943 \\
+Septicemia (except in labor) & 0.306 & 0.965 \\
+Shock & 0.251 & 0.982 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Adj Replay}} \\
+\midrule
+Acute and unspecified renal failure & 0.306 & 0.931 \\
+Acute cerebrovascular disease & 0.439 & 0.981 \\
+Acute myocardial infarction & 0.055 & 0.995 \\
+Cardiac dysrhythmias & 0.256 & 0.887 \\
+Chronic kidney disease & 0.124 & 0.98 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.018 & 0.995 \\
+Complications of surgical procedures or medical care & 0.14 & 0.971 \\
+Conduction disorders & 0.002 & 0.999 \\
+Congestive heart failure; nonhypertensive & 0.336 & 0.898 \\
+Coronary atherosclerosis and other heart disease & 0.468 & 0.883 \\
+Diabetes mellitus with complications & 0.302 & 0.985 \\
+Diabetes mellitus without complication & 0.202 & 0.953 \\
+Disorders of lipid metabolism & 0.244 & 0.928 \\
+Essential hypertension & 0.432 & 0.762 \\
+Fluid and electrolyte disorders & 0.303 & 0.903 \\
+Gastrointestinal hemorrhage & 0.004 & 0.999 \\
+Hypertension with complications and secondary hypertension & 0.115 & 0.979 \\
+Other liver diseases & 0.035 & 0.997 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.031 & 0.998 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.006 & 0.998 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.19 & 0.973 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.558 & 0.939 \\
+Septicemia (except in labor) & 0.33 & 0.959 \\
+Shock & 0.245 & 0.982 \\
+\midrule
+\multicolumn{3}{c}{\textbf{Method: Combined}} \\
+\midrule
+Acute and unspecified renal failure & 0.308 & 0.932 \\
+Acute cerebrovascular disease & 0.371 & 0.986 \\
+Acute myocardial infarction & 0.053 & 0.994 \\
+Cardiac dysrhythmias & 0.241 & 0.894 \\
+Chronic kidney disease & 0.109 & 0.983 \\
+Chronic obstructive pulmonary disease and bronchiectasis & 0.009 & 0.998 \\
+Complications of surgical procedures or medical care & 0.183 & 0.957 \\
+Conduction disorders & 0.008 & 0.999 \\
+Congestive heart failure; nonhypertensive & 0.36 & 0.884 \\
+Coronary atherosclerosis and other heart disease & 0.474 & 0.881 \\
+Diabetes mellitus with complications & 0.328 & 0.979 \\
+Diabetes mellitus without complication & 0.233 & 0.944 \\
+Disorders of lipid metabolism & 0.275 & 0.915 \\
+Essential hypertension & 0.429 & 0.759 \\
+Fluid and electrolyte disorders & 0.27 & 0.915 \\
+Gastrointestinal hemorrhage & 0.0 & 1.0 \\
+Hypertension with complications and secondary hypertension & 0.115 & 0.976 \\
+Other liver diseases & 0.049 & 0.995 \\
+Other lower respiratory disease & 0.0 & 1.0 \\
+Other upper respiratory disease & 0.05 & 0.997 \\
+Pleurisy; pneumothorax; pulmonary collapse & 0.01 & 0.998 \\
+Pneumonia (except that caused by tuberculosis or sexually transmitted disease) & 0.219 & 0.971 \\
+Respiratory failure; insufficiency; arrest (adult) & 0.58 & 0.933 \\
+Septicemia (except in labor) & 0.293 & 0.964 \\
+Shock & 0.228 & 0.984 \\
+\bottomrule
+\end{longtable}
+
+\end{document}
+
+

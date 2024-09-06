@@ -1,0 +1,50 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\usepackage{graphicx} % For including images
+\usepackage{longtable} % For long tables that span multiple pages
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{cccccc}
+\toprule
+\multicolumn{6}{c}{\textbf{In-hospital Mortality}} \\
+\midrule
+Method & Region & Sensitivity MIMIC-III & Sensitivity eICU Region & Specificity MIMIC-III & Specificity eICU Region \\
+\midrule
+Baseline & \multirow{5}{*}{South} &  0.633 & 0.52 & 0.794 & 0.987 \\
+EWC & & 0.542 & 0.508 & 0.876 & 0.989 \\
+Replay & & 0.363 & 0.505 & 0.952 & 0.987 \\
+Adj Replay & & 0.32 & 0.517 & 0.971 & 0.986 \\
+Combined & & 0.343 & 0.505 & 0.962 & 0.989 \\
+\midrule
+Baseline & \multirow{5}{*}{Midwest} &  0.532 & 0.434 & 0.874 & 0.992 \\
+EWC & & 0.56 & 0.429 & 0.854 & 0.991 \\
+Replay & & 0.396 & 0.419 & 0.943 & 0.991 \\
+Adj Replay & & 0.338 & 0.439 & 0.961 & 0.992 \\
+Combined & & 0.356 & 0.424 & 0.959 & 0.992 \\
+\midrule
+Baseline & \multirow{5}{*}{West} &  0.614 & 0.558 & 0.823 & 0.99 \\
+EWC & & 0.582 & 0.562 & 0.847 & 0.99 \\
+Replay & & 0.382 & 0.539 & 0.953 & 0.989 \\
+Adj Replay & & 0.36 & 0.547 & 0.96 & 0.989 \\
+Combined & & 0.343 & 0.553 & 0.964 & 0.989 \\
+\midrule
+Baseline & \multirow{5}{*}{Northeast} &  0.759 & 0.581 & 0.633 & 0.98 \\
+EWC & & 0.634 & 0.576 & 0.814 & 0.986 \\
+Replay & & 0.337 & 0.55 & 0.969 & 0.982 \\
+Adj Replay & & 0.347 & 0.562 & 0.964 & 0.984 \\
+Combined & & 0.338 & 0.552 & 0.966 & 0.985 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\end{document}
+

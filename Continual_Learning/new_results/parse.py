@@ -22,7 +22,7 @@ for task in ["ihm", "phen", "dec", "los"]:
             print(bs)
             try:
                 with open(
-                    f"{PATH_TO_NEW_RESULTS}/{task}/{region}/{task}_{bs}_{method}_CE.txt",
+                    f"{PATH_TO_NEW_RESULTS}/{task}/{region}/{task}_{bs}_{method}_CE_BiLSTM.txt",
                     "r",
                 ) as file:
                     primary_metric = True

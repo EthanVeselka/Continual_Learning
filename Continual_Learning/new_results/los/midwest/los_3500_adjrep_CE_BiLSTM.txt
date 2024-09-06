@@ -1,0 +1,54 @@
+Best test performances:
+----------------------------------
+Model: Final Average Cohen Kappa: 0.1955146210203944, Final Average MAD: 0.7328465854794242
+Configuration: {'hidden_dim': 32, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 3500, 'EWC': False, 'Importance': 0, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 1, 'Tasks': 2}
+
+
+Model: Final Average Cohen Kappa: 0.19468924924279846, Final Average MAD: 0.7086749114911155
+Configuration: {'hidden_dim': 32, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 3500, 'EWC': False, 'Importance': 0, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 1, 'Tasks': 2}
+
+
+Model: Final Average Cohen Kappa: 0.19345742390256127, Final Average MAD: 0.691546325354902
+Configuration: {'hidden_dim': 32, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 3500, 'EWC': False, 'Importance': 0, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 1, 'Tasks': 2}
+
+
+Model: Final Average Cohen Kappa: 0.16382515811747866, Final Average MAD: 0.7093258378309331
+Configuration: {'hidden_dim': 32, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 3500, 'EWC': False, 'Importance': 0, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 1, 'Tasks': 2}
+
+
+Model: Final Average Cohen Kappa: 0.16236912871464926, Final Average MAD: 0.7113378754677382
+Configuration: {'hidden_dim': 32, 'num_layers': 1, 'dropout_rate': 0.3, 'bidirectional': True, 'Buffer size': 3500, 'EWC': False, 'Importance': 0, 'Replay': True, 'test_batch_size': 256, 'train_batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0, 'Epochs': 1, 'Tasks': 2}
+
+
+Per Task Average: [array([0.33350026, 0.72571846]), array([0.18197112, 0.71074631])]
+Std Dev: Cohen Kappa [0.007834640481004943, 0.030284612932397273]
+Std Dev: MAD [0.012250524044977156, 0.014684112786524754]
+Avg Sensitivity: [[0.58458896 0.45054101 0.00858086 0.         0.         0.
+  0.         0.         0.29292763 0.16626281]
+ [0.28196644 0.75384615 0.02557947 0.         0.         0.
+  0.         0.         0.08366013 0.        ]]
+Avg Specificity: [[0.66364058 0.63782025 0.99627015 1.         1.         1.
+  1.         1.         0.89556925 0.91368421]
+ [0.82021287 0.2523989  0.97392214 1.         1.         0.99995839
+  1.         1.         0.98609545 1.        ]]
+
+
+Best Per Task Average: {'Task 1': {'Average Cohen Kappa': 0.3214269407235607, 'Average MAD': 0.7174353184892153}, 'Task 2': {'Average Cohen Kappa': 0.1955146210203944, 'Average MAD': 0.7328465854794242}}
+
+
+Average performance:
+ [[[0.33350026 0.72571846]
+  [0.00386575 0.74141524]]
+
+ [[0.28303766 0.72920056]
+  [0.08090457 0.69229205]]]
+
+
+Standard deviation Cohen Kappa:
+ [[0.00783464 0.00235498]
+ [0.04000588 0.02056334]]
+
+
+Standard deviation MAD:
+ [[0.01225052 0.01086436]
+ [0.01638228 0.01298595]]
